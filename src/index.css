@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Cormorant Garamond", serif;
+  --font-body: "Inter", sans-serif;
+
+  --color-background-50: oklch(1 0 0);
+  --color-background-100: oklch(0.97 0.003 264);
+  --color-background-200: oklch(0.93 0.004 260);
+  --color-background-300: oklch(0.88 0.005 258);
+  --color-background-400: oklch(0.82 0.006 256);
+  --color-background-500: oklch(0.75 0.007 254);
+  --color-background-600: oklch(0.65 0.008 252);
+  --color-background-700: oklch(0.52 0.009 250);
+  --color-background-800: oklch(0.38 0.01 248);
+  --color-background-900: oklch(0.26 0.011 246);
+  --color-background-950: oklch(0.15 0.012 244);
+
+  --color-primary-50: oklch(0.97 0.01 264);
+  --color-primary-100: oklch(0.93 0.015 264);
+  --color-primary-200: oklch(0.85 0.02 264);
+  --color-primary-300: oklch(0.72 0.025 264);
+  --color-primary-400: oklch(0.55 0.03 264);
+  --color-primary-500: oklch(0.21 0.034 264);
+  --color-primary-600: oklch(0.18 0.03 264);
+  --color-primary-700: oklch(0.15 0.026 264);
+  --color-primary-800: oklch(0.12 0.022 264);
+  --color-primary-900: oklch(0.09 0.018 264);
+  --color-primary-950: oklch(0.06 0.014 264);
+
+  --color-secondary-50: oklch(0.97 0.008 260);
+  --color-secondary-100: oklch(0.93 0.012 260);
+  --color-secondary-200: oklch(0.85 0.018 260);
+  --color-secondary-300: oklch(0.72 0.024 260);
+  --color-secondary-400: oklch(0.55 0.03 260);
+  --color-secondary-500: oklch(0.28 0.037 260);
+  --color-secondary-600: oklch(0.24 0.033 260);
+  --color-secondary-700: oklch(0.2 0.029 260);
+  --color-secondary-800: oklch(0.16 0.025 260);
+  --color-secondary-900: oklch(0.12 0.021 260);
+  --color-secondary-950: oklch(0.08 0.017 260);
+
+  --color-accent-50: oklch(0.98 0.02 45);
+  --color-accent-100: oklch(0.95 0.05 45);
+  --color-accent-200: oklch(0.9 0.08 45);
+  --color-accent-300: oklch(0.83 0.12 45);
+  --color-accent-400: oklch(0.76 0.16 45);
+  --color-accent-500: oklch(0.7 0.19 45);
+  --color-accent-600: oklch(0.63 0.175 45);
+  --color-accent-700: oklch(0.55 0.155 45);
+  --color-accent-800: oklch(0.47 0.135 45);
+  --color-accent-900: oklch(0.38 0.11 45);
+  --color-accent-950: oklch(0.28 0.085 45);
+
+  --color-foreground-50: oklch(0.98 0.002 264);
+  --color-foreground-100: oklch(0.96 0.004 264);
+  --color-foreground-200: oklch(0.92 0.006 264);
+  --color-foreground-300: oklch(0.85 0.008 264);
+  --color-foreground-400: oklch(0.72 0.01 264);
+  --color-foreground-500: oklch(0.58 0.012 264);
+  --color-foreground-600: oklch(0.46 0.014 264);
+  --color-foreground-700: oklch(0.35 0.016 264);
+  --color-foreground-800: oklch(0.25 0.018 264);
+  --color-foreground-900: oklch(0.18 0.02 264);
+  --color-foreground-950: oklch(0.12 0.022 264);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-foreground-950);
+    background-color: var(--color-background-50);
+  }
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
