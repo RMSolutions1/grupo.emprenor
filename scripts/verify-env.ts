@@ -124,15 +124,26 @@ async function testDb() {
     console.log(`✓ site_settings/main actualizado: ${settings.updated_at}`)
   }
 
-  const { error: insertErr } = await createClient(url!, anonKey!, { auth: { persistSession: false } })
-    .from('contact_submissions')
-    .insert({ email: 'test-verify@local.dev', type: 'newsletter', name: 'Test verificación' })
-    .select()
-  if (insertErr) {
-    console.log(`✗ Insert público (formulario): ${insertErr.message}`)
-  } else {
-    console.log('✓ Insert público (formulario newsletter): OK')
+  const anonClient = createClient(url!, anonKey!, { auth: { persistSession: false } })
+  const { error: rpcErr } = await anonClient.rpc('submit_contact_submission', {
+    p_type: 'newsletter',
+    p_email: 'test-verify@local.dev',
+    p_name: 'Test verificación',
+  })
+  if (!rpcErr) {
+    console.log('✓ Formulario público (RPC): OK')
     await client.from('contact_submissions').delete().eq('email', 'test-verify@local.dev')
+  } else {
+    const { error: insertErr } = await anonClient
+      .from('contact_submissions')
+      .insert({ email: 'test-verify@local.dev', type: 'newsletter', name: 'Test verificación' })
+    if (insertErr) {
+      console.log(`✗ Formulario público: ${insertErr.message}`)
+      console.log('  → Ejecute: npm run fix:contact  (o scripts/fix-contact-form.sql en Supabase)')
+    } else {
+      console.log('✓ Formulario público (insert directo): OK')
+      await client.from('contact_submissions').delete().eq('email', 'test-verify@local.dev')
+    }
   }
 }
 

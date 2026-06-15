@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+export { AdminImageField } from './AdminImageField'
+
 export function AdminPage({ title, description, actions, children }: {
   title: string
   description?: string
@@ -7,22 +9,22 @@ export function AdminPage({ title, description, actions, children }: {
   children: ReactNode
 }) {
   return (
-    <div className="min-h-full bg-background-100">
-      <header className="sticky top-0 z-10 bg-background-50/95 backdrop-blur border-b border-background-200 px-6 md:px-10 py-5 flex flex-wrap items-start justify-between gap-4">
+    <div className="min-h-full">
+      <header className="bg-white border-b border-background-200 px-4 md:px-8 py-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950">{title}</h1>
+          <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground-950">{title}</h1>
           {description && <p className="text-sm font-body text-foreground-500 mt-1 max-w-2xl">{description}</p>}
         </div>
         {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
       </header>
-      <div className="p-6 md:p-10">{children}</div>
+      <div className="p-4 md:p-8 max-w-[1400px]">{children}</div>
     </div>
   )
 }
 
 export function AdminCard({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-background-200 bg-background-50 shadow-sm ${className}`}>
+    <div className={`rounded-2xl border border-background-200 bg-white shadow-sm ${className}`}>
       {children}
     </div>
   )
@@ -140,26 +142,17 @@ export function AdminModal({ open, title, onClose, children, wide }: { open: boo
   )
 }
 
-export function AdminImageField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="block md:col-span-2">
-      <AdminInput label={label} value={value} onChange={(e) => onChange(e.target.value)} placeholder="/images/ejemplo.jpg" />
-      {value && (
-        <div className="mt-2 flex items-start gap-4 p-3 rounded-lg border border-background-200 bg-background-100">
-          <img src={value} alt="" className="w-24 h-24 object-cover rounded-lg border border-background-200" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
-          <p className="text-xs font-body text-foreground-500 break-all flex-1">{value}</p>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function AdminEmpty({ message }: { message: string }) {
   return <p className="p-8 text-center text-sm font-body text-foreground-500">{message}</p>
 }
 
 export function AdminLoading() {
-  return <p className="p-8 text-center text-sm font-body text-foreground-500">Cargando datos…</p>
+  return (
+    <div className="p-12 flex flex-col items-center justify-center gap-3">
+      <div className="w-8 h-8 border-2 border-accent-500 border-t-transparent rounded-full animate-spin" />
+      <p className="text-sm font-body text-foreground-500">Cargando datos…</p>
+    </div>
+  )
 }
 
 export function AdminCheckbox({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {

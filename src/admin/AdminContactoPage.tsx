@@ -61,7 +61,7 @@ export default function AdminContacto() {
   }
 
   return (
-    <AdminPage title="Contacto" description="Edite la información de contacto que aparece en el sitio y en el pie de página.">
+    <AdminPage title="Contacto" description="Editá teléfonos, emails, dirección y áreas de contacto. Todo con formularios, sin código.">
       <AdminCard className="p-6 md:p-8">
         <FormSection title="Datos principales" description="Correos, dirección y horarios de atención.">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -99,15 +99,14 @@ export default function AdminContacto() {
 
         <FormSection
           title="Áreas de contacto directo"
-          description="Tarjetas de la página Contacto con email por área."
+          description="Tarjetas de la página Contacto y opciones del formulario «Área de interés»."
           onAdd={() => setAreas([...areas, { title: '', description: '', email: '', icon: 'ri-mail-line' }])}
           addLabel="Agregar área"
         >
           {areas.map((area, i) => (
             <ItemCard key={i} title="Área" index={i} onRemove={() => setAreas(areas.filter((_, j) => j !== i))}>
-              <AdminInput label="Título" value={area.title} onChange={(e) => { const n = [...areas]; n[i] = { ...area, title: e.target.value }; setAreas(n) }} />
-              <AdminInput label="Email" type="email" value={area.email} onChange={(e) => { const n = [...areas]; n[i] = { ...area, email: e.target.value }; setAreas(n) }} />
-              <AdminInput label="Icono" value={area.icon} onChange={(e) => { const n = [...areas]; n[i] = { ...area, icon: e.target.value }; setAreas(n) }} placeholder="ri-ruler-line" />
+              <AdminInput label="Nombre del área" value={area.title} onChange={(e) => { const n = [...areas]; n[i] = { ...area, title: e.target.value }; setAreas(n) }} />
+              <AdminInput label="Email del área" type="email" value={area.email} onChange={(e) => { const n = [...areas]; n[i] = { ...area, email: e.target.value }; setAreas(n) }} />
               <AdminTextarea label="Descripción" value={area.description} onChange={(e) => { const n = [...areas]; n[i] = { ...area, description: e.target.value }; setAreas(n) }} className="md:col-span-2" rows={2} />
             </ItemCard>
           ))}

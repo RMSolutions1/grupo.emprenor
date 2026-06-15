@@ -186,6 +186,37 @@ drop policy if exists "Submissions: eliminación autenticada" on public.contact_
 create policy "Submissions: eliminación autenticada" on public.contact_submissions
   for delete using (auth.role() = 'authenticated');
 
+-- RPC para formularios públicos (alternativa robusta a RLS directo)
+create or replace function public.submit_contact_submission(
+  p_type text,
+  p_name text default null,
+  p_email text default null,
+  p_phone text default null,
+  p_organization text default null,
+  p_area text default null,
+  p_message text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  if p_type not in ('contact', 'callback', 'newsletter') then
+    raise exception 'Tipo inválido';
+  end if;
+  insert into public.contact_submissions (name, email, phone, organization, area, message, type)
+  values (p_name, p_email, p_phone, p_organization, p_area, p_message, p_type)
+  returning id into new_id;
+  return new_id;
+end;
+$$;
+
+revoke all on function public.submit_contact_submission(text, text, text, text, text, text, text) from public;
+grant execute on function public.submit_contact_submission(text, text, text, text, text, text, text) to anon, authenticated;
+
 -- Trigger: crear perfil al registrar usuario admin
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -202,5 +233,35 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- Storage bucket para imágenes (crear también en Storage UI: bucket "media", público lectura)
--- insert into storage.buckets (id, name, public) values ('media', 'media', true);
+-- Storage: imágenes subidas desde el panel admin
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'media',
+  'media',
+  true,
+  8388608,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Media: lectura pública" on storage.objects;
+create policy "Media: lectura pública" on storage.objects
+  for select using (bucket_id = 'media');
+
+drop policy if exists "Media: subida autenticada" on storage.objects;
+create policy "Media: subida autenticada" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'media');
+
+drop policy if exists "Media: actualización autenticada" on storage.objects;
+create policy "Media: actualización autenticada" on storage.objects
+  for update to authenticated
+  using (bucket_id = 'media');
+
+drop policy if exists "Media: eliminación autenticada" on storage.objects;
+create policy "Media: eliminación autenticada" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'media');

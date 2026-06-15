@@ -30,6 +30,7 @@ export default function AdminProyectos() {
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const load = async () => {
     if (!supabase) return
@@ -47,22 +48,30 @@ export default function AdminProyectos() {
 
   const openNew = () => {
     setForm({ ...empty, id: `proj-${Date.now()}` })
+    setSaveError(null)
     setOpen(true)
   }
 
   const openEdit = (row: DbProject) => {
     setForm({ ...row, tags: row.tags ?? [] })
+    setSaveError(null)
     setOpen(true)
   }
 
   const handleSave = async () => {
+    if (!form.title.trim()) {
+      setSaveError('Ingrese el título del proyecto.')
+      return
+    }
     setSaving(true)
+    setSaveError(null)
     const ok = await saveProject({
       ...form,
       tags: typeof form.tags === 'string' ? (form.tags as unknown as string).split(',').map((t) => t.trim()) : form.tags,
     })
     setSaving(false)
     if (ok) { setOpen(false); load() }
+    else setSaveError('No se pudo guardar. Intente nuevamente.')
   }
 
   const handleDelete = async (id: string) => {
@@ -108,9 +117,9 @@ export default function AdminProyectos() {
       </AdminCard>
 
       <AdminModal open={open} title={form.id.startsWith('proj-') && !rows.find((r) => r.id === form.id) ? 'Nuevo proyecto' : 'Editar proyecto'} onClose={() => setOpen(false)} wide>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <AdminInput label="ID" value={form.id} onChange={(e) => setForm({ ...form, id: e.target.value })} />
-          <AdminInput label="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        {saveError && <AdminAlert tone="error">{saveError}</AdminAlert>}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <AdminInput label="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="md:col-span-2" />
           <AdminInput label="Cliente" value={form.client ?? ''} onChange={(e) => setForm({ ...form, client: e.target.value })} />
           <AdminInput label="Ubicación" value={form.location ?? ''} onChange={(e) => setForm({ ...form, location: e.target.value })} />
           <AdminInput label="Año" type="number" value={form.year ?? ''} onChange={(e) => setForm({ ...form, year: Number(e.target.value) })} />
@@ -119,12 +128,11 @@ export default function AdminProyectos() {
               <option key={c} value={c}>{c}</option>
             ))}
           </AdminSelect>
-          <AdminImageField label="Imagen (URL)" value={form.image_url ?? ''} onChange={(v) => setForm({ ...form, image_url: v })} />
-          <AdminInput label="Tags (separados por coma)" value={(form.tags ?? []).join(', ')} onChange={(e) => setForm({ ...form, tags: e.target.value.split(',').map((t) => t.trim()) })} className="md:col-span-2" />
+          <AdminImageField label="Imagen principal" value={form.image_url ?? ''} onChange={(v) => setForm({ ...form, image_url: v })} folder="proyectos" />
+          <AdminInput label="Etiquetas (separadas por coma)" value={(form.tags ?? []).join(', ')} onChange={(e) => setForm({ ...form, tags: e.target.value.split(',').map((t) => t.trim()) })} className="md:col-span-2" />
           <AdminTextarea label="Descripción" value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} className="md:col-span-2" rows={4} />
-          <AdminTextarea label="Descripción carrusel" value={form.carousel_description ?? ''} onChange={(e) => setForm({ ...form, carousel_description: e.target.value })} className="md:col-span-2" rows={2} />
-          <AdminInput label="Orden" type="number" value={form.sort_order ?? 0} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
-          <div className="flex flex-col gap-2 justify-end">
+          <AdminTextarea label="Descripción en carrusel (home)" value={form.carousel_description ?? ''} onChange={(e) => setForm({ ...form, carousel_description: e.target.value })} className="md:col-span-2" rows={2} />
+          <div className="flex flex-col gap-2 md:col-span-2">
             <AdminCheckbox label="Destacado" checked={form.featured ?? false} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
             <AdminCheckbox label="Publicado" checked={form.published ?? true} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
           </div>

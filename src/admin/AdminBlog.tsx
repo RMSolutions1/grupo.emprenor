@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { saveBlogPost, deleteBlogPost, type DbBlogPost } from '../lib/cms'
-import { AdminPage, AdminCard, AdminTable, AdminButton, AdminModal, AdminInput, AdminTextarea, AdminCheckbox, AdminBadge, AdminImageField, AdminLoading, AdminEmpty } from './components/AdminUI'
+import { AdminPage, AdminCard, AdminTable, AdminButton, AdminModal, AdminInput, AdminTextarea, AdminCheckbox, AdminBadge, AdminImageField, AdminLoading, AdminEmpty, AdminAlert } from './components/AdminUI'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAdminReady } from './hooks/useAdminReady'
 
@@ -27,7 +27,10 @@ export default function AdminBlog() {
   const [rows, setRows] = useState<DbBlogPost[]>([])
   const [form, setForm] = useState<DbBlogPost>(empty)
   const [open, setOpen] = useState(false)
+  const [isNew, setIsNew] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const load = async () => {
     if (!supabase) return
@@ -43,18 +46,33 @@ export default function AdminBlog() {
 
   const openNew = () => {
     setForm({ ...empty, id: `blog-${Date.now()}` })
+    setIsNew(true)
+    setSaveError(null)
     setOpen(true)
   }
 
   const openEdit = (row: DbBlogPost) => {
     setForm(row)
+    setIsNew(false)
+    setSaveError(null)
     setOpen(true)
   }
 
   const handleSave = async () => {
-    await saveBlogPost(form)
-    setOpen(false)
-    load()
+    if (!form.title.trim()) {
+      setSaveError('Ingrese el título del artículo.')
+      return
+    }
+    setSaving(true)
+    setSaveError(null)
+    const ok = await saveBlogPost(form)
+    setSaving(false)
+    if (ok) {
+      setOpen(false)
+      load()
+    } else {
+      setSaveError('No se pudo guardar. Intente nuevamente.')
+    }
   }
 
   const handleDelete = async (id: string) => {
@@ -84,24 +102,24 @@ export default function AdminBlog() {
         )}
       </AdminCard>
 
-      <AdminModal open={open} title="Artículo" onClose={() => setOpen(false)} wide>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <AdminInput label="ID" value={form.id} onChange={(e) => setForm({ ...form, id: e.target.value })} />
-          <AdminInput label="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+      <AdminModal open={open} title={isNew ? 'Nuevo artículo' : 'Editar artículo'} onClose={() => setOpen(false)} wide>
+        {saveError && <AdminAlert tone="error">{saveError}</AdminAlert>}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <AdminInput label="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="md:col-span-2" />
           <AdminInput label="Categoría" value={form.category ?? ''} onChange={(e) => setForm({ ...form, category: e.target.value })} />
           <AdminInput label="Fecha" value={form.date_label ?? ''} onChange={(e) => setForm({ ...form, date_label: e.target.value })} />
           <AdminInput label="Autor" value={form.author ?? ''} onChange={(e) => setForm({ ...form, author: e.target.value })} />
           <AdminInput label="Rol autor" value={form.author_role ?? ''} onChange={(e) => setForm({ ...form, author_role: e.target.value })} />
-          <AdminImageField label="Avatar autor" value={form.author_avatar_url ?? ''} onChange={(v) => setForm({ ...form, author_avatar_url: v })} />
-          <AdminImageField label="Imagen portada" value={form.image_url ?? ''} onChange={(v) => setForm({ ...form, image_url: v })} />
+          <AdminImageField label="Avatar autor" value={form.author_avatar_url ?? ''} onChange={(v) => setForm({ ...form, author_avatar_url: v })} folder="blog" />
+          <AdminImageField label="Imagen portada" value={form.image_url ?? ''} onChange={(v) => setForm({ ...form, image_url: v })} folder="blog" />
           <AdminInput label="Tiempo lectura" value={form.read_time ?? ''} onChange={(e) => setForm({ ...form, read_time: e.target.value })} />
           <AdminTextarea label="Extracto" value={form.excerpt ?? ''} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} className="md:col-span-2" />
-          <AdminTextarea label="Contenido (HTML/Markdown)" value={form.content ?? ''} onChange={(e) => setForm({ ...form, content: e.target.value })} className="md:col-span-2" rows={12} />
+          <AdminTextarea label="Contenido (escriba párrafos separados por una línea en blanco)" value={form.content ?? ''} onChange={(e) => setForm({ ...form, content: e.target.value })} className="md:col-span-2" rows={12} />
           <AdminCheckbox label="Destacado" checked={form.featured ?? false} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
           <AdminCheckbox label="Publicado" checked={form.published ?? true} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
         </div>
         <div className="flex gap-2 mt-6">
-          <AdminButton onClick={handleSave}>Guardar</AdminButton>
+          <AdminButton onClick={handleSave} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</AdminButton>
           <AdminButton variant="ghost" onClick={() => setOpen(false)}>Cancelar</AdminButton>
         </div>
       </AdminModal>

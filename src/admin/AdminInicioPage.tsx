@@ -59,7 +59,7 @@ export default function AdminInicio() {
   }
 
   return (
-    <AdminPage title="Página de inicio" description="Contenido de la home: números destacados, sectores, certificaciones y testimonios.">
+    <AdminPage title="Página de inicio" description="Editá las estadísticas, sectores, certificaciones y testimonios de la home con formularios simples.">
       <AdminCard className="p-6 md:p-8">
         <FormSection
           title="Estadísticas"
@@ -71,8 +71,7 @@ export default function AdminInicio() {
             <ItemCard key={i} title="Estadística" index={i} onRemove={() => setStatList(statList.filter((_, j) => j !== i))}>
               <AdminInput label="Valor numérico" type="number" value={stat.value} onChange={(e) => { const n = [...statList]; n[i] = { ...stat, value: Number(e.target.value) }; setStatList(n) }} />
               <AdminInput label="Sufijo (+, %, etc.)" value={stat.suffix} onChange={(e) => { const n = [...statList]; n[i] = { ...stat, suffix: e.target.value }; setStatList(n) }} />
-              <AdminInput label="Etiqueta" value={stat.label} onChange={(e) => { const n = [...statList]; n[i] = { ...stat, label: e.target.value }; setStatList(n) }} className="md:col-span-2" />
-              <AdminInput label="Icono" value={stat.icon} onChange={(e) => { const n = [...statList]; n[i] = { ...stat, icon: e.target.value }; setStatList(n) }} placeholder="ri-building-2-line" />
+              <AdminInput label="Etiqueta visible" value={stat.label} onChange={(e) => { const n = [...statList]; n[i] = { ...stat, label: e.target.value }; setStatList(n) }} className="md:col-span-2" />
             </ItemCard>
           ))}
         </FormSection>
@@ -85,10 +84,9 @@ export default function AdminInicio() {
         >
           {sectorList.map((sector, i) => (
             <ItemCard key={sector.id} title="Sector" index={i} onRemove={() => setSectorList(sectorList.filter((_, j) => j !== i))}>
-              <AdminInput label="Título" value={sector.title} onChange={(e) => { const n = [...sectorList]; n[i] = { ...sector, title: e.target.value }; setSectorList(n) }} />
-              <AdminInput label="Icono" value={sector.icon} onChange={(e) => { const n = [...sectorList]; n[i] = { ...sector, icon: e.target.value }; setSectorList(n) }} />
+              <AdminInput label="Nombre del sector" value={sector.title} onChange={(e) => { const n = [...sectorList]; n[i] = { ...sector, title: e.target.value }; setSectorList(n) }} />
               <div className="md:col-span-2">
-                <AdminImageField label="Imagen" value={sector.image} onChange={(v) => { const n = [...sectorList]; n[i] = { ...sector, image: v }; setSectorList(n) }} />
+                <AdminImageField label="Imagen" value={sector.image} onChange={(v) => { const n = [...sectorList]; n[i] = { ...sector, image: v }; setSectorList(n) }} folder="home" />
               </div>
             </ItemCard>
           ))}
@@ -102,8 +100,7 @@ export default function AdminInicio() {
         >
           {certList.map((cert, i) => (
             <ItemCard key={i} title="Certificación" index={i} onRemove={() => setCertList(certList.filter((_, j) => j !== i))}>
-              <AdminInput label="Título" value={cert.title} onChange={(e) => { const n = [...certList]; n[i] = { ...cert, title: e.target.value }; setCertList(n) }} />
-              <AdminInput label="Icono" value={cert.icon} onChange={(e) => { const n = [...certList]; n[i] = { ...cert, icon: e.target.value }; setCertList(n) }} />
+              <AdminInput label="Nombre de la certificación" value={cert.title} onChange={(e) => { const n = [...certList]; n[i] = { ...cert, title: e.target.value }; setCertList(n) }} className="md:col-span-2" />
               <AdminTextarea label="Descripción" value={cert.description} onChange={(e) => { const n = [...certList]; n[i] = { ...cert, description: e.target.value }; setCertList(n) }} className="md:col-span-2" rows={2} />
             </ItemCard>
           ))}
@@ -122,9 +119,9 @@ export default function AdminInicio() {
               <AdminInput label="Organización" value={t.company} onChange={(e) => { const n = [...testimonialList]; n[i] = { ...t, company: e.target.value }; setTestimonialList(n) }} className="md:col-span-2" />
               <AdminTextarea label="Cita" value={t.quote} onChange={(e) => { const n = [...testimonialList]; n[i] = { ...t, quote: e.target.value }; setTestimonialList(n) }} className="md:col-span-2" rows={3} />
               <div className="md:col-span-2">
-                <AdminImageField label="Foto" value={t.avatar} onChange={(v) => { const n = [...testimonialList]; n[i] = { ...t, avatar: v }; setTestimonialList(n) }} />
+                <AdminImageField label="Foto" value={t.avatar} onChange={(v) => { const n = [...testimonialList]; n[i] = { ...t, avatar: v }; setTestimonialList(n) }} folder="testimonials" />
               </div>
-              <AdminCheckbox label="Desplazamiento visual (offset)" checked={t.offset ?? false} onChange={(e) => { const n = [...testimonialList]; n[i] = { ...t, offset: e.target.checked }; setTestimonialList(n) }} />
+              <AdminCheckbox label="Mostrar desplazado a la derecha" checked={t.offset ?? false} onChange={(e) => { const n = [...testimonialList]; n[i] = { ...t, offset: e.target.checked }; setTestimonialList(n) }} />
             </ItemCard>
           ))}
         </FormSection>

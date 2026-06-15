@@ -11,6 +11,9 @@ import { usePageMeta } from '../hooks/usePageMeta'
 export default function Contacto() {
   const siteContact = useSiteContact()
   const contactAreas = useContactAreas()
+  const formAreaOptions = contactAreas.length > 0
+    ? [...contactAreas.map((a) => ({ value: a.title, label: a.title })), { value: 'Otro', label: 'Otro' }]
+    : interestAreas
   const [submitted, setSubmitted] = useState(false)
   const [callbackSubmitted, setCallbackSubmitted] = useState(false)
   const [message, setMessage] = useState('')
@@ -108,7 +111,7 @@ export default function Contacto() {
                       <label htmlFor="contact-area" className="block text-sm font-body text-foreground-600 mb-1">Área de interés *</label>
                       <select id="contact-area" name="area" required defaultValue="" className="w-full h-11 px-4 rounded-md border border-background-300 bg-background-100 text-sm font-body focus:outline-none focus:border-accent-500 transition-colors">
                         <option value="" disabled>Seleccione un área</option>
-                        {interestAreas.map((area) => (
+                        {formAreaOptions.map((area) => (
                           <option key={area.value} value={area.value}>{area.label}</option>
                         ))}
                       </select>
