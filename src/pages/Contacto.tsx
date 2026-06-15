@@ -3,27 +3,56 @@ import Layout, { SectionHeading } from '../components/Layout'
 import PageHero from '../components/PageHero'
 import FormNotice from '../components/FormNotice'
 import { IMAGES } from '../data/images'
-import { contactAreas, interestAreas, siteContact } from '../data/contacto'
+import { interestAreas } from '../data/contacto'
+import { useSiteContact, useContactAreas } from '../context/ContentContext'
+import { submitContact, submitCallback } from '../lib/contact'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Contacto() {
+  const siteContact = useSiteContact()
+  const contactAreas = useContactAreas()
   const [submitted, setSubmitted] = useState(false)
   const [callbackSubmitted, setCallbackSubmitted] = useState(false)
   const [message, setMessage] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   usePageMeta({
     title: 'Contacto',
     description: 'Comuníquese con EMPRENOR GROUP para consultas de ingeniería, construcción, energía y licitaciones.',
   })
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitting(true)
+    setError(null)
+    const form = new FormData(e.currentTarget)
+    const result = await submitContact({
+      name: String(form.get('name') ?? ''),
+      email: String(form.get('email') ?? ''),
+      phone: String(form.get('phone') ?? '') || undefined,
+      organization: String(form.get('organization') ?? '') || undefined,
+      area: String(form.get('area') ?? ''),
+      message: String(form.get('message') ?? ''),
+    })
+    setSubmitting(false)
+    if (result.ok) setSubmitted(true)
+    else setError(result.error ?? 'No se pudo enviar la consulta')
   }
 
-  const handleCallback = (e: FormEvent<HTMLFormElement>) => {
+  const handleCallback = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setCallbackSubmitted(true)
+    setSubmitting(true)
+    setError(null)
+    const form = new FormData(e.currentTarget)
+    const result = await submitCallback({
+      name: String(form.get('name') ?? ''),
+      phone: String(form.get('phone') ?? ''),
+      schedule: String(form.get('schedule') ?? '') || undefined,
+    })
+    setSubmitting(false)
+    if (result.ok) setCallbackSubmitted(true)
+    else setError(result.error ?? 'No se pudo enviar la solicitud')
   }
 
   return (
@@ -54,6 +83,7 @@ export default function Contacto() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5" aria-label="Formulario de contacto">
+                    {error && <p className="text-sm font-body text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="contact-name" className="block text-sm font-body text-foreground-600 mb-1">Nombre completo *</label>
@@ -99,8 +129,8 @@ export default function Contacto() {
                       />
                       <p id="contact-message-count" className="text-xs font-body text-foreground-400 mt-1">{message.length} / 500 caracteres</p>
                     </div>
-                    <button type="submit" className="w-full sm:w-auto px-10 h-12 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
-                      Enviar consulta
+                    <button type="submit" disabled={submitting} className="w-full sm:w-auto px-10 h-12 bg-accent-500 hover:bg-accent-600 disabled:opacity-60 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
+                      {submitting ? 'Enviando…' : 'Enviar consulta'}
                     </button>
                     <FormNotice />
                   </form>
@@ -180,6 +210,7 @@ export default function Contacto() {
               <p className="text-base font-body text-accent-500">¡Gracias! Nos comunicaremos con usted pronto.</p>
             ) : (
               <form onSubmit={handleCallback} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left" aria-label="Formulario de callback">
+                {error && !submitted && <p className="sm:col-span-2 text-sm font-body text-red-600">{error}</p>}
                 <div>
                   <label htmlFor="callback-name" className="sr-only">Nombre</label>
                   <input id="callback-name" name="name" required type="text" placeholder="Nombre" className="w-full h-11 px-4 rounded-md border border-background-300 bg-background-50 text-sm font-body focus:outline-none focus:border-accent-500" />
@@ -192,8 +223,8 @@ export default function Contacto() {
                   <label htmlFor="callback-schedule" className="sr-only">Horario preferido</label>
                   <input id="callback-schedule" name="schedule" type="text" placeholder="Horario preferido" className="w-full h-11 px-4 rounded-md border border-background-300 bg-background-50 text-sm font-body focus:outline-none focus:border-accent-500" />
                 </div>
-                <button type="submit" className="sm:col-span-2 h-12 bg-primary-500 hover:bg-primary-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
-                  Solicitar llamada
+                <button type="submit" disabled={submitting} className="sm:col-span-2 h-12 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
+                  {submitting ? 'Enviando…' : 'Solicitar llamada'}
                 </button>
                 <div className="sm:col-span-2">
                   <FormNotice />

@@ -2,11 +2,7 @@ import { Link } from 'react-router-dom'
 import Layout, { AccentButton } from '../components/Layout'
 import { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { services } from '../data/services'
-import { sectors, certifications, stats } from '../data/home'
-import { siteContact } from '../data/contacto'
-import { featuredProjects } from '../data/projects'
-import { testimonials } from '../data/testimonials'
+import { useServicesData, useHomeData, useSiteContact, useProjectsData } from '../context/ContentContext'
 import { useCounter } from '../hooks/useCounter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { DEFAULT_DESCRIPTION } from '../data/site'
@@ -29,6 +25,7 @@ function StatItem({ value, suffix, label, icon }: { value: number; suffix: strin
 }
 
 function ProjectsCarousel() {
+  const { featuredProjects } = useProjectsData()
   const [current, setCurrent] = useState(0)
   const project = featuredProjects[current]
 
@@ -109,6 +106,10 @@ function ProjectsCarousel() {
 }
 
 export default function Home() {
+  const { services } = useServicesData()
+  const { sectors, certifications, stats, testimonials } = useHomeData()
+  const siteContact = useSiteContact()
+
   usePageMeta({ title: 'Inicio', description: DEFAULT_DESCRIPTION })
 
   return (

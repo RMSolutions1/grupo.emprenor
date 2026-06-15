@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
-import { blogPosts, blogCategories } from '../data/blog'
+import { useBlogData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Blog() {
+  const { blogPosts, blogCategories } = useBlogData()
   const [category, setCategory] = useState('Todos los Artículos')
   const [search, setSearch] = useState('')
   const [visible, setVisible] = useState(6)

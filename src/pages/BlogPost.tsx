@@ -2,14 +2,15 @@ import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import Breadcrumb from '../components/Breadcrumb'
 import { CTASection } from '../components/PageHero'
-import { blogPosts } from '../data/blog'
-import { getBlogContent } from '../data/blogContent'
+import { useBlogData, useBlogPostContent } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function BlogPost() {
   const { id } = useParams()
+  const { blogPosts } = useBlogData()
   const post = blogPosts.find((p) => p.id === id)
-  const content = post ? (post.content ?? getBlogContent(post.id)) : undefined
+  const fallbackContent = useBlogPostContent(id ?? '')
+  const content = post ? (post.content ?? fallbackContent) : undefined
 
   usePageMeta({
     title: post?.title ?? 'Artículo no encontrado',

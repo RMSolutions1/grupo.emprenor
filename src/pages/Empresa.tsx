@@ -1,10 +1,12 @@
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { timeline, values, team, regions } from '../data/empresa'
+import { useEmpresaData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Empresa() {
+  const { timeline, values, team, regions } = useEmpresaData()
+
   usePageMeta({
     title: 'Empresa',
     description: 'Conozca la historia, valores y equipo directivo de GRUPO EMPRENOR.',

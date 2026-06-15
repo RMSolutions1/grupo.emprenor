@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { IMAGES } from '../data/images'
-import { licitaciones, licitacionStatuses, licitacionCategories, type Licitacion } from '../data/licitaciones'
+import { type Licitacion } from '../data/licitaciones'
+import { useLicitacionesData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 const statusColors: Record<Licitacion['status'], string> = {
@@ -22,6 +23,7 @@ function truncateText(text: string, max = 35): string {
 }
 
 export default function Licitaciones() {
+  const { licitaciones, licitacionStatuses, licitacionCategories } = useLicitacionesData()
   const [status, setStatus] = useState('Todas las Licitaciones')
   const [category, setCategory] = useState('Todas las Categorías')
   const [visible, setVisible] = useState(6)
@@ -44,7 +46,7 @@ export default function Licitaciones() {
       const catMatch = category === 'Todas las Categorías' || l.category === category
       return statusMatch && catMatch
     })
-  }, [status, category])
+  }, [status, category, licitaciones])
 
   return (
     <Layout>

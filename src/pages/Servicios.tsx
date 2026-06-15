@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { services, serviceDetails } from '../data/services'
+import { useServicesData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Servicios() {
-  const [activeTab, setActiveTab] = useState(services[0].id)
+  const { services, serviceDetails } = useServicesData()
+  const [activeTab, setActiveTab] = useState(services[0]?.id ?? '')
 
   usePageMeta({
     title: 'Servicios',
@@ -20,8 +21,10 @@ export default function Servicios() {
       setTimeout(() => {
         document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
+    } else if (services.length && !services.find((s) => s.id === activeTab)) {
+      setActiveTab(services[0].id)
     }
-  }, [])
+  }, [services, activeTab])
 
   const active = services.find((s) => s.id === activeTab) || services[0]
   const details = serviceDetails[activeTab]

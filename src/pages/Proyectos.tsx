@@ -4,7 +4,7 @@ import Layout, { SectionHeading } from '../components/Layout'
 import Breadcrumb from '../components/Breadcrumb'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { projectsList, projectCategories } from '../data/projects'
+import { useProjectsData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 const sectorLabels: Record<string, string> = {
@@ -19,6 +19,7 @@ const sectorLabels: Record<string, string> = {
 }
 
 export default function Proyectos() {
+  const { projectsList, projectCategories } = useProjectsData()
   const [searchParams] = useSearchParams()
   const sectorParam = searchParams.get('sector')
   const [category, setCategory] = useState('Todos los Proyectos')
@@ -48,7 +49,7 @@ export default function Proyectos() {
       if (cats) result = result.filter((p) => cats.includes(p.category))
     }
     return result
-  }, [category, sectorParam])
+  }, [category, sectorParam, projectsList])
 
   return (
     <Layout>

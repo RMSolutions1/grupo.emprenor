@@ -3,11 +3,12 @@ import Layout from '../components/Layout'
 import Breadcrumb from '../components/Breadcrumb'
 import { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { projects } from '../data/projects'
+import { useProjectsData } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function ProyectoDetail() {
   const { id } = useParams()
+  const { projects } = useProjectsData()
   const project = projects.find((p) => p.id === id)
 
   usePageMeta({

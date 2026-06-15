@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import { type FormEvent, useState } from 'react'
 import Logo from './Logo'
 import FormNotice from './FormNotice'
-import { siteContact } from '../data/contacto'
+import { useSiteContact } from '../context/ContentContext'
+import { submitNewsletter } from '../lib/contact'
 
 const navLinks = [
   { to: '/empresa', label: 'Empresa' },
@@ -14,11 +15,17 @@ const navLinks = [
 ]
 
 export default function Footer() {
+  const contact = useSiteContact()
   const [subscribed, setSubscribed] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleNewsletter = (e: FormEvent) => {
+  const handleNewsletter = async (e: FormEvent) => {
     e.preventDefault()
-    setSubscribed(true)
+    const form = e.target as HTMLFormElement
+    const email = (form.elements.namedItem('email') as HTMLInputElement).value
+    const result = await submitNewsletter(email)
+    if (result.ok) setSubscribed(true)
+    else setError(result.error ?? 'Error al suscribirse')
   }
 
   return (
@@ -59,17 +66,17 @@ export default function Footer() {
           <div>
             <h4 className="text-white text-sm font-body font-semibold mb-5 uppercase tracking-wider">Contacto</h4>
             <div className="flex flex-col gap-3">
-              <a href={siteContact.primaryPhone.href} className="text-white/50 hover:text-white text-sm font-body transition-colors duration-200 flex items-center gap-2">
+              <a href={contact.primaryPhone.href} className="text-white/50 hover:text-white text-sm font-body transition-colors duration-200 flex items-center gap-2">
                 <i className="ri-phone-line text-sm w-4 h-4 flex items-center justify-center" />
-                {siteContact.primaryPhone.display}
+                {contact.primaryPhone.display}
               </a>
-              <a href={`mailto:${siteContact.email}`} className="text-white/50 hover:text-white text-sm font-body transition-colors duration-200 flex items-center gap-2">
+              <a href={`mailto:${contact.email}`} className="text-white/50 hover:text-white text-sm font-body transition-colors duration-200 flex items-center gap-2">
                 <i className="ri-mail-line text-sm w-4 h-4 flex items-center justify-center" />
-                {siteContact.email}
+                {contact.email}
               </a>
               <span className="text-white/50 text-sm font-body flex items-start gap-2">
                 <i className="ri-map-pin-line text-sm w-4 h-4 flex items-center justify-center mt-0.5" />
-                {siteContact.address.short}
+                {contact.address.short}
               </span>
             </div>
           </div>
@@ -83,6 +90,7 @@ export default function Footer() {
               <p className="text-accent-300 text-sm font-body">¡Gracias por suscribirte!</p>
             ) : (
               <form className="flex flex-col gap-0" onSubmit={handleNewsletter}>
+                {error && <p className="text-red-300 text-xs mb-2">{error}</p>}
                 <div className="flex items-center gap-0">
                   <input
                     id="newsletter-email"
