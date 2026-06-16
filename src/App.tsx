@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import ScrollToTop from './components/ScrollToTop'
 import { ContentProvider } from './context/ContentContext'
 import { AdminAuthProvider } from './admin/AdminAuthContext'
@@ -34,6 +35,7 @@ export default function App() {
       <ContentProvider>
         <AdminAuthProvider>
           <ScrollToTop />
+          <Analytics />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/empresa" element={<Empresa />} />
