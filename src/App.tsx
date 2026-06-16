@@ -15,6 +15,7 @@ import AdminContacto from './admin/AdminContactoPage'
 import AdminInicio from './admin/AdminInicioPage'
 import AdminEmpresa from './admin/AdminEmpresaPage'
 import AdminMedios from './admin/AdminMedios'
+import AdminPaginas from './admin/AdminPaginasPage'
 import Home from './pages/Home'
 import Empresa from './pages/Empresa'
 import Servicios from './pages/Servicios'
@@ -59,6 +60,7 @@ export default function App() {
                 <Route path="empresa" element={<AdminEmpresa />} />
                 <Route path="inicio" element={<AdminInicio />} />
                 <Route path="contacto" element={<AdminContacto />} />
+                <Route path="paginas" element={<AdminPaginas />} />
                 <Route path="medios" element={<AdminMedios />} />
                 <Route path="consultas" element={<AdminConsultas />} />
               </Route>

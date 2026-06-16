@@ -1,19 +1,17 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
-import { useBlogData } from '../context/ContentContext'
+import { useBlogData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Blog() {
+  const copy = usePageCopy('blog')
   const { blogPosts, blogCategories } = useBlogData()
   const [category, setCategory] = useState('Todos los Artículos')
   const [search, setSearch] = useState('')
   const [visible, setVisible] = useState(6)
 
-  usePageMeta({
-    title: 'Blog',
-    description: 'Artículos técnicos sobre ingeniería, construcción, energía y licitaciones en el Norte Argentino.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   const featured = blogPosts.find((p) => p.featured)!
   const filtered = useMemo(() => {

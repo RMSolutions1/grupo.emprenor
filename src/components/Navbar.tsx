@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useScrollHeader } from '../hooks/useCounter'
-import { useSiteContact } from '../context/ContentContext'
+import { useSiteContact, useGlobalCopy } from '../context/ContentContext'
 import Logo from './Logo'
 
 const navLinks = [
@@ -22,6 +22,7 @@ function isNavActive(pathname: string, to: string): boolean {
 export default function Navbar({ transparent = false }: { transparent?: boolean }) {
   const location = useLocation()
   const contact = useSiteContact()
+  const global = useGlobalCopy()
   const scrolled = useScrollHeader()
   const [menuOpen, setMenuOpen] = useState(false)
   const isHome = location.pathname === '/'
@@ -87,7 +88,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 to="/contacto"
                 className="whitespace-nowrap px-6 py-2.5 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300"
               >
-                Solicitar Cotización
+                {global.navCtaLabel}
               </Link>
             </div>
 
@@ -128,7 +129,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               className="block w-full text-center px-6 py-3 bg-accent-500 text-white text-sm font-body font-medium rounded-md"
               onClick={() => setMenuOpen(false)}
             >
-              Solicitar Cotización
+              {global.navCtaLabel}
             </Link>
           </div>
         )}

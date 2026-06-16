@@ -1,14 +1,14 @@
 export const siteContact = {
   phones: [
-    { display: '+54 387 431-2800', href: 'tel:+543874312800' },
-    { display: '+54 387 431-2801', href: 'tel:+543874312801' },
+    { display: '+54 11 2758-6521', href: 'tel:+541127586521' },
+    { display: '+54 11 2758-6521', href: 'tel:+541127586521' },
   ],
-  primaryPhone: { display: '+54 387 431-2800', href: 'tel:+543874312800' },
+  primaryPhone: { display: '+54 11 2758-6521', href: 'tel:+541127586521' },
   email: 'contacto@emprenor.com.ar',
   licitacionesEmail: 'licitaciones@emprenor.com.ar',
   address: {
-    lines: ['Av. Belgrano 845, Piso 3', 'Salta Capital, CP 4400', 'Argentina'],
-    short: 'Av. Belgrano 845, Salta Capital, Argentina',
+    lines: ['Av. Casiano Casas 3080', 'Campamento Vespucio, CP 4563', 'Salta, Argentina'],
+    short: 'Av. Casiano Casas 3080, Campamento Vespucio, Salta, Argentina',
   },
   hours: {
     weekdays: 'Lunes a Viernes: 8:00 – 18:00',

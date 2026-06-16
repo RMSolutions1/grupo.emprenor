@@ -1,34 +1,34 @@
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { useEmpresaData } from '../context/ContentContext'
+import { useEmpresaData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { ctaToLinks, resolveImage } from '../lib/pageCopy'
 
 export default function Empresa() {
+  const copy = usePageCopy('empresa')
   const { timeline, values, team, regions } = useEmpresaData()
+  const ctaLinks = ctaToLinks(copy.cta)
 
-  usePageMeta({
-    title: 'Empresa',
-    description: 'Conozca la historia, valores y equipo directivo de GRUPO EMPRENOR.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   return (
     <Layout>
       <PageHero
-        title="Somos GRUPO EMPRENOR"
-        subtitle="Ingeniería, construcción y energía. Más de 15 años impulsando el desarrollo del Norte Argentino."
-        image={IMAGES.empresaHero}
+        title={copy.hero.title}
+        subtitle={copy.hero.subtitle}
+        image={resolveImage(copy.hero.image, IMAGES.empresaHero)}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             <div>
-              <SectionHeading label="Trayectoria" title={<>Nuestra <span className="font-light italic text-foreground-600">Historia</span></>} />
+              <SectionHeading label={copy.history.label} title={copy.history.title} />
               <div className="space-y-4 text-base font-body text-foreground-600 leading-relaxed">
-                <p>GRUPO EMPRENOR nació en el año 2008 en la ciudad de Salta, fundada por un grupo de ingenieros con la visión de transformar la infraestructura del Norte Argentino. Lo que comenzó como una oficina técnica de tres profesionales, hoy es una empresa de referencia regional con más de 50 colaboradores.</p>
-                <p>Desde nuestros primeros proyectos de infraestructura eléctrica rural, fuimos expandiendo nuestras capacidades hacia la construcción de obras civiles, edificios públicos, plantas industriales y desarrollos energéticos de gran escala.</p>
-                <p>Hoy, con presencia en 4 provincias y más de 500 proyectos ejecutados, seguimos comprometidos con la excelencia técnica, la innovación y el desarrollo sostenible de las comunidades donde operamos.</p>
+                {copy.history.paragraphs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
             </div>
             <div className="space-y-6">
@@ -54,14 +54,14 @@ export default function Empresa() {
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             <div className="p-8 rounded-xl bg-background-100 border border-background-200">
               <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-4">Misión</h3>
-              <p className="text-base font-body text-foreground-600 leading-relaxed">Desarrollar proyectos de ingeniería y construcción de excelencia que impulsen el crecimiento económico y social del Norte Argentino, generando valor para nuestros clientes, colaboradores y comunidades.</p>
+              <p className="text-base font-body text-foreground-600 leading-relaxed">{copy.mission}</p>
             </div>
             <div className="p-8 rounded-xl bg-background-100 border border-background-200">
               <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-4">Visión</h3>
-              <p className="text-base font-body text-foreground-600 leading-relaxed">Ser la empresa de ingeniería y construcción de referencia en el Norte Argentino para el año 2030, reconocida por nuestra excelencia técnica, innovación, sostenibilidad y compromiso con el desarrollo regional.</p>
+              <p className="text-base font-body text-foreground-600 leading-relaxed">{copy.vision}</p>
             </div>
           </div>
-          <h3 className="font-heading text-4xl md:text-5xl font-bold text-foreground-950 leading-tight mb-14 md:mb-16">Nuestros Valores</h3>
+          <h3 className="font-heading text-4xl md:text-5xl font-bold text-foreground-950 leading-tight mb-14 md:mb-16">{copy.valuesTitle}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {values.map((v) => (
               <div key={v.title} className="p-6 rounded-xl border border-background-200 bg-background-50 hover:border-accent-300 transition-all duration-300">
@@ -79,7 +79,7 @@ export default function Empresa() {
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading label="Liderazgo" title={<>Equipo <span className="font-light italic text-foreground-600">Directivo</span></>} subtitle="Profesionales con amplia trayectoria que lideran cada área con excelencia y compromiso." />
+            <SectionHeading label={copy.team.label} title={copy.team.title} subtitle={copy.team.subtitle} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {team.map((member) => (
                 <div key={member.name} className="group rounded-xl overflow-hidden border border-background-200 bg-background-50 hover:border-background-300 transition-all duration-300">
@@ -101,7 +101,7 @@ export default function Empresa() {
       <section className="py-20 md:py-28 bg-background-50">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading label="Presencia Regional" title={<>Cobertura <span className="font-light italic text-foreground-600">Geográfica</span></>} subtitle="Operamos en 4 provincias del Norte Argentino, con oficinas centrales en Salta y capacidad de despliegue en toda la región." />
+            <SectionHeading label={copy.regions.label} title={copy.regions.title} subtitle={copy.regions.subtitle} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
               <div className="relative rounded-xl overflow-hidden h-[400px] md:h-[500px]">
                 <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('${IMAGES.mapaCobertura}')` }} />
@@ -127,10 +127,10 @@ export default function Empresa() {
       </section>
 
       <CTASection
-        title="Formá parte del equipo líder en ingeniería del Norte Argentino"
-        description="Buscamos profesionales comprometidos con la excelencia. Conocé nuestras oportunidades."
-        primaryLink={{ to: '/contacto', label: 'Trabajá con Nosotros' }}
-        image={IMAGES.empresaCta}
+        title={copy.cta.title}
+        description={copy.cta.description}
+        primaryLink={ctaLinks.primaryLink}
+        image={resolveImage(copy.cta.image, IMAGES.empresaCta)}
       />
     </Layout>
   )

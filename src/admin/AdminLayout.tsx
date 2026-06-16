@@ -16,7 +16,7 @@ const navGroups = [
   },
   {
     label: 'Sitio web',
-    items: adminModules.filter((m) => ['home', 'empresa', 'contact', 'media'].includes(m.id)),
+    items: adminModules.filter((m) => ['pages', 'home', 'empresa', 'contact', 'media'].includes(m.id)),
   },
 ]
 

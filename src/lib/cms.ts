@@ -8,6 +8,8 @@ import { stats } from '../data/home'
 import { sectors, certifications } from '../data/home'
 import { testimonials } from '../data/testimonials'
 import { timeline, values, team, regions } from '../data/empresa'
+import { defaultPages, type SitePages } from '../data/pages'
+import { mergeSitePages } from './pageCopy'
 
 export type SiteSettings = {
   id: string
@@ -18,6 +20,7 @@ export type SiteSettings = {
   home: { sectors: typeof sectors; certifications: typeof certifications }
   empresa: { timeline: typeof timeline; values: typeof values; team: typeof team; regions: typeof regions }
   contact_areas: typeof contactAreas
+  pages: SitePages
   updated_at?: string
 }
 
@@ -175,6 +178,7 @@ const defaultSettings: SiteSettings = {
   home: { sectors, certifications },
   empresa: { timeline, values, team, regions },
   contact_areas: contactAreas,
+  pages: defaultPages,
 }
 
 export async function fetchSiteSettings(): Promise<SiteSettings | null> {
@@ -198,6 +202,7 @@ export async function fetchSiteSettings(): Promise<SiteSettings | null> {
       regions: (data.empresa as SiteSettings['empresa'])?.regions?.length ? (data.empresa as SiteSettings['empresa']).regions : defaultSettings.empresa.regions,
     },
     contact_areas: (data.contact_areas as typeof contactAreas)?.length ? (data.contact_areas as typeof contactAreas) : defaultSettings.contact_areas,
+    pages: mergeSitePages((data.pages as Partial<SitePages>) ?? undefined),
     updated_at: data.updated_at,
   }
 }

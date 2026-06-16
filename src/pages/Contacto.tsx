@@ -4,11 +4,13 @@ import PageHero from '../components/PageHero'
 import FormNotice from '../components/FormNotice'
 import { IMAGES } from '../data/images'
 import { interestAreas } from '../data/contacto'
-import { useSiteContact, useContactAreas } from '../context/ContentContext'
+import { useSiteContact, useContactAreas, usePageCopy } from '../context/ContentContext'
 import { submitContact, submitCallback } from '../lib/contact'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { resolveImage } from '../lib/pageCopy'
 
 export default function Contacto() {
+  const copy = usePageCopy('contacto')
   const siteContact = useSiteContact()
   const contactAreas = useContactAreas()
   const formAreaOptions = contactAreas.length > 0
@@ -20,10 +22,7 @@ export default function Contacto() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  usePageMeta({
-    title: 'Contacto',
-    description: 'Comuníquese con EMPRENOR GROUP para consultas de ingeniería, construcción, energía y licitaciones.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -61,28 +60,25 @@ export default function Contacto() {
   return (
     <Layout>
       <PageHero
-        label="Contacto"
-        title="Hablemos de su próximo proyecto"
-        subtitle="Estamos listos para escuchar sus necesidades y encontrar la mejor solución de ingeniería, construcción o energía para su organización."
-        image={IMAGES.contactoHero}
+        label={copy.hero.label}
+        title={copy.hero.title}
+        subtitle={copy.hero.subtitle}
+        image={resolveImage(copy.hero.image, IMAGES.contactoHero)}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
-              <SectionHeading
-                title="Envíenos su consulta"
-                subtitle="Complete el formulario y un asesor especializado se pondrá en contacto a la brevedad."
-              />
+              <SectionHeading title={copy.form.title} subtitle={copy.form.subtitle} />
               <div className="p-8 rounded-xl border border-background-200 bg-background-50">
                 {submitted ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 flex items-center justify-center rounded-full bg-accent-100 mx-auto mb-6">
                       <i className="ri-check-line text-2xl text-accent-500" />
                     </div>
-                    <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">¡Consulta enviada!</h3>
-                    <p className="text-base font-body text-foreground-600">Un asesor especializado se pondrá en contacto a la brevedad.</p>
+                    <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">{copy.formSuccessTitle}</h3>
+                    <p className="text-base font-body text-foreground-600">{copy.formSuccessText}</p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5" aria-label="Formulario de contacto">
@@ -142,7 +138,7 @@ export default function Contacto() {
             </div>
 
             <div>
-              <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-6">Información de Contacto</h3>
+              <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-6">{copy.sidebarTitle}</h3>
               <div className="space-y-6 p-6 rounded-xl border border-background-200 bg-background-50">
                 <div>
                   <p className="text-sm font-body font-medium text-foreground-500 mb-1">Dirección</p>
@@ -177,10 +173,7 @@ export default function Contacto() {
       <section className="py-20 md:py-28 bg-background-50">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading
-              title="Áreas de Contacto Directo"
-              subtitle="Comuníquese directamente con el área que mejor se adapte a su necesidad."
-            />
+            <SectionHeading title={copy.areas.title} subtitle={copy.areas.subtitle} />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {contactAreas.map((area) => (
                 <a
@@ -205,12 +198,12 @@ export default function Contacto() {
         <div className="w-full px-6 md:px-12">
           <div className="max-w-3xl mx-auto text-center">
             <SectionHeading
-              title="¿Prefiere que lo llamemos?"
-              subtitle="Déjenos sus datos y un representante se comunicará en el horario que usted indique."
+              title={copy.callback.title}
+              subtitle={copy.callback.subtitle}
               align="center"
             />
             {callbackSubmitted ? (
-              <p className="text-base font-body text-accent-500">¡Gracias! Nos comunicaremos con usted pronto.</p>
+              <p className="text-base font-body text-accent-500">{copy.callbackSuccess}</p>
             ) : (
               <form onSubmit={handleCallback} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left" aria-label="Formulario de callback">
                 {error && !submitted && <p className="sm:col-span-2 text-sm font-body text-red-600">{error}</p>}

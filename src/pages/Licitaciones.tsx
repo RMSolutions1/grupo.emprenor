@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { IMAGES } from '../data/images'
 import { type Licitacion } from '../data/licitaciones'
-import { useLicitacionesData } from '../context/ContentContext'
+import { useLicitacionesData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { resolveImage } from '../lib/pageCopy'
 
 const statusColors: Record<Licitacion['status'], string> = {
   Publicada: 'bg-accent-100 text-accent-700 border-accent-200',
@@ -23,15 +24,13 @@ function truncateText(text: string, max = 35): string {
 }
 
 export default function Licitaciones() {
+  const copy = usePageCopy('licitaciones')
   const { licitaciones, licitacionStatuses, licitacionCategories } = useLicitacionesData()
   const [status, setStatus] = useState('Todas las Licitaciones')
   const [category, setCategory] = useState('Todas las Categorías')
   const [visible, setVisible] = useState(6)
 
-  usePageMeta({
-    title: 'Licitaciones',
-    description: 'Portal de licitaciones vigentes de EMPRENOR GROUP. Acceda a documentación, consultas y ofertas.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   const filtered = useMemo(() => {
     const statusMap: Record<string, string> = {
@@ -54,19 +53,23 @@ export default function Licitaciones() {
         <img
           alt="Portal de Licitaciones EMPRENOR GROUP"
           className="absolute inset-0 w-full h-full object-cover object-center"
-          src={IMAGES.licitacionesHero}
+          src={resolveImage(copy.hero.image, IMAGES.licitacionesHero)}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
         <div className="relative z-10 w-full px-6 md:px-12 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-accent-500/90 text-white text-xs font-body font-medium tracking-wider uppercase mb-6">
-            Transparencia y Gestión
-          </span>
+          {copy.hero.label && (
+            <span className="inline-block px-4 py-1.5 rounded-full bg-accent-500/90 text-white text-xs font-body font-medium tracking-wider uppercase mb-6">
+              {copy.hero.label}
+            </span>
+          )}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-4 max-w-3xl mx-auto leading-tight">
-            Portal de Licitaciones
+            {copy.hero.title}
           </h1>
-          <p className="text-base md:text-lg text-white/80 font-body max-w-2xl mx-auto leading-relaxed">
-            Acceda a llamados vigentes, descargue documentación, realice consultas y presente sus ofertas. Interactuamos con organismos públicos y privados con total transparencia.
-          </p>
+          {copy.hero.subtitle && (
+            <p className="text-base md:text-lg text-white/80 font-body max-w-2xl mx-auto leading-relaxed">
+              {copy.hero.subtitle}
+            </p>
+          )}
           <div className="mt-8 flex items-center justify-center gap-4 text-white/60 text-xs font-body">
             <Link to="/" className="hover:text-accent-400 transition-colors whitespace-nowrap">Inicio</Link>
             <span>/</span>
@@ -201,27 +204,31 @@ export default function Licitaciones() {
 
       <section className="w-full bg-background-100 py-16 md:py-20">
         <div className="px-6 md:px-12 max-w-3xl mx-auto text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-accent-100 text-accent-700 text-xs font-body font-medium tracking-wider uppercase mb-6">
-            ¿Quiere participar?
-          </span>
+          {copy.provider.label && (
+            <span className="inline-block px-4 py-1.5 rounded-full bg-accent-100 text-accent-700 text-xs font-body font-medium tracking-wider uppercase mb-6">
+              {copy.provider.label}
+            </span>
+          )}
           <h2 className="text-2xl md:text-3xl font-heading font-bold text-foreground-950 mb-4">
-            Registre su empresa como proveedor
+            {copy.provider.title}
           </h2>
-          <p className="text-sm text-foreground-500 font-body leading-relaxed mb-8 max-w-xl mx-auto">
-            Al registrarse en nuestro portal de proveedores recibirá notificaciones automáticas de nuevos llamados, podrá descargar pliegos, realizar consultas técnicas y presentar sus ofertas de manera digital.
-          </p>
+          {copy.provider.subtitle && (
+            <p className="text-sm text-foreground-500 font-body leading-relaxed mb-8 max-w-xl mx-auto">
+              {copy.provider.subtitle}
+            </p>
+          )}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/contacto"
+              to={copy.provider.ctaPrimaryUrl}
               className="whitespace-nowrap px-8 py-3 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300"
             >
-              Registrarme como Proveedor
+              {copy.provider.ctaPrimary}
             </Link>
             <Link
-              to="/servicios"
+              to={copy.provider.ctaSecondaryUrl}
               className="whitespace-nowrap px-8 py-3 border border-foreground-300 hover:border-accent-400 rounded-md text-foreground-600 hover:text-accent-500 text-sm font-body font-medium transition-all duration-300"
             >
-              Conocer nuestros servicios
+              {copy.provider.ctaSecondary}
             </Link>
           </div>
         </div>

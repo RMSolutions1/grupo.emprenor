@@ -1,9 +1,10 @@
 import Layout from '../components/Layout'
 import PageHero from '../components/PageHero'
-import { siteContact } from '../data/contacto'
+import { useSiteContact } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 export default function Privacidad() {
+  const siteContact = useSiteContact()
   usePageMeta({ title: 'Política de Privacidad' })
 
   return (

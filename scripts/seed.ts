@@ -15,6 +15,7 @@ import { siteContact, contactAreas } from '../src/data/contacto'
 import { sectors, certifications, stats } from '../src/data/home'
 import { testimonials } from '../src/data/testimonials'
 import { timeline, values, team, regions } from '../src/data/empresa'
+import { defaultPages } from '../src/data/pages'
 
 function loadEnv() {
   const envPath = resolve(process.cwd(), '.env.local')
@@ -165,6 +166,7 @@ async function seed() {
     home: { sectors, certifications },
     empresa: { timeline, values, team, regions },
     contact_areas: contactAreas,
+    pages: defaultPages,
     updated_at: new Date().toISOString(),
   }
 

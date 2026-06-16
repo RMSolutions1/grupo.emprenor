@@ -44,6 +44,7 @@ alter table public.site_settings add column if not exists testimonials jsonb not
 alter table public.site_settings add column if not exists home jsonb not null default '{}';
 alter table public.site_settings add column if not exists empresa jsonb not null default '{}';
 alter table public.site_settings add column if not exists contact_areas jsonb not null default '[]';
+alter table public.site_settings add column if not exists pages jsonb not null default '{}';
 
 -- Proyectos
 create table if not exists public.projects (

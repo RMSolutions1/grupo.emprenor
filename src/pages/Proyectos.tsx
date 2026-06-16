@@ -4,8 +4,9 @@ import Layout, { SectionHeading } from '../components/Layout'
 import Breadcrumb from '../components/Breadcrumb'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { useProjectsData } from '../context/ContentContext'
+import { useProjectsData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { ctaToLinks, resolveImage } from '../lib/pageCopy'
 
 const sectorLabels: Record<string, string> = {
   gobierno: 'Gobierno',
@@ -19,15 +20,14 @@ const sectorLabels: Record<string, string> = {
 }
 
 export default function Proyectos() {
+  const copy = usePageCopy('proyectos')
   const { projectsList, projectCategories } = useProjectsData()
   const [searchParams] = useSearchParams()
   const sectorParam = searchParams.get('sector')
   const [category, setCategory] = useState('Todos los Proyectos')
+  const ctaLinks = ctaToLinks(copy.cta)
 
-  usePageMeta({
-    title: 'Proyectos',
-    description: 'Más de 500 proyectos ejecutados en 4 provincias para organismos públicos, industrias y clientes privados.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   const filtered = useMemo(() => {
     let result = projectsList
@@ -54,9 +54,9 @@ export default function Proyectos() {
   return (
     <Layout>
       <PageHero
-        title="Proyectos que transforman el Norte Argentino"
-        subtitle="Más de 500 proyectos ejecutados en 4 provincias para organismos públicos, industrias y clientes privados. Conocé nuestra trayectoria."
-        image={IMAGES.proyectosHero}
+        title={copy.hero.title}
+        subtitle={copy.hero.subtitle}
+        image={resolveImage(copy.hero.image, IMAGES.proyectosHero)}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
@@ -107,11 +107,11 @@ export default function Proyectos() {
       </section>
 
       <CTASection
-        title="Convertimos sus necesidades en soluciones de ingeniería"
-        description="Nuestro equipo técnico está listo para analizar su proyecto y elaborar una propuesta a medida sin compromiso."
-        primaryLink={{ to: '/contacto', label: 'Solicitar Cotización' }}
-        secondaryLink={{ to: '/servicios', label: 'Ver Servicios' }}
-        image={IMAGES.proyectosCta}
+        title={copy.cta.title}
+        description={copy.cta.description}
+        primaryLink={ctaLinks.primaryLink}
+        secondaryLink={ctaLinks.secondaryLink}
+        image={resolveImage(copy.cta.image, IMAGES.proyectosCta)}
       />
     </Layout>
   )

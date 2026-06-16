@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
-import { useServicesData } from '../context/ContentContext'
+import { useServicesData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { ctaToLinks, resolveImage } from '../lib/pageCopy'
 
 export default function Servicios() {
+  const copy = usePageCopy('servicios')
   const { services, serviceDetails } = useServicesData()
   const [activeTab, setActiveTab] = useState(services[0]?.id ?? '')
+  const ctaLinks = ctaToLinks(copy.cta)
 
-  usePageMeta({
-    title: 'Servicios',
-    description: 'Seis divisiones de ingeniería, construcción, energía y mantenimiento para proyectos de cualquier escala.',
-  })
+  usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
   useEffect(() => {
     const hash = window.location.hash.replace('#', '')
@@ -32,15 +32,15 @@ export default function Servicios() {
   return (
     <Layout>
       <PageHero
-        title="Servicios de Ingeniería y Construcción"
-        subtitle="Soluciones integrales en seis divisiones especializadas que cubren cada etapa y escala de su proyecto."
-        image={IMAGES.serviciosHero}
+        title={copy.hero.title}
+        subtitle={copy.hero.subtitle}
+        image={resolveImage(copy.hero.image, IMAGES.serviciosHero)}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading label="Divisiones" title={<>Seis áreas de especialización para proyectos de <span className="font-light italic text-foreground-600">cualquier escala</span></>} />
+            <SectionHeading label={copy.divisions.label} title={copy.divisions.title} />
 
             <div className="flex flex-wrap gap-2 mb-12">
               {services.map((s) => (
@@ -86,7 +86,7 @@ export default function Servicios() {
       <section className="py-20 md:py-28 bg-background-50">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <SectionHeading label="Soluciones Integrales" title="Todas nuestras divisiones" />
+            <SectionHeading label={copy.grid.label} title={copy.grid.title} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service) => (
                 <div key={service.id} className="p-6 rounded-xl border border-background-200 bg-background-100 hover:border-accent-300 transition-all duration-300 scroll-mt-28">
@@ -110,11 +110,11 @@ export default function Servicios() {
       </section>
 
       <CTASection
-        label="¿No encuentra lo que busca?"
-        title="Desarrollamos soluciones a medida para su proyecto"
-        description="Cuéntenos sobre su proyecto y nuestro equipo técnico le presentará una propuesta personalizada sin cargo."
-        primaryLink={{ to: '/contacto', label: 'Solicitar Asesoramiento' }}
-        image={IMAGES.serviciosCta}
+        label={copy.cta.label}
+        title={copy.cta.title}
+        description={copy.cta.description}
+        primaryLink={ctaLinks.primaryLink}
+        image={resolveImage(copy.cta.image, IMAGES.serviciosCta)}
       />
     </Layout>
   )

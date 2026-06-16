@@ -8,7 +8,10 @@ import { sectors, certifications, stats } from '../data/home'
 import { testimonials } from '../data/testimonials'
 import { timeline, values, team, regions } from '../data/empresa'
 import { getBlogContent } from '../data/blogContent'
+import { type SitePages } from '../data/pages'
+import { SITE_NAME, DEFAULT_DESCRIPTION } from '../data/site'
 import { isSupabaseConfigured } from '../lib/supabase'
+import { mergeSitePages } from '../lib/pageCopy'
 import {
   fetchSiteSettings,
   fetchProjects,
@@ -173,4 +176,26 @@ export function useLicitacionesData() {
 export function useBlogPostContent(id: string) {
   const { getBlogPostContent } = useContent()
   return getBlogPostContent(id)
+}
+
+export function useSitePages(): SitePages {
+  const { settings } = useContent()
+  return mergeSitePages(settings?.pages)
+}
+
+export function usePageCopy<K extends keyof SitePages>(page: K): SitePages[K] {
+  const pages = useSitePages()
+  return pages[page]
+}
+
+export function useGlobalCopy() {
+  return usePageCopy('global')
+}
+
+export function useSiteMeta() {
+  const global = useGlobalCopy()
+  return {
+    siteName: global.siteName || SITE_NAME,
+    siteDescription: global.siteDescription || DEFAULT_DESCRIPTION,
+  }
 }

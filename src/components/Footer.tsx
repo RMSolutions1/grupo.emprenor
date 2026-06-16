@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { type FormEvent, useState } from 'react'
 import Logo from './Logo'
 import FormNotice from './FormNotice'
-import { useSiteContact } from '../context/ContentContext'
+import { useSiteContact, useGlobalCopy } from '../context/ContentContext'
 import { submitNewsletter } from '../lib/contact'
 
 const navLinks = [
@@ -16,6 +16,7 @@ const navLinks = [
 
 export default function Footer() {
   const contact = useSiteContact()
+  const global = useGlobalCopy()
   const [subscribed, setSubscribed] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -37,16 +38,16 @@ export default function Footer() {
               <Logo variant="light" size="md" />
             </div>
             <p className="text-white/60 text-sm font-body leading-relaxed mb-6 max-w-xs">
-              Construimos la infraestructura que impulsa el crecimiento del Norte Argentino.
+              {global.footerTagline}
             </p>
             <div className="flex items-center gap-3">
-              <a href="https://instagram.com/emprenorgroup" target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="Instagram">
+              <a href={global.social.instagram} target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="Instagram">
                 <i className="ri-instagram-line text-base" />
               </a>
-              <a href="https://youtube.com/@emprenorgroup" target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="YouTube">
+              <a href={global.social.youtube} target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="YouTube">
                 <i className="ri-youtube-line text-base" />
               </a>
-              <a href="https://facebook.com/emprenorgroup" target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="Facebook">
+              <a href={global.social.facebook} target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="Facebook">
                 <i className="ri-facebook-line text-base" />
               </a>
             </div>
@@ -82,9 +83,9 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white text-sm font-body font-semibold mb-5 uppercase tracking-wider">Newsletter</h4>
+            <h4 className="text-white text-sm font-body font-semibold mb-5 uppercase tracking-wider">{global.newsletterTitle}</h4>
             <p className="text-white/50 text-sm font-body leading-relaxed mb-4">
-              Recibí novedades sobre proyectos, licitaciones y el sector de la construcción.
+              {global.newsletterText}
             </p>
             {subscribed ? (
               <p className="text-accent-300 text-sm font-body">¡Gracias por suscribirte!</p>
@@ -111,7 +112,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-xs font-body">© 2026 GRUPO EMPRENOR. Todos los derechos reservados.</p>
+          <p className="text-white/30 text-xs font-body">{global.footerCopyright}</p>
           <div className="flex items-center gap-6">
             <Link to="/privacidad" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Privacidad</Link>
             <Link to="/terminos" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Términos</Link>
