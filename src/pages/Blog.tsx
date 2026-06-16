@@ -36,7 +36,7 @@ export default function Blog() {
 
   return (
     <Layout>
-      <section className="relative pt-20 min-h-[500px]">
+      <section className="relative site-header-offset min-h-[500px]">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${featured.image}")` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/60 to-primary-950/40" />
         <div className="relative z-10 flex flex-col justify-end min-h-[500px] px-6 md:px-12 pb-12">

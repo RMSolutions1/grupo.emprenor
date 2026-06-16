@@ -47,6 +47,7 @@ export default function App() {
             <Route path="/privacidad" element={<Privacidad />} />
             <Route path="/terminos" element={<Terminos />} />
 
+            <Route path="/acceso" element={<AdminLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminGuard />}>
               <Route element={<AdminLayout />}>

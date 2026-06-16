@@ -115,6 +115,10 @@ export default function Footer() {
           <div className="flex items-center gap-6">
             <Link to="/privacidad" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Privacidad</Link>
             <Link to="/terminos" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Términos</Link>
+            <Link to="/admin/login" className="text-white/30 hover:text-white/60 text-xs font-body transition-colors inline-flex items-center gap-1">
+              <i className="ri-shield-user-line" />
+              Acceso Administrador
+            </Link>
           </div>
         </div>
       </div>

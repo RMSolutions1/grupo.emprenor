@@ -50,7 +50,7 @@ export default function Licitaciones() {
 
   return (
     <Layout>
-      <section className="relative w-full h-[500px] flex items-center justify-center overflow-hidden pt-20">
+      <section className="relative w-full h-[500px] flex items-center justify-center overflow-hidden site-header-offset">
         <img
           alt="Portal de Licitaciones EMPRENOR GROUP"
           className="absolute inset-0 w-full h-full object-cover object-center"

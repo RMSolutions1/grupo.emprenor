@@ -10,7 +10,7 @@ interface PageHeroProps {
 
 export default function PageHero({ label, title, subtitle, image, children }: PageHeroProps) {
   return (
-    <section className={`relative w-full overflow-hidden pt-20 ${image ? 'min-h-[420px] md:min-h-[520px]' : 'py-16 md:py-20 bg-primary-500'}`}>
+    <section className={`relative w-full overflow-hidden site-header-offset ${image ? 'min-h-[420px] md:min-h-[520px]' : 'py-16 md:py-20 bg-primary-500'}`}>
       {image && (
         <>
           <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${image}")` }} />

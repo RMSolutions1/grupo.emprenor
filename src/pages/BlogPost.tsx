@@ -20,7 +20,7 @@ export default function BlogPost() {
   if (!post) {
     return (
       <Layout>
-        <div className="min-h-screen flex flex-col items-center justify-center pt-20 px-6">
+        <div className="min-h-screen flex flex-col items-center justify-center site-header-offset px-6">
           <h1 className="font-heading text-4xl font-bold text-foreground-950 mb-4">Artículo no encontrado</h1>
           <Link to="/blog" className="text-accent-500 font-body hover:text-accent-600">Volver al blog</Link>
         </div>
@@ -30,7 +30,7 @@ export default function BlogPost() {
 
   return (
     <Layout>
-      <section className="relative pt-20">
+      <section className="relative site-header-offset">
         <div className="relative h-[40vh] min-h-[300px] overflow-hidden">
           <img alt={post.title} className="w-full h-full object-cover object-top" src={post.image} />
           <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 to-transparent" />

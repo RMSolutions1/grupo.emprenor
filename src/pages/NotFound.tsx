@@ -7,7 +7,7 @@ export default function NotFound() {
 
   return (
     <Layout>
-      <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 pt-20 text-center">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 site-header-offset text-center">
         <p className="text-accent-500 text-sm font-body font-semibold uppercase tracking-wider mb-3">Error 404</p>
         <h1 className="font-heading text-4xl md:text-5xl font-bold text-foreground-950 mb-4">Página no encontrada</h1>
         <p className="text-base font-body text-foreground-600 max-w-md mb-8">

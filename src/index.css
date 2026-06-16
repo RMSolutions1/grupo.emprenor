@@ -98,4 +98,14 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  .site-header-offset {
+    padding-top: 5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .site-header-offset {
+      padding-top: 7.25rem;
+    }
+  }
 }

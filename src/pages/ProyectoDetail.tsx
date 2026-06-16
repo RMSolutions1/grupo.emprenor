@@ -19,7 +19,7 @@ export default function ProyectoDetail() {
   if (!project) {
     return (
       <Layout>
-        <div className="min-h-screen flex flex-col items-center justify-center pt-20 px-6">
+        <div className="min-h-screen flex flex-col items-center justify-center site-header-offset px-6">
           <h1 className="font-heading text-4xl font-bold text-foreground-950 mb-4">Proyecto no encontrado</h1>
           <Link to="/proyectos" className="text-accent-500 font-body hover:text-accent-600">Volver a proyectos</Link>
         </div>
@@ -29,7 +29,7 @@ export default function ProyectoDetail() {
 
   return (
     <Layout>
-      <section className="relative pt-20">
+      <section className="relative site-header-offset">
         <div className="relative h-[50vh] min-h-[400px] overflow-hidden">
           <img alt={project.title} className="w-full h-full object-cover object-top" src={project.image} />
           <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-primary-950/40 to-transparent" />
