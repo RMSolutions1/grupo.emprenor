@@ -76,17 +76,18 @@ export function QuickActions() {
     { to: '/admin/inicio', icon: 'ri-home-gear-line', label: 'Home' },
     { to: '/admin/empresa', icon: 'ri-team-line', label: 'Empresa' },
     { to: '/admin/contacto', icon: 'ri-phone-line', label: 'Contacto' },
+    { to: '/admin/paginas', icon: 'ri-file-text-line', label: 'Textos' },
   ]
 
   return (
-    <AdminCard className="p-5">
+    <AdminCard className="p-5 relative">
       <h3 className="font-heading text-lg font-semibold text-foreground-950 mb-4">Acciones rápidas</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {actions.map((a) => (
           <Link
             key={a.to}
             to={a.to}
-            className="flex flex-col items-center gap-2 p-4 rounded-xl border border-background-200 bg-background-50 hover:bg-white hover:border-accent-200 hover:shadow-sm transition-all text-center group"
+            className="flex flex-col items-center gap-2 p-4 rounded-xl border border-background-200 bg-background-50 hover:bg-white hover:border-accent-200 hover:shadow-sm transition-all text-center group min-h-[96px]"
           >
             <div className="w-10 h-10 rounded-xl bg-primary-50 group-hover:bg-accent-100 flex items-center justify-center transition-colors">
               <i className={`${a.icon} text-lg text-primary-600 group-hover:text-accent-600`} />
@@ -101,7 +102,7 @@ export function QuickActions() {
 
 export function RecentSubmissions({ items, loading }: { items: ContactSubmission[]; loading?: boolean }) {
   return (
-    <AdminCard className="p-0 overflow-hidden h-full flex flex-col">
+    <AdminCard className="p-0 overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-5 py-4 border-b border-background-200">
         <h3 className="font-heading text-lg font-semibold text-foreground-950">Consultas recientes</h3>
         <Link to="/admin/consultas" className="text-xs font-body text-accent-600 hover:text-accent-700">Ver todas →</Link>
@@ -180,25 +181,26 @@ export function ModuleGrid() {
     { to: '/admin/blog', icon: 'ri-article-line', title: 'Blog', desc: 'Artículos y novedades' },
     { to: '/admin/licitaciones', icon: 'ri-file-list-3-line', title: 'Licitaciones', desc: 'Llamados vigentes' },
     { to: '/admin/inicio', icon: 'ri-home-4-line', title: 'Inicio', desc: 'Stats y testimonios' },
+    { to: '/admin/paginas', icon: 'ri-file-text-line', title: 'Textos del sitio', desc: 'Copy y CTAs por página' },
     { to: '/admin/empresa', icon: 'ri-team-line', title: 'Empresa', desc: 'Equipo e historia' },
     { to: '/admin/contacto', icon: 'ri-phone-line', title: 'Contacto', desc: 'Datos de contacto' },
     { to: '/admin/medios', icon: 'ri-image-line', title: 'Medios', desc: 'Imágenes del sitio' },
   ]
 
   return (
-    <AdminCard className="p-5">
+    <AdminCard className="p-5 relative">
       <h3 className="font-heading text-lg font-semibold text-foreground-950 mb-4">Todos los módulos</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {modules.map((m) => (
-          <Link key={m.to} to={m.to} className="flex items-center gap-3 p-3 rounded-xl hover:bg-background-100 transition-colors group">
-            <div className="w-9 h-9 rounded-lg bg-background-200 group-hover:bg-accent-100 flex items-center justify-center transition-colors">
+          <Link key={m.to} to={m.to} className="flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-background-200 hover:bg-background-50 transition-colors group min-h-[60px]">
+            <div className="w-9 h-9 rounded-lg bg-background-200 group-hover:bg-accent-100 flex items-center justify-center transition-colors shrink-0">
               <i className={`${m.icon} text-accent-600`} />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-body font-medium text-foreground-900">{m.title}</p>
-              <p className="text-xs font-body text-foreground-500">{m.desc}</p>
+              <p className="text-xs font-body text-foreground-500 truncate">{m.desc}</p>
             </div>
-            <i className="ri-arrow-right-s-line ml-auto text-foreground-300 group-hover:text-accent-500" />
+            <i className="ri-arrow-right-s-line shrink-0 text-foreground-300 group-hover:text-accent-500" />
           </Link>
         ))}
       </div>

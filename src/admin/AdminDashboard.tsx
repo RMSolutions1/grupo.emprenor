@@ -29,12 +29,12 @@ export default function AdminDashboard() {
         <StatCard label="Consultas nuevas" value={stats.unread} sub={`${stats.submissions} en total`} icon="ri-mail-unread-line" to="/admin/consultas" accent="bg-accent-50 text-accent-600" loading={loading} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 flex flex-col gap-6">
           <RecentSubmissions items={recentSubmissions} loading={loading} />
           <QuickActions />
         </div>
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           <ContentOverview stats={stats} loading={loading} />
           <SystemStatus stats={stats} />
         </div>
