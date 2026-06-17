@@ -13,7 +13,7 @@ export default function Privacidad() {
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-3xl mx-auto space-y-6 text-base font-body text-foreground-600 leading-relaxed">
-            <p>EMPRENOR GROUP se compromete a proteger la privacidad de los datos personales de sus usuarios, clientes y proveedores, conforme a la Ley 25.326 de Protección de Datos Personales de la República Argentina.</p>
+            <p>EMPRENOR se compromete a proteger la privacidad de los datos personales de sus usuarios, clientes y proveedores, conforme a la Ley 25.326 de Protección de Datos Personales de la República Argentina.</p>
             <h2 className="font-heading text-2xl font-bold text-foreground-950">Recopilación de datos</h2>
             <p>Recopilamos información que usted nos proporciona voluntariamente a través de formularios de contacto, suscripción al newsletter y registro como proveedor.</p>
             <h2 className="font-heading text-2xl font-bold text-foreground-950">Uso de la información</h2>

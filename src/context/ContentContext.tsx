@@ -44,6 +44,10 @@ const ContentContext = createContext<ContentState | null>(null)
 function buildServiceDetails(services: (Service & { details?: Record<string, unknown> })[]) {
   const details: ContentState['serviceDetails'] = { ...staticServiceDetails }
   for (const s of services) {
+    if (staticServiceDetails[s.id]) {
+      details[s.id] = staticServiceDetails[s.id]
+      continue
+    }
     if (s.details && typeof s.details === 'object' && 'intro' in s.details) {
       details[s.id] = s.details as ContentState['serviceDetails'][string]
     }
@@ -54,12 +58,14 @@ function buildServiceDetails(services: (Service & { details?: Record<string, unk
 function mergeServices(dbServices: Service[]): Service[] {
   if (!dbServices.length) return staticServices
   const byId = new Map(dbServices.map((s) => [s.id, s]))
-  const staticById = new Map(staticServices.map((s) => [s.id, s]))
-  const merged = staticServices.map((s) => {
+  return staticServices.map((s) => {
     const db = byId.get(s.id)
     if (!db) return s
     return {
       ...db,
+      title: s.title,
+      tagline: s.tagline,
+      description: s.description,
       tabTitle: s.tabTitle,
       icon: s.icon,
       image: s.image,
@@ -67,10 +73,6 @@ function mergeServices(dbServices: Service[]): Service[] {
       services: s.services.length ? s.services : db.services,
     }
   })
-  for (const s of dbServices) {
-    if (!staticById.has(s.id)) merged.push(s)
-  }
-  return merged
 }
 
 function mergeLicitaciones(dbLicitaciones: Licitacion[]): Licitacion[] {

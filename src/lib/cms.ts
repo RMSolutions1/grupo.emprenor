@@ -10,7 +10,7 @@ import { sectors, certifications } from '../data/home'
 import { testimonials } from '../data/testimonials'
 import { timeline, values, team, regions } from '../data/empresa'
 import { defaultPages, type SitePages } from '../data/pages'
-import { mergeSitePages } from './pageCopy'
+import { mergeSitePages, isStaleStats, isStaleTestimonials, isStaleTimeline, isStaleRegions, isStaleTeam } from './pageCopy'
 
 export type SiteSettings = {
   id: string
@@ -183,11 +183,27 @@ const defaultSettings: SiteSettings = {
   pages: defaultPages,
 }
 
+function sanitizeSiteSettings(settings: SiteSettings): SiteSettings {
+  const out: SiteSettings = { ...settings, pages: mergeSitePages(settings.pages) }
+  if (isStaleStats(out.stats)) out.stats = defaultSettings.stats
+  if (isStaleTestimonials(out.testimonials)) out.testimonials = defaultSettings.testimonials
+  if (isStaleTimeline(out.empresa.timeline)) {
+    out.empresa = { ...out.empresa, timeline: defaultSettings.empresa.timeline }
+  }
+  if (isStaleRegions(out.empresa.regions)) {
+    out.empresa = { ...out.empresa, regions: defaultSettings.empresa.regions }
+  }
+  if (isStaleTeam(out.empresa.team)) {
+    out.empresa = { ...out.empresa, team: defaultSettings.empresa.team }
+  }
+  return out
+}
+
 export async function fetchSiteSettings(): Promise<SiteSettings | null> {
   if (!supabase) return null
   const { data, error } = await supabase.from('site_settings').select('*').eq('id', 'main').maybeSingle()
   if (error || !data) return null
-  return {
+  return sanitizeSiteSettings({
     id: data.id,
     contact: { ...defaultSettings.contact, ...(data.contact as object) },
     stats: (data.stats as typeof stats)?.length ? (data.stats as typeof stats) : defaultSettings.stats,
@@ -206,7 +222,7 @@ export async function fetchSiteSettings(): Promise<SiteSettings | null> {
     contact_areas: (data.contact_areas as typeof contactAreas)?.length ? (data.contact_areas as typeof contactAreas) : defaultSettings.contact_areas,
     pages: mergeSitePages((data.pages as Partial<SitePages>) ?? undefined),
     updated_at: data.updated_at,
-  }
+  })
 }
 
 export async function fetchProjects(publishedOnly = true): Promise<Project[]> {

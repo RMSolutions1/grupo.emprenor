@@ -143,7 +143,7 @@ export default function Home() {
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
             <div className="relative rounded-2xl overflow-hidden mb-16 h-[300px] md:h-[420px]">
-              <img alt="Vista aérea de obras de EMPRENOR GROUP" className="w-full h-full object-cover object-top" loading="lazy" src={statsImage} />
+              <img alt="Vista aérea de obras de EMPRENOR" className="w-full h-full object-cover object-top" loading="lazy" src={statsImage} />
               <div className="absolute inset-0 bg-gradient-to-t from-primary-950/30 to-transparent" />
             </div>
             <div className="text-center mb-14">

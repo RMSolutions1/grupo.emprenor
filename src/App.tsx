@@ -33,8 +33,14 @@ const AdminPaginas = lazy(() => import('./admin/AdminPaginasPage'))
 
 function PageLoader() {
   return (
-    <div className="min-h-[50vh] flex items-center justify-center">
-      <p className="text-sm font-body text-foreground-500">Cargando…</p>
+    <div className="min-h-screen bg-background-50">
+      <div className="h-8 bg-primary-950" />
+      <div className="h-20 bg-background-50 border-b border-background-200 animate-pulse" />
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 space-y-6">
+        <div className="h-4 w-32 bg-background-200 rounded animate-pulse" />
+        <div className="h-12 w-2/3 max-w-xl bg-background-200 rounded animate-pulse" />
+        <div className="h-5 w-1/2 max-w-md bg-background-200 rounded animate-pulse" />
+      </div>
     </div>
   )
 }
