@@ -188,6 +188,8 @@ export default function AdminPaginasPage() {
         <AdminTabPanel active={tab} id="licitaciones">
           <SeoFields seo={pages.licitaciones.seo} onChange={(seo) => set('licitaciones', { ...pages.licitaciones, seo })} />
           <HeroFields hero={pages.licitaciones.hero} onChange={(hero) => set('licitaciones', { ...pages.licitaciones, hero })} />
+          <SectionFields title="Destacadas" section={pages.licitaciones.featured} onChange={(featured) => set('licitaciones', { ...pages.licitaciones, featured })} />
+          <SectionFields title="Listado" section={pages.licitaciones.list} onChange={(list) => set('licitaciones', { ...pages.licitaciones, list })} />
           <SectionFields title="Registro proveedores" section={pages.licitaciones.provider} onChange={(provider) => set('licitaciones', { ...pages.licitaciones, provider: { ...pages.licitaciones.provider, ...provider } })} />
           <FormSection title="Botones registro proveedor">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

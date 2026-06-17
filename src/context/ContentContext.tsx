@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { projects as staticProjects, projectsList as staticProjectsList, featuredProjects as staticFeatured, projectCategories as staticProjectCategories } from '../data/projects'
 import { services as staticServices, serviceDetails as staticServiceDetails } from '../data/services'
 import { blogPosts as staticBlogPosts, blogCategories as staticBlogCategories } from '../data/blog'
-import { licitaciones as staticLicitaciones, licitacionStatuses, licitacionCategories } from '../data/licitaciones'
+import { licitaciones as staticLicitaciones, licitacionStatuses, licitacionCategories, licitacionImage } from '../data/licitaciones'
 import { siteContact, contactAreas } from '../data/contacto'
 import { sectors, certifications, stats } from '../data/home'
 import { testimonials } from '../data/testimonials'
@@ -54,11 +54,35 @@ function buildServiceDetails(services: (Service & { details?: Record<string, unk
 function mergeServices(dbServices: Service[]): Service[] {
   if (!dbServices.length) return staticServices
   const byId = new Map(dbServices.map((s) => [s.id, s]))
-  const merged = staticServices.map((s) => byId.get(s.id) ?? s)
+  const staticById = new Map(staticServices.map((s) => [s.id, s]))
+  const merged = staticServices.map((s) => {
+    const db = byId.get(s.id)
+    if (!db) return s
+    return {
+      ...db,
+      tabTitle: s.tabTitle,
+      icon: s.icon,
+      image: s.image,
+      pageImage: s.pageImage,
+      services: s.services.length ? s.services : db.services,
+    }
+  })
   for (const s of dbServices) {
-    if (!staticServices.some((st) => st.id === s.id)) merged.push(s)
+    if (!staticById.has(s.id)) merged.push(s)
   }
   return merged
+}
+
+function mergeLicitaciones(dbLicitaciones: Licitacion[]): Licitacion[] {
+  if (!dbLicitaciones.length) return staticLicitaciones
+  const staticById = new Map(staticLicitaciones.map((l) => [l.id, l]))
+  return dbLicitaciones.map((db) => {
+    const base = staticById.get(db.id)
+    return {
+      ...db,
+      image: base?.image ?? licitacionImage(db),
+    }
+  })
 }
 
 export function ContentProvider({ children }: { children: ReactNode }) {
@@ -113,7 +137,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         services: mergedServices,
         serviceDetails: buildServiceDetails(mergedServices),
         blogPosts,
-        licitaciones: dbLicitaciones.length ? dbLicitaciones : staticLicitaciones,
+        licitaciones: mergeLicitaciones(dbLicitaciones.length ? dbLicitaciones : staticLicitaciones),
         getBlogPostContent: (id: string) => {
           const post = blogPosts.find((p) => p.id === id)
           if (post?.content) return post.content

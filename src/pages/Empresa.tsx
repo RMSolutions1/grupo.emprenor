@@ -1,5 +1,6 @@
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
+import AutoCardSlider from '../components/AutoCardSlider'
 import { IMAGES } from '../data/images'
 import { useEmpresaData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
@@ -82,9 +83,14 @@ export default function Empresa() {
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
             <SectionHeading label={copy.team.label} title={copy.team.title} subtitle={copy.team.subtitle} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {team.map((member) => (
-                <div key={member.name} className="group rounded-xl overflow-hidden border border-background-200 bg-background-50 hover:border-background-300 transition-all duration-300">
+            <AutoCardSlider
+              items={team}
+              itemKey={(m) => m.name}
+              ariaLabel="Equipo"
+              perView={{ default: 1, md: 2, lg: 3 }}
+              interval={6000}
+              renderItem={(member) => (
+                <div className="group h-full rounded-xl overflow-hidden border border-background-200 bg-background-50 hover:border-background-300 transition-all duration-300">
                   <div className="h-64 overflow-hidden">
                     <img alt={member.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" src={member.avatar} />
                   </div>
@@ -94,8 +100,8 @@ export default function Empresa() {
                     <p className="text-sm font-body text-foreground-600 leading-relaxed mt-3">{member.description}</p>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            />
           </div>
         </div>
       </section>

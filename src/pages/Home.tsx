@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import HomeHero from '../components/HomeHero'
+import AutoCardSlider from '../components/AutoCardSlider'
+import CarouselDots from '../components/CarouselDots'
 import { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
 import { useServicesData, useHomeData, useSiteContact, useProjectsData, usePageCopy } from '../context/ContentContext'
 import { useCounter } from '../hooks/useCounter'
 import { usePageMeta } from '../hooks/usePageMeta'
+import { useAutoplay } from '../hooks/useAutoplay'
 import { ctaToLinks, getHomeHeroSlides, resolveImage } from '../lib/pageCopy'
-import { useState } from 'react'
 
 function StatItem({ value, suffix, label, icon }: { value: number; suffix: string; label: string; icon: string }) {
   const { count, ref } = useCounter(value)
@@ -28,11 +30,8 @@ function StatItem({ value, suffix, label, icon }: { value: number; suffix: strin
 function ProjectsCarousel() {
   const copy = usePageCopy('home')
   const { featuredProjects } = useProjectsData()
-  const [current, setCurrent] = useState(0)
+  const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(featuredProjects.length, { interval: 7000 })
   const project = featuredProjects[current]
-
-  const prev = () => setCurrent((c) => (c === 0 ? featuredProjects.length - 1 : c - 1))
-  const next = () => setCurrent((c) => (c === featuredProjects.length - 1 ? 0 : c + 1))
 
   if (!project) return null
 
@@ -50,10 +49,10 @@ function ProjectsCarousel() {
               </h2>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={prev} className="w-10 h-10 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all duration-300" aria-label="Proyecto anterior">
+              <button type="button" onClick={prev} className="w-10 h-10 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all duration-300" aria-label="Proyecto anterior">
                 <i className="ri-arrow-left-line text-lg" />
               </button>
-              <button onClick={next} className="w-10 h-10 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all duration-300" aria-label="Proyecto siguiente">
+              <button type="button" onClick={next} className="w-10 h-10 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all duration-300" aria-label="Proyecto siguiente">
                 <i className="ri-arrow-right-line text-lg" />
               </button>
               <Link to="/proyectos" className="whitespace-nowrap ml-2 px-5 py-2.5 text-sm font-body font-medium text-foreground-700 hover:text-accent-500 transition-colors">
@@ -62,48 +61,43 @@ function ProjectsCarousel() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50">
-            <div className="relative h-[350px] md:h-[500px] overflow-hidden">
-              <img alt={project.title} className="w-full h-full object-cover object-top transition-all duration-500" src={project.image} />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-body font-semibold rounded-full mb-3">{project.year}</span>
+          <div {...bindPauseHandlers}>
+            <div key={project.id} className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50 animate-fade-in">
+              <div className="relative h-[350px] md:h-[500px] overflow-hidden">
+                <img alt={project.title} className="w-full h-full object-cover object-top" src={project.image} />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                  <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-body font-semibold rounded-full mb-3">{project.year}</span>
+                </div>
+              </div>
+              <div className="p-8 md:p-10 flex flex-col justify-center">
+                <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-3">{project.title}</h3>
+                <div className="flex flex-wrap items-center gap-3 text-sm font-body text-foreground-600 mb-4">
+                  <span className="flex items-center gap-1.5">
+                    <i className="ri-building-2-line w-4 h-4 flex items-center justify-center text-accent-500" />
+                    {project.client}
+                  </span>
+                  <span className="text-foreground-300">|</span>
+                  <span className="flex items-center gap-1.5">
+                    <i className="ri-map-pin-line w-4 h-4 flex items-center justify-center text-accent-500" />
+                    {project.location}
+                  </span>
+                </div>
+                <p className="text-base font-body text-foreground-600 leading-relaxed mb-6">{project.carouselDescription || project.description}</p>
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {project.tags.map((tag) => (
+                    <span key={tag} className="px-3 py-1 bg-background-100 border border-background-200 text-xs font-body text-foreground-700 rounded-full">{tag}</span>
+                  ))}
+                </div>
+                <Link to={`/proyectos/${project.id}`} className="whitespace-nowrap self-start px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
+                  Ver proyecto completo
+                </Link>
               </div>
             </div>
-            <div className="p-8 md:p-10 flex flex-col justify-center">
-              <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-3">{project.title}</h3>
-              <div className="flex flex-wrap items-center gap-3 text-sm font-body text-foreground-600 mb-4">
-                <span className="flex items-center gap-1.5">
-                  <i className="ri-building-2-line w-4 h-4 flex items-center justify-center text-accent-500" />
-                  {project.client}
-                </span>
-                <span className="text-foreground-300">|</span>
-                <span className="flex items-center gap-1.5">
-                  <i className="ri-map-pin-line w-4 h-4 flex items-center justify-center text-accent-500" />
-                  {project.location}
-                </span>
-              </div>
-              <p className="text-base font-body text-foreground-600 leading-relaxed mb-6">{project.carouselDescription || project.description}</p>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {project.tags.map((tag) => (
-                  <span key={tag} className="px-3 py-1 bg-background-100 border border-background-200 text-xs font-body text-foreground-700 rounded-full">{tag}</span>
-                ))}
-              </div>
-              <Link to={`/proyectos/${project.id}`} className="whitespace-nowrap self-start px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
-                Ver proyecto completo
-              </Link>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-center gap-2 mt-8">
-            {featuredProjects.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === current ? 'bg-accent-500 w-8' : 'w-2.5 bg-background-300 hover:bg-background-400'}`}
-                aria-label={`Ir al proyecto ${i + 1}`}
-              />
-            ))}
+            <div className="mt-8">
+              <CarouselDots count={featuredProjects.length} current={current} onSelect={setCurrent} labelPrefix="Ir al proyecto" />
+            </div>
           </div>
         </div>
       </div>
@@ -171,9 +165,14 @@ export default function Home() {
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {services.map((service) => (
-                <Link key={service.id} to={`/servicios#${service.id}`} className="group block rounded-lg border border-background-200 overflow-hidden bg-background-50 hover:border-background-300 transition-all duration-300">
+            <AutoCardSlider
+              items={services}
+              itemKey={(s) => s.id}
+              ariaLabel="Servicios"
+              perView={{ default: 1, md: 2, lg: 3 }}
+              interval={5000}
+              renderItem={(service) => (
+                <Link to={`/servicios#${service.id}`} className="group block h-full rounded-lg border border-background-200 overflow-hidden bg-background-50 hover:border-background-300 transition-all duration-300">
                   <div className="relative h-56 overflow-hidden">
                     <img alt={service.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" loading="lazy" src={service.image} />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-950/40 to-transparent" />
@@ -191,8 +190,8 @@ export default function Home() {
                     </span>
                   </div>
                 </Link>
-              ))}
-            </div>
+              )}
+            />
           </div>
         </div>
       </section>
@@ -207,9 +206,14 @@ export default function Home() {
                 {copy.sectors.title}
               </h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {sectors.map((sector) => (
-                <Link key={sector.id} to={`/proyectos?sector=${sector.id}`} className="group relative rounded-xl overflow-hidden aspect-[3/4]">
+            <AutoCardSlider
+              items={sectors}
+              itemKey={(s) => s.id}
+              ariaLabel="Sectores"
+              perView={{ default: 2, md: 3, lg: 4 }}
+              interval={5500}
+              renderItem={(sector) => (
+                <Link to={`/proyectos?sector=${sector.id}`} className="group relative block rounded-xl overflow-hidden aspect-[3/4]">
                   <img alt={sector.title} className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700" loading="lazy" src={sector.image} />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-primary-950/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -221,8 +225,8 @@ export default function Home() {
                     <h3 className="font-heading text-lg font-semibold text-white">{sector.title}</h3>
                   </div>
                 </Link>
-              ))}
-            </div>
+              )}
+            />
           </div>
         </div>
       </section>
@@ -267,9 +271,14 @@ export default function Home() {
                 {copy.testimonials.title}
               </h2>
             </div>
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-              {testimonials.map((t) => (
-                <div key={t.name} className={`break-inside-avoid mb-6 p-6 md:p-8 rounded-xl bg-background-100 border border-background-200 ${t.offset ? 'lg:mt-8' : ''}`}>
+            <AutoCardSlider
+              items={testimonials}
+              itemKey={(t) => t.name}
+              ariaLabel="Testimonios"
+              perView={{ default: 1, md: 2, lg: 3 }}
+              interval={6500}
+              renderItem={(t) => (
+                <div className="h-full p-6 md:p-8 rounded-xl bg-background-100 border border-background-200">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-background-200">
                       <img alt={t.name} className="w-full h-full object-cover" loading="lazy" src={t.avatar} />
@@ -285,8 +294,8 @@ export default function Home() {
                     <p className="text-sm font-body text-foreground-700 leading-relaxed pl-6 italic">{t.quote}</p>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            />
           </div>
         </div>
       </section>

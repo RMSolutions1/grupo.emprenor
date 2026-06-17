@@ -2,6 +2,7 @@ import { supabase } from './supabase'
 import type { Project } from '../data/projects'
 import type { Service } from '../data/services'
 import type { Licitacion } from '../data/licitaciones'
+import { licitacionImage } from '../data/licitaciones'
 import type { BlogPost } from '../data/blog'
 import { siteContact, contactAreas } from '../data/contacto'
 import { stats } from '../data/home'
@@ -149,7 +150,7 @@ export function mapBlogPost(row: DbBlogPost): BlogPost {
 }
 
 export function mapLicitacion(row: DbLicitacion): Licitacion {
-  return {
+  const lic = {
     id: row.id,
     code: row.code ?? '',
     status: (row.status ?? 'Publicada') as Licitacion['status'],
@@ -163,6 +164,7 @@ export function mapLicitacion(row: DbLicitacion): Licitacion {
     docs: row.docs ?? 0,
     consultas: row.consultas ?? undefined,
   }
+  return { ...lic, image: licitacionImage(lic) }
 }
 
 const defaultSettings: SiteSettings = {

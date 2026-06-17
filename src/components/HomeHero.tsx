@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
 import { AccentButton } from './Layout'
 import { IMAGES } from '../data/images'
 import type { HeroSlideCopy, HeroStripStatCopy } from '../data/pages'
 import { resolveImage } from '../lib/pageCopy'
+import { useAutoplay } from '../hooks/useAutoplay'
+import CarouselDots from './CarouselDots'
 
 type HomeHeroProps = {
   slides: HeroSlideCopy[]
@@ -14,22 +15,14 @@ type HomeHeroProps = {
 }
 
 export default function HomeHero({ slides, strip, ctaPrimary, ctaSecondary, ctaSecondaryUrl }: HomeHeroProps) {
-  const [current, setCurrent] = useState(0)
+  const { index: current, setIndex: setCurrent, bindPauseHandlers } = useAutoplay(slides.length, { interval: 8000 })
   const slide = slides[current] ?? slides[0]
-
-  useEffect(() => {
-    if (slides.length <= 1) return
-    const id = window.setInterval(() => {
-      setCurrent((c) => (c + 1) % slides.length)
-    }, 8000)
-    return () => window.clearInterval(id)
-  }, [slides.length])
 
   if (!slide) return null
 
   return (
     <>
-      <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
+      <section className="relative h-screen min-h-[700px] w-full overflow-hidden" {...bindPauseHandlers}>
         {slides.map((s, i) => {
           const img = resolveImage(s.image, IMAGES.hero)
           return (
@@ -69,16 +62,8 @@ export default function HomeHero({ slides, strip, ctaPrimary, ctaSecondary, ctaS
         </div>
 
         {slides.length > 1 && (
-          <div className="absolute bottom-28 md:bottom-32 left-0 right-0 z-10 flex items-center justify-center gap-2">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setCurrent(i)}
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${i === current ? 'bg-accent-500 w-8' : 'w-2 bg-white/40 hover:bg-white/60'}`}
-                aria-label={`Ir al slide ${i + 1}`}
-              />
-            ))}
+          <div className="absolute bottom-28 md:bottom-32 left-0 right-0 z-10">
+            <CarouselDots count={slides.length} current={current} onSelect={setCurrent} labelPrefix="Ir al slide" variant="light" />
           </div>
         )}
       </section>

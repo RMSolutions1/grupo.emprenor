@@ -12,14 +12,29 @@ export interface Service {
   services: string[]
 }
 
-const imgs = [
-  image('div-const-2026-02'),
-  image('div-eng-2026-01'),
-  image('div-en-2026-03'),
-  image('div-ind-2026-04'),
-  image('div-viv-2026-05'),
-  image('div-mant-2026-06'),
-]
+/** Imagen de tarjeta y de detalle únicas por especialidad (sin repetir assets). */
+const SERVICE_MEDIA: Record<string, { card: string; page: string }> = {
+  'construccion-general': { card: 'div-const-2026-02', page: 'serv-const-2026' },
+  remodelacion: { card: 'proj-viv01-after-2026', page: 'serv-ing-2026' },
+  albanileria: { card: 'proj-infra01-a-2026', page: 'proj-ind01-b-2026' },
+  pintura: { card: 'proj-viv01-b-2026', page: 'proj-edu01-after-2026' },
+  electricas: { card: 'div-en-2026-03', page: 'serv-energy-2026' },
+  sanitarias: { card: 'proj-salud01-a-2026', page: 'sector-salud-2026' },
+  gas: { card: 'proj-ener01-b-2026', page: 'proj-ener01-a-2026' },
+  industrial: { card: 'div-ind-2026-04', page: 'serv-ind-2026' },
+  agropecuarios: { card: 'sector-agro-2026', page: 'proj-ind02-a-2026' },
+  climatizacion: { card: 'proj-hosp-2026-01', page: 'team-energy-2026' },
+  mantenimiento: { card: 'div-mant-2026-06', page: 'serv-mant-2026' },
+  viviendas: { card: 'div-viv-2026-05', page: 'serv-viv-2026' },
+}
+
+function mediaFor(id: string) {
+  const m = SERVICE_MEDIA[id]
+  return {
+    image: image(m?.card ?? 'div-const-2026-02'),
+    pageImage: image(m?.page ?? 'serv-const-2026'),
+  }
+}
 
 export const services: Service[] = [
   {
@@ -29,8 +44,7 @@ export const services: Service[] = [
     description: 'Proyectos llave en mano para viviendas, edificios comerciales, obras públicas y estructuras metálicas.',
     tagline: 'Proyectos llave en mano para todos los sectores.',
     icon: 'ri-building-line',
-    image: imgs[0],
-    pageImage: image('serv-const-2026'),
+    ...mediaFor('construccion-general'),
     services: ['Viviendas unifamiliares', 'Edificios comerciales', 'Obras públicas', 'Estructuras metálicas'],
   },
   {
@@ -40,8 +54,7 @@ export const services: Service[] = [
     description: 'Reformas integrales, ampliaciones y refacciones con un solo interlocutor técnico.',
     tagline: 'Reformas integrales con alcance y presupuesto por escrito.',
     icon: 'ri-home-gear-line',
-    image: imgs[1],
-    pageImage: image('serv-ing-2026'),
+    ...mediaFor('remodelacion'),
     services: ['Remodelación integral', 'Ampliaciones', 'Refacciones', 'Redistribución de ambientes'],
   },
   {
@@ -51,8 +64,7 @@ export const services: Service[] = [
     description: 'Mampostería, hormigón, revoques y estructuras con maestros certificados.',
     tagline: 'Obra gruesa y terminaciones estructurales con control de calidad.',
     icon: 'ri-hammer-line',
-    image: imgs[2],
-    pageImage: image('serv-const-2026'),
+    ...mediaFor('albanileria'),
     services: ['Mampostería', 'Revoques', 'Contrapisos', 'Hormigón'],
   },
   {
@@ -62,8 +74,7 @@ export const services: Service[] = [
     description: 'Acabados premium interior, exterior e industrial con preparación profesional de superficies.',
     tagline: 'Terminaciones de alto rendimiento para obra nueva y remodelación.',
     icon: 'ri-paint-brush-line',
-    image: imgs[3],
-    pageImage: image('serv-ind-2026'),
+    ...mediaFor('pintura'),
     services: ['Interior', 'Exterior', 'Revestimientos', 'Texturas'],
   },
   {
@@ -73,8 +84,7 @@ export const services: Service[] = [
     description: 'Media y baja tensión, subestaciones, tableros e iluminación con habilitaciones vigentes.',
     tagline: 'Instalaciones eléctricas seguras y documentadas.',
     icon: 'ri-flashlight-line',
-    image: imgs[4],
-    pageImage: image('serv-energy-2026'),
+    ...mediaFor('electricas'),
     services: ['Instalaciones nuevas', 'Tableros', 'Iluminación', 'Trifásica'],
   },
   {
@@ -84,8 +94,7 @@ export const services: Service[] = [
     description: 'Agua potable, cloacales, pluviales y tratamiento de efluentes.',
     tagline: 'Redes sanitarias completas para obra civil e industrial.',
     icon: 'ri-drop-line',
-    image: imgs[5],
-    pageImage: image('serv-mant-2026'),
+    ...mediaFor('sanitarias'),
     services: ['Instalaciones sanitarias', 'Desagües', 'Agua caliente', 'Reparaciones'],
   },
   {
@@ -95,8 +104,7 @@ export const services: Service[] = [
     description: 'Gas natural y envasado con matrícula habilitada y certificación de instalaciones.',
     tagline: 'Instalaciones de gas con habilitación y pruebas de estanqueidad.',
     icon: 'ri-fire-line',
-    image: imgs[0],
-    pageImage: image('serv-energy-2026'),
+    ...mediaFor('gas'),
     services: ['Gas natural', 'Gas envasado', 'Calderas', 'Habilitaciones'],
   },
   {
@@ -106,8 +114,7 @@ export const services: Service[] = [
     description: 'Naves industriales, plantas productivas, agroindustria y sistemas contra incendio.',
     tagline: 'Infraestructura industrial llave en mano.',
     icon: 'ri-store-2-line',
-    image: imgs[1],
-    pageImage: image('serv-ind-2026'),
+    ...mediaFor('industrial'),
     services: ['Naves y galpones', 'Agroindustria', 'Plantas', 'Infraestructura'],
   },
   {
@@ -117,8 +124,7 @@ export const services: Service[] = [
     description: 'Infraestructura rural, riego tecnificado y electrificación de establecimientos.',
     tagline: 'Obras para el sector agropecuario del NOA.',
     icon: 'ri-plant-line',
-    image: imgs[2],
-    pageImage: image('serv-const-2026'),
+    ...mediaFor('agropecuarios'),
     services: ['Infraestructura rural', 'Riego tecnificado', 'Electrificación', 'Galpones rurales'],
   },
   {
@@ -128,8 +134,7 @@ export const services: Service[] = [
     description: 'Aire acondicionado, calefacción y ventilación industrial y comercial.',
     tagline: 'Confort térmico con eficiencia energética.',
     icon: 'ri-temp-cold-line',
-    image: imgs[3],
-    pageImage: image('serv-mant-2026'),
+    ...mediaFor('climatizacion'),
     services: ['Aire acondicionado', 'Calefacción', 'Ventilación', 'Sistemas VRF'],
   },
   {
@@ -139,8 +144,7 @@ export const services: Service[] = [
     description: 'Servicios preventivos y correctivos para infraestructura, plantas y edificios.',
     tagline: 'Continuidad operativa de sus instalaciones.',
     icon: 'ri-tools-line',
-    image: imgs[4],
-    pageImage: image('serv-mant-2026'),
+    ...mediaFor('mantenimiento'),
     services: ['Mantenimiento preventivo', 'Mantenimiento correctivo', 'Contratos integrales', 'Emergencias'],
   },
   {
@@ -150,8 +154,7 @@ export const services: Service[] = [
     description: 'Steel frame, madera, hormigón o tradicional — obra completa en el NOA.',
     tagline: 'Viviendas con diseño, ejecución y entrega documentada.',
     icon: 'ri-home-4-line',
-    image: imgs[5],
-    pageImage: image('serv-viv-2026'),
+    ...mediaFor('viviendas'),
     services: ['Steel framing', 'Diseño a medida', 'Montaje en sitio', 'Aislación térmica'],
   },
 ]

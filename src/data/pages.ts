@@ -125,6 +125,8 @@ export type BlogPageCopy = {
 export type LicitacionesPageCopy = {
   seo: SeoCopy
   hero: HeroCopy
+  featured: SectionCopy
+  list: SectionCopy
   provider: SectionCopy & {
     ctaPrimary: string
     ctaPrimaryUrl: string
@@ -354,13 +356,21 @@ export const defaultPages: SitePages = {
   licitaciones: {
     seo: {
       title: 'Licitaciones',
-      description: 'Portal de licitaciones vigentes de EMPRENOR. Acceda a documentación, consultas y ofertas.',
+      description: 'Portal de licitaciones vigentes de EMPRENOR en el NOA. Documentación, consultas y ofertas para proveedores.',
     },
     hero: {
-      label: 'Transparencia y Gestión',
+      label: 'Desde 2018 · NOA',
       title: 'Portal de Licitaciones',
-      subtitle: 'Acceda a llamados vigentes, descargue documentación, realice consultas y presente sus ofertas. Interactuamos con organismos públicos y privados con total transparencia.',
+      subtitle: 'Llamados vigentes en Salta, Jujuy, Tucumán y Formosa. Descargue pliegos, realice consultas y presente ofertas con total transparencia.',
       image: IMAGES.licitacionesHero,
+    },
+    featured: {
+      label: 'Destacadas',
+      title: 'Licitaciones con apertura próxima',
+    },
+    list: {
+      label: 'Explorar',
+      title: 'Llamados vigentes y cerrados',
     },
     provider: {
       label: '¿Quiere participar?',

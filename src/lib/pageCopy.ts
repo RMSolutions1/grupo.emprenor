@@ -29,9 +29,20 @@ export function getHomeHeroSlides(home: SitePages['home']): HeroSlideCopy[] {
   }]
 }
 
+function isStaleServiciosCopy(servicios?: Partial<SitePages['servicios']>) {
+  const title = servicios?.divisions?.title ?? ''
+  const label = servicios?.divisions?.label ?? ''
+  return /seis\s+áreas|seis\s+areas/i.test(title) || label.toLowerCase() === 'divisiones'
+}
+
+function isStaleLicitacionesCopy(licitaciones?: Partial<SitePages['licitaciones']>) {
+  const subtitle = licitaciones?.hero?.subtitle ?? ''
+  return /santiago del estero/i.test(subtitle) || !licitaciones?.featured?.title
+}
+
 export function mergeSitePages(partial?: Partial<SitePages> | null): SitePages {
   if (!partial) return defaultPages
-  return {
+  const merged = {
     global: mergeDeep(defaultPages.global, partial.global),
     home: mergeDeep(defaultPages.home, partial.home),
     contacto: mergeDeep(defaultPages.contacto, partial.contacto),
@@ -41,6 +52,22 @@ export function mergeSitePages(partial?: Partial<SitePages> | null): SitePages {
     blog: mergeDeep(defaultPages.blog, partial.blog),
     licitaciones: mergeDeep(defaultPages.licitaciones, partial.licitaciones),
   }
+  if (isStaleServiciosCopy(partial.servicios)) {
+    merged.servicios = {
+      ...merged.servicios,
+      divisions: defaultPages.servicios.divisions,
+      grid: defaultPages.servicios.grid,
+    }
+  }
+  if (isStaleLicitacionesCopy(partial.licitaciones)) {
+    merged.licitaciones = {
+      ...merged.licitaciones,
+      hero: defaultPages.licitaciones.hero,
+      featured: defaultPages.licitaciones.featured,
+      list: defaultPages.licitaciones.list,
+    }
+  }
+  return merged
 }
 
 export function resolveImage(custom?: string, fallback?: string): string {
