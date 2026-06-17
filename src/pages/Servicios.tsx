@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import CarouselDots from '../components/CarouselDots'
+import HorizontalSlider from '../components/HorizontalSlider'
 import { IMAGES } from '../data/images'
 import { useServicesData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
@@ -22,13 +23,12 @@ export default function Servicios() {
     if (idx >= 0) {
       setActiveIndex(idx)
       setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        document.getElementById('servicios-slider')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 100)
     }
   }, [services, setActiveIndex])
 
   const active = services[activeIndex] ?? services[0]
-  const details = active ? serviceDetails[active.id] : undefined
 
   if (!active) return null
 
@@ -64,30 +64,37 @@ export default function Servicios() {
               ))}
             </div>
 
-            <div id={active.id} className="scroll-mt-28" {...bindPauseHandlers}>
-              <div key={active.id} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start animate-fade-in">
-                <div className="rounded-xl overflow-hidden h-[350px]">
-                  <img alt={active.title} className="w-full h-full object-cover object-top" src={active.pageImage} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-100/70">
-                      <i className={`${active.icon} text-xl text-accent-500`} />
-                    </div>
-                    <h3 className="font-heading text-3xl font-bold text-foreground-950">{active.title}</h3>
-                  </div>
-                  <p className="text-base font-body text-foreground-600 leading-relaxed mb-2">{active.tagline}</p>
-                  {details && <p className="text-base font-body text-foreground-600 leading-relaxed mb-8">{details.intro}</p>}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {details?.items.map((item) => (
-                      <div key={item.title} className="p-4 rounded-lg border border-background-200 bg-background-50">
-                        <h4 className="font-heading text-base font-semibold text-foreground-950 mb-1">{item.title}</h4>
-                        <p className="text-xs font-body text-foreground-600 leading-relaxed">{item.description}</p>
+            <div id="servicios-slider" className="scroll-mt-28" {...bindPauseHandlers}>
+              <HorizontalSlider index={activeIndex}>
+                {services.map((service) => {
+                  const details = serviceDetails[service.id]
+                  return (
+                    <div key={service.id} id={service.id} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start min-h-[420px]">
+                      <div className="rounded-xl overflow-hidden h-[350px]">
+                        <img alt={service.title} className="w-full h-full object-cover object-top" src={service.pageImage} />
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                      <div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-accent-100/70">
+                            <i className={`${service.icon} text-xl text-accent-500`} />
+                          </div>
+                          <h3 className="font-heading text-3xl font-bold text-foreground-950">{service.title}</h3>
+                        </div>
+                        <p className="text-base font-body text-foreground-600 leading-relaxed mb-2">{service.tagline}</p>
+                        {details && <p className="text-base font-body text-foreground-600 leading-relaxed mb-8">{details.intro}</p>}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {details?.items.map((item) => (
+                            <div key={item.title} className="p-4 rounded-lg border border-background-200 bg-background-50">
+                              <h4 className="font-heading text-base font-semibold text-foreground-950 mb-1">{item.title}</h4>
+                              <p className="text-xs font-body text-foreground-600 leading-relaxed">{item.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </HorizontalSlider>
 
               {services.length > 1 && (
                 <div className="mt-8">

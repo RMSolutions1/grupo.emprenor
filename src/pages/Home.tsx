@@ -3,6 +3,7 @@ import Layout from '../components/Layout'
 import HomeHero from '../components/HomeHero'
 import AutoCardSlider from '../components/AutoCardSlider'
 import CarouselDots from '../components/CarouselDots'
+import HorizontalSlider from '../components/HorizontalSlider'
 import { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
 import { useServicesData, useHomeData, useSiteContact, useProjectsData, usePageCopy } from '../context/ContentContext'
@@ -31,9 +32,8 @@ function ProjectsCarousel() {
   const copy = usePageCopy('home')
   const { featuredProjects } = useProjectsData()
   const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(featuredProjects.length, { interval: 7000 })
-  const project = featuredProjects[current]
 
-  if (!project) return null
+  if (!featuredProjects.length) return null
 
   return (
     <section className="py-20 md:py-28 bg-background-100">
@@ -62,38 +62,42 @@ function ProjectsCarousel() {
           </div>
 
           <div {...bindPauseHandlers}>
-            <div key={project.id} className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50 animate-fade-in">
-              <div className="relative h-[350px] md:h-[500px] overflow-hidden">
-                <img alt={project.title} className="w-full h-full object-cover object-top" src={project.image} />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-body font-semibold rounded-full mb-3">{project.year}</span>
+            <HorizontalSlider index={current}>
+              {featuredProjects.map((project) => (
+                <div key={project.id} className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50">
+                  <div className="relative h-[350px] md:h-[500px] overflow-hidden">
+                    <img alt={project.title} className="w-full h-full object-cover object-top" src={project.image} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                      <span className="inline-block px-3 py-1 bg-accent-500 text-white text-xs font-body font-semibold rounded-full mb-3">{project.year}</span>
+                    </div>
+                  </div>
+                  <div className="p-8 md:p-10 flex flex-col justify-center">
+                    <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-3">{project.title}</h3>
+                    <div className="flex flex-wrap items-center gap-3 text-sm font-body text-foreground-600 mb-4">
+                      <span className="flex items-center gap-1.5">
+                        <i className="ri-building-2-line w-4 h-4 flex items-center justify-center text-accent-500" />
+                        {project.client}
+                      </span>
+                      <span className="text-foreground-300">|</span>
+                      <span className="flex items-center gap-1.5">
+                        <i className="ri-map-pin-line w-4 h-4 flex items-center justify-center text-accent-500" />
+                        {project.location}
+                      </span>
+                    </div>
+                    <p className="text-base font-body text-foreground-600 leading-relaxed mb-6">{project.carouselDescription || project.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {project.tags.map((tag) => (
+                        <span key={tag} className="px-3 py-1 bg-background-100 border border-background-200 text-xs font-body text-foreground-700 rounded-full">{tag}</span>
+                      ))}
+                    </div>
+                    <Link to={`/proyectos/${project.id}`} className="whitespace-nowrap self-start px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
+                      Ver proyecto completo
+                    </Link>
+                  </div>
                 </div>
-              </div>
-              <div className="p-8 md:p-10 flex flex-col justify-center">
-                <h3 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-3">{project.title}</h3>
-                <div className="flex flex-wrap items-center gap-3 text-sm font-body text-foreground-600 mb-4">
-                  <span className="flex items-center gap-1.5">
-                    <i className="ri-building-2-line w-4 h-4 flex items-center justify-center text-accent-500" />
-                    {project.client}
-                  </span>
-                  <span className="text-foreground-300">|</span>
-                  <span className="flex items-center gap-1.5">
-                    <i className="ri-map-pin-line w-4 h-4 flex items-center justify-center text-accent-500" />
-                    {project.location}
-                  </span>
-                </div>
-                <p className="text-base font-body text-foreground-600 leading-relaxed mb-6">{project.carouselDescription || project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.tags.map((tag) => (
-                    <span key={tag} className="px-3 py-1 bg-background-100 border border-background-200 text-xs font-body text-foreground-700 rounded-full">{tag}</span>
-                  ))}
-                </div>
-                <Link to={`/proyectos/${project.id}`} className="whitespace-nowrap self-start px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-body font-medium rounded-md transition-all duration-300">
-                  Ver proyecto completo
-                </Link>
-              </div>
-            </div>
+              ))}
+            </HorizontalSlider>
 
             <div className="mt-8">
               <CarouselDots count={featuredProjects.length} current={current} onSelect={setCurrent} labelPrefix="Ir al proyecto" />

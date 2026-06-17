@@ -4,6 +4,7 @@ import Layout, { SectionHeading } from '../components/Layout'
 import PageHero from '../components/PageHero'
 import AutoCardSlider from '../components/AutoCardSlider'
 import CarouselDots from '../components/CarouselDots'
+import HorizontalSlider from '../components/HorizontalSlider'
 import { IMAGES } from '../data/images'
 import { type Licitacion, STATUS_FILTER_MAP } from '../data/licitaciones'
 import { useLicitacionesData, usePageCopy } from '../context/ContentContext'
@@ -79,9 +80,8 @@ function LicitacionCard({ lic }: { lic: Licitacion }) {
 
 function FeaturedLicitaciones({ items, label, title }: { items: Licitacion[]; label?: string; title: string }) {
   const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(items.length, { interval: 6500 })
-  const lic = items[current]
 
-  if (!lic || items.length === 0) return null
+  if (items.length === 0) return null
 
   return (
     <section className="py-16 md:py-20 bg-background-100 border-b border-background-200">
@@ -96,29 +96,33 @@ function FeaturedLicitaciones({ items, label, title }: { items: Licitacion[]; la
               <i className="ri-arrow-right-line" />
             </button>
           </div>
-          <div key={lic.id} className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50 animate-fade-in">
-            <div className="relative h-[280px] md:h-[360px]">
-              <img alt={lic.title} className="w-full h-full object-cover object-top" src={lic.image} />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
-            </div>
-            <div className="p-8 flex flex-col justify-center">
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className={`px-2 py-0.5 rounded-full text-xs font-body font-medium border ${statusColors[lic.status]}`}>{lic.status}</span>
-                <span className="text-xs font-body text-foreground-500">{lic.category}</span>
-                <span className="text-xs font-mono text-foreground-400">{lic.code}</span>
+          <HorizontalSlider index={current}>
+            {items.map((lic) => (
+              <div key={lic.id} className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-xl overflow-hidden border border-background-200 bg-background-50">
+                <div className="relative h-[280px] md:h-[360px]">
+                  <img alt={lic.title} className="w-full h-full object-cover object-top" src={lic.image} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
+                </div>
+                <div className="p-8 flex flex-col justify-center">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-body font-medium border ${statusColors[lic.status]}`}>{lic.status}</span>
+                    <span className="text-xs font-body text-foreground-500">{lic.category}</span>
+                    <span className="text-xs font-mono text-foreground-400">{lic.code}</span>
+                  </div>
+                  <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">{lic.title}</h3>
+                  <p className="text-sm font-body text-foreground-600 mb-4">{lic.client} · {lic.location}</p>
+                  <div className="flex flex-wrap gap-4 text-sm font-body text-foreground-600 mb-6">
+                    <span>Apertura: <strong className="text-foreground-900">{lic.apertura}</strong></span>
+                    <span>Cierre: <strong className="text-foreground-900">{lic.cierre}</strong></span>
+                    <span>Presupuesto: <strong className="text-foreground-900">{lic.budget}</strong></span>
+                  </div>
+                  <Link to="/contacto" className="self-start px-6 py-2.5 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all">
+                    Consultar documentación
+                  </Link>
+                </div>
               </div>
-              <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">{lic.title}</h3>
-              <p className="text-sm font-body text-foreground-600 mb-4">{lic.client} · {lic.location}</p>
-              <div className="flex flex-wrap gap-4 text-sm font-body text-foreground-600 mb-6">
-                <span>Apertura: <strong className="text-foreground-900">{lic.apertura}</strong></span>
-                <span>Cierre: <strong className="text-foreground-900">{lic.cierre}</strong></span>
-                <span>Presupuesto: <strong className="text-foreground-900">{lic.budget}</strong></span>
-              </div>
-              <Link to="/contacto" className="self-start px-6 py-2.5 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all">
-                Consultar documentación
-              </Link>
-            </div>
-          </div>
+            ))}
+          </HorizontalSlider>
           {items.length > 1 && (
             <div className="mt-6">
               <CarouselDots count={items.length} current={current} onSelect={setCurrent} labelPrefix="Ir a licitación" />

@@ -1,5 +1,7 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { type ReactNode } from 'react'
 import { useAutoplay } from '../hooks/useAutoplay'
+import HorizontalSlider from './HorizontalSlider'
+import { useEffect, useState } from 'react'
 
 type Breakpoints = { default: number; sm?: number; md?: number; lg?: number }
 
@@ -31,7 +33,6 @@ export default function AutoCardSlider<T>({
   className = '',
   showArrows = true,
 }: AutoCardSliderProps<T>) {
-  const trackRef = useRef<HTMLDivElement>(null)
   const [spv, setSpv] = useState(() => slidesPerViewAt(typeof window !== 'undefined' ? window.innerWidth : 1280, perView))
   const maxIndex = Math.max(0, items.length - spv)
   const { index, setIndex, next, prev, bindPauseHandlers } = useAutoplay(maxIndex + 1, {
@@ -47,11 +48,8 @@ export default function AutoCardSlider<T>({
   }, [perView])
 
   useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-    const child = track.children[index] as HTMLElement | undefined
-    child?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })
-  }, [index, spv, items.length])
+    if (index > maxIndex) setIndex(maxIndex)
+  }, [index, maxIndex, setIndex])
 
   if (!items.length) return null
 
@@ -79,22 +77,14 @@ export default function AutoCardSlider<T>({
           </>
         )}
 
-        <div
-          ref={trackRef}
-          className="flex gap-4 md:gap-6 overflow-x-hidden scroll-smooth snap-x snap-mandatory px-1"
-          role="region"
-          aria-label={ariaLabel}
-          aria-live="polite"
-        >
-          {items.map((item) => (
-            <div
-              key={itemKey(item)}
-              className="flex-shrink-0 snap-start"
-              style={{ width: `calc((100% - ${(spv - 1) * (spv >= 4 ? 24 : 16)}px) / ${spv})` }}
-            >
-              {renderItem(item)}
-            </div>
-          ))}
+        <div role="region" aria-label={ariaLabel} aria-live="polite" className="px-1">
+          <HorizontalSlider index={index} perView={spv}>
+            {items.map((item) => (
+              <div key={itemKey(item)} className="px-2 md:px-3 h-full">
+                {renderItem(item)}
+              </div>
+            ))}
+          </HorizontalSlider>
         </div>
       </div>
 
