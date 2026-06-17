@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /acceso
 
-Sitemap: https://www.emprenor.com.ar/sitemap.xml
+Sitemap: https://grupo.emprenor.com/sitemap.xml

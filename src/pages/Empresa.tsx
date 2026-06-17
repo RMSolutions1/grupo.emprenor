@@ -15,9 +15,11 @@ export default function Empresa() {
   return (
     <Layout>
       <PageHero
+        label={copy.hero.label}
         title={copy.hero.title}
         subtitle={copy.hero.subtitle}
         image={resolveImage(copy.hero.image, IMAGES.empresaHero)}
+        breadcrumb={[{ label: 'Empresa' }]}
       />
 
       <section className="py-20 md:py-28 bg-background-100">

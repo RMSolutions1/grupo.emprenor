@@ -9,7 +9,7 @@ export default function Privacidad() {
 
   return (
     <Layout>
-      <PageHero title="Política de Privacidad" subtitle="Última actualización: Junio 2026" image="" />
+      <PageHero title="Política de Privacidad" subtitle="Última actualización: Junio 2026" image="" breadcrumb={[{ label: 'Política de Privacidad' }]} />
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-3xl mx-auto space-y-6 text-base font-body text-foreground-600 leading-relaxed">

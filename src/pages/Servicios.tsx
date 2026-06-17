@@ -34,7 +34,9 @@ export default function Servicios() {
       <PageHero
         title={copy.hero.title}
         subtitle={copy.hero.subtitle}
+        label={copy.hero.label}
         image={resolveImage(copy.hero.image, IMAGES.serviciosHero)}
+        breadcrumb={[{ label: 'Servicios' }]}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
@@ -42,12 +44,12 @@ export default function Servicios() {
           <div className="max-w-7xl mx-auto">
             <SectionHeading label={copy.divisions.label} title={copy.divisions.title} />
 
-            <div className="flex flex-wrap gap-2 mb-12">
+            <div className="flex gap-2 mb-12 overflow-x-auto pb-2 scrollbar-hide">
               {services.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setActiveTab(s.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-body font-medium transition-all duration-300 ${
+                  className={`shrink-0 px-4 py-2 rounded-full text-sm font-body font-medium transition-all duration-300 ${
                     activeTab === s.id ? 'bg-accent-500 text-white' : 'bg-background-200 text-foreground-600 hover:bg-background-300'
                   }`}
                 >

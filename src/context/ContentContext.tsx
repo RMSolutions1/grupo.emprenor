@@ -51,6 +51,16 @@ function buildServiceDetails(services: (Service & { details?: Record<string, unk
   return details
 }
 
+function mergeServices(dbServices: Service[]): Service[] {
+  if (!dbServices.length) return staticServices
+  const byId = new Map(dbServices.map((s) => [s.id, s]))
+  const merged = staticServices.map((s) => byId.get(s.id) ?? s)
+  for (const s of dbServices) {
+    if (!staticServices.some((st) => st.id === s.id)) merged.push(s)
+  }
+  return merged
+}
+
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ContentState>({
     loading: isSupabaseConfigured,
@@ -91,6 +101,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
       const blogPosts = dbBlog.length ? dbBlog : staticBlogPosts
 
+      const mergedServices = mergeServices(dbServices)
+
       setState({
         loading: false,
         fromDb: hasDb,
@@ -98,8 +110,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         projects,
         projectsList: orderedList,
         featuredProjects: projects.filter((p) => p.featured),
-        services: dbServices.length ? dbServices : staticServices,
-        serviceDetails: buildServiceDetails(dbServices.length ? dbServices : staticServices),
+        services: mergedServices,
+        serviceDetails: buildServiceDetails(mergedServices),
         blogPosts,
         licitaciones: dbLicitaciones.length ? dbLicitaciones : staticLicitaciones,
         getBlogPostContent: (id: string) => {

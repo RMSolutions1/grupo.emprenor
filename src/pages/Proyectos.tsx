@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
-import Breadcrumb from '../components/Breadcrumb'
 import PageHero, { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
 import { useProjectsData, usePageCopy } from '../context/ContentContext'
@@ -57,12 +56,12 @@ export default function Proyectos() {
         title={copy.hero.title}
         subtitle={copy.hero.subtitle}
         image={resolveImage(copy.hero.image, IMAGES.proyectosHero)}
+        breadcrumb={[{ label: 'Proyectos' }]}
       />
 
       <section className="py-20 md:py-28 bg-background-100">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
-            <Breadcrumb items={[{ label: 'Proyectos' }]} />
             <div className="flex flex-wrap gap-2 mb-10">
               {projectCategories.map((cat) => (
                 <button

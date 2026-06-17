@@ -41,6 +41,11 @@ export default function Footer() {
               {global.footerTagline}
             </p>
             <div className="flex items-center gap-3">
+              {global.social.linkedin ? (
+                <a href={global.social.linkedin} target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="LinkedIn">
+                  <i className="ri-linkedin-line text-base" />
+                </a>
+              ) : null}
               <a href={global.social.instagram} target="_blank" rel="nofollow noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-accent-500 text-white/70 hover:text-white transition-all duration-300" aria-label="Instagram">
                 <i className="ri-instagram-line text-base" />
               </a>
@@ -116,17 +121,13 @@ export default function Footer() {
           <div className="flex items-center gap-6">
             <Link to="/privacidad" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Privacidad</Link>
             <Link to="/terminos" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Términos</Link>
-            <Link to="/admin/login" className="text-white/30 hover:text-white/60 text-xs font-body transition-colors inline-flex items-center gap-1">
-              <i className="ri-shield-user-line" />
-              Acceso Administrador
-            </Link>
           </div>
         </div>
       </div>
 
       <div className="relative px-6 md:px-12 pb-4 overflow-hidden select-none pointer-events-none">
         <span className="block text-center text-[5rem] md:text-[7rem] font-heading font-bold text-white/[0.03] leading-none whitespace-nowrap">
-          GRUPO EMPRENOR
+          EMPRENOR
         </span>
       </div>
     </footer>

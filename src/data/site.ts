@@ -1,7 +1,7 @@
-export const SITE_NAME = 'EMPRENOR GROUP'
-export const SITE_URL = 'https://www.emprenor.com.ar'
+export const SITE_NAME = 'EMPRENOR'
+export const SITE_URL = 'https://grupo.emprenor.com'
 export const DEFAULT_DESCRIPTION =
-  'Ingeniería, construcción y energía. Más de 18 años desarrollando proyectos de gran escala en el Norte Argentino.'
+  'Construcción e instalaciones integradas en el NOA. Doce especialidades técnicas, operación documentada desde 2018 en Salta, Jujuy, Tucumán y Formosa.'
 
 export const formDemoNotice =
   'Formulario demostrativo: los datos no se envían a un servidor. Conecte su backend para habilitar el envío real.'

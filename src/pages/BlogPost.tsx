@@ -15,6 +15,8 @@ export default function BlogPost() {
   usePageMeta({
     title: post?.title ?? 'Artículo no encontrado',
     description: post?.excerpt,
+    type: 'article',
+    image: post?.image,
   })
 
   if (!post) {

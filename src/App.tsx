@@ -1,33 +1,47 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import { ContentProvider } from './context/ContentContext'
 import { AdminAuthProvider } from './admin/AdminAuthContext'
 import AdminGuard from './admin/AdminGuard'
-import AdminLayout from './admin/AdminLayout'
-import AdminLogin from './admin/AdminLogin'
-import AdminDashboard from './admin/AdminDashboard'
-import AdminProyectos from './admin/AdminProyectos'
-import AdminServicios from './admin/AdminServicios'
-import AdminBlog from './admin/AdminBlog'
-import AdminLicitaciones from './admin/AdminLicitaciones'
-import AdminConsultas from './admin/AdminConsultas'
-import AdminContacto from './admin/AdminContactoPage'
-import AdminInicio from './admin/AdminInicioPage'
-import AdminEmpresa from './admin/AdminEmpresaPage'
-import AdminMedios from './admin/AdminMedios'
-import AdminPaginas from './admin/AdminPaginasPage'
-import Home from './pages/Home'
-import Empresa from './pages/Empresa'
-import Servicios from './pages/Servicios'
-import Proyectos from './pages/Proyectos'
-import ProyectoDetail from './pages/ProyectoDetail'
-import Licitaciones from './pages/Licitaciones'
-import Blog from './pages/Blog'
-import BlogPost from './pages/BlogPost'
-import Contacto from './pages/Contacto'
-import Privacidad from './pages/Privacidad'
-import Terminos from './pages/Terminos'
-import NotFound from './pages/NotFound'
+
+const Home = lazy(() => import('./pages/Home'))
+const Empresa = lazy(() => import('./pages/Empresa'))
+const Servicios = lazy(() => import('./pages/Servicios'))
+const Proyectos = lazy(() => import('./pages/Proyectos'))
+const ProyectoDetail = lazy(() => import('./pages/ProyectoDetail'))
+const Licitaciones = lazy(() => import('./pages/Licitaciones'))
+const Blog = lazy(() => import('./pages/Blog'))
+const BlogPost = lazy(() => import('./pages/BlogPost'))
+const Contacto = lazy(() => import('./pages/Contacto'))
+const Privacidad = lazy(() => import('./pages/Privacidad'))
+const Terminos = lazy(() => import('./pages/Terminos'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+const AdminLayout = lazy(() => import('./admin/AdminLayout'))
+const AdminLogin = lazy(() => import('./admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'))
+const AdminProyectos = lazy(() => import('./admin/AdminProyectos'))
+const AdminServicios = lazy(() => import('./admin/AdminServicios'))
+const AdminBlog = lazy(() => import('./admin/AdminBlog'))
+const AdminLicitaciones = lazy(() => import('./admin/AdminLicitaciones'))
+const AdminConsultas = lazy(() => import('./admin/AdminConsultas'))
+const AdminContacto = lazy(() => import('./admin/AdminContactoPage'))
+const AdminInicio = lazy(() => import('./admin/AdminInicioPage'))
+const AdminEmpresa = lazy(() => import('./admin/AdminEmpresaPage'))
+const AdminMedios = lazy(() => import('./admin/AdminMedios'))
+const AdminPaginas = lazy(() => import('./admin/AdminPaginasPage'))
+
+function PageLoader() {
+  return (
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <p className="text-sm font-body text-foreground-500">Cargando…</p>
+    </div>
+  )
+}
+
+function Lazy({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<PageLoader />}>{children}</Suspense>
+}
 
 export default function App() {
   return (
@@ -36,37 +50,37 @@ export default function App() {
         <AdminAuthProvider>
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/empresa" element={<Empresa />} />
-            <Route path="/servicios" element={<Servicios />} />
-            <Route path="/proyectos" element={<Proyectos />} />
-            <Route path="/proyectos/:id" element={<ProyectoDetail />} />
-            <Route path="/licitaciones" element={<Licitaciones />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<BlogPost />} />
-            <Route path="/contacto" element={<Contacto />} />
-            <Route path="/privacidad" element={<Privacidad />} />
-            <Route path="/terminos" element={<Terminos />} />
+            <Route path="/" element={<Lazy><Home /></Lazy>} />
+            <Route path="/empresa" element={<Lazy><Empresa /></Lazy>} />
+            <Route path="/servicios" element={<Lazy><Servicios /></Lazy>} />
+            <Route path="/proyectos" element={<Lazy><Proyectos /></Lazy>} />
+            <Route path="/proyectos/:id" element={<Lazy><ProyectoDetail /></Lazy>} />
+            <Route path="/licitaciones" element={<Lazy><Licitaciones /></Lazy>} />
+            <Route path="/blog" element={<Lazy><Blog /></Lazy>} />
+            <Route path="/blog/:id" element={<Lazy><BlogPost /></Lazy>} />
+            <Route path="/contacto" element={<Lazy><Contacto /></Lazy>} />
+            <Route path="/privacidad" element={<Lazy><Privacidad /></Lazy>} />
+            <Route path="/terminos" element={<Lazy><Terminos /></Lazy>} />
 
-            <Route path="/acceso" element={<AdminLogin />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/acceso" element={<Lazy><AdminLogin /></Lazy>} />
+            <Route path="/admin/login" element={<Lazy><AdminLogin /></Lazy>} />
             <Route path="/admin" element={<AdminGuard />}>
-              <Route element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="proyectos" element={<AdminProyectos />} />
-                <Route path="servicios" element={<AdminServicios />} />
-                <Route path="blog" element={<AdminBlog />} />
-                <Route path="licitaciones" element={<AdminLicitaciones />} />
-                <Route path="empresa" element={<AdminEmpresa />} />
-                <Route path="inicio" element={<AdminInicio />} />
-                <Route path="contacto" element={<AdminContacto />} />
-                <Route path="paginas" element={<AdminPaginas />} />
-                <Route path="medios" element={<AdminMedios />} />
-                <Route path="consultas" element={<AdminConsultas />} />
+              <Route element={<Lazy><AdminLayout /></Lazy>}>
+                <Route index element={<Lazy><AdminDashboard /></Lazy>} />
+                <Route path="proyectos" element={<Lazy><AdminProyectos /></Lazy>} />
+                <Route path="servicios" element={<Lazy><AdminServicios /></Lazy>} />
+                <Route path="blog" element={<Lazy><AdminBlog /></Lazy>} />
+                <Route path="licitaciones" element={<Lazy><AdminLicitaciones /></Lazy>} />
+                <Route path="empresa" element={<Lazy><AdminEmpresa /></Lazy>} />
+                <Route path="inicio" element={<Lazy><AdminInicio /></Lazy>} />
+                <Route path="contacto" element={<Lazy><AdminContacto /></Lazy>} />
+                <Route path="paginas" element={<Lazy><AdminPaginas /></Lazy>} />
+                <Route path="medios" element={<Lazy><AdminMedios /></Lazy>} />
+                <Route path="consultas" element={<Lazy><AdminConsultas /></Lazy>} />
               </Route>
             </Route>
 
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Lazy><NotFound /></Lazy>} />
           </Routes>
         </AdminAuthProvider>
       </ContentProvider>

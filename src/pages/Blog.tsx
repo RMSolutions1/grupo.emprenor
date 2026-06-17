@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
+import Breadcrumb from '../components/Breadcrumb'
 import { useBlogData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 
@@ -34,7 +35,12 @@ export default function Blog() {
 
   return (
     <Layout>
-      <section className="relative site-header-offset min-h-[500px]">
+      <div className="site-header-offset bg-background-100 border-b border-background-200">
+        <div className="w-full px-6 md:px-12 py-4 max-w-7xl mx-auto">
+          <Breadcrumb items={[{ label: 'Blog' }]} className="!mb-0" />
+        </div>
+      </div>
+      <section className="relative min-h-[500px]">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url("${featured.image}")` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-950/60 to-primary-950/40" />
         <div className="relative z-10 flex flex-col justify-end min-h-[500px] px-6 md:px-12 pb-12">

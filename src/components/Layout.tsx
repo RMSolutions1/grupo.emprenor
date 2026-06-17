@@ -2,12 +2,17 @@ import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import WhatsAppButton from './WhatsAppButton'
+import StructuredData from './StructuredData'
 
 export default function Layout({ children, transparentNav = false }: { children: React.ReactNode; transparentNav?: boolean }) {
   return (
     <>
+      <StructuredData />
+      <a href="#contenido-principal" className="sr-only skip-link">
+        Saltar al contenido
+      </a>
       <Navbar transparent={transparentNav} />
-      <main>{children}</main>
+      <main id="contenido-principal">{children}</main>
       <Footer />
       <WhatsAppButton />
     </>

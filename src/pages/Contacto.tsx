@@ -64,6 +64,7 @@ export default function Contacto() {
         title={copy.hero.title}
         subtitle={copy.hero.subtitle}
         image={resolveImage(copy.hero.image, IMAGES.contactoHero)}
+        breadcrumb={[{ label: 'Contacto' }]}
       />
 
       <section className="py-20 md:py-28 bg-background-100">

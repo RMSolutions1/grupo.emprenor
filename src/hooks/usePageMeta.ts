@@ -1,23 +1,17 @@
 import { useEffect } from 'react'
-import { DEFAULT_DESCRIPTION, SITE_NAME } from '../data/site'
+import { useLocation } from 'react-router-dom'
+import { DEFAULT_DESCRIPTION } from '../data/site'
+import { applyPageSeo, type PageSeoOptions } from '../lib/seo'
 
-interface PageMetaOptions {
-  title: string
+interface PageMetaOptions extends PageSeoOptions {
   description?: string
 }
 
-export function usePageMeta({ title, description = DEFAULT_DESCRIPTION }: PageMetaOptions) {
+export function usePageMeta({ title, description = DEFAULT_DESCRIPTION, path, image, type }: PageMetaOptions) {
+  const location = useLocation()
+  const resolvedPath = path ?? location.pathname
+
   useEffect(() => {
-    const previousTitle = document.title
-    document.title = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`
-
-    const descriptionTag = document.querySelector('meta[name="description"]')
-    const previousDescription = descriptionTag?.getAttribute('content') ?? ''
-    descriptionTag?.setAttribute('content', description)
-
-    return () => {
-      document.title = previousTitle
-      descriptionTag?.setAttribute('content', previousDescription)
-    }
-  }, [title, description])
+    applyPageSeo({ title, description, path: resolvedPath, image, type })
+  }, [title, description, resolvedPath, image, type])
 }

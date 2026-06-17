@@ -88,8 +88,9 @@ export default function AdminPaginasPage() {
             </div>
           </FormSection>
           <FormSection title="Redes sociales">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <AdminInput label="Instagram" value={pages.global.social.instagram} onChange={(e) => set('global', { ...pages.global, social: { ...pages.global.social, instagram: e.target.value } })} />
+              <AdminInput label="LinkedIn" value={pages.global.social.linkedin ?? ''} onChange={(e) => set('global', { ...pages.global, social: { ...pages.global.social, linkedin: e.target.value } })} />
               <AdminInput label="YouTube" value={pages.global.social.youtube} onChange={(e) => set('global', { ...pages.global, social: { ...pages.global.social, youtube: e.target.value } })} />
               <AdminInput label="Facebook" value={pages.global.social.facebook} onChange={(e) => set('global', { ...pages.global, social: { ...pages.global.social, facebook: e.target.value } })} />
             </div>

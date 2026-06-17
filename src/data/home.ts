@@ -27,9 +27,9 @@ export const certifications = [
 ]
 
 export const stats = [
-  { value: 500, suffix: '+', label: 'Proyectos Ejecutados', icon: 'ri-building-2-line' },
-  { value: 18, suffix: '+', label: 'Años de Experiencia', icon: 'ri-calendar-check-line' },
+  { value: 12, suffix: '', label: 'Especialidades integradas', icon: 'ri-tools-line' },
+  { value: 4, suffix: '', label: 'Provincias del NOA', icon: 'ri-map-pin-line' },
+  { value: 500, suffix: '+', label: 'Proyectos ejecutados', icon: 'ri-building-2-line' },
   { value: 50, suffix: '+', label: 'Profesionales', icon: 'ri-team-line' },
-  { value: 4, suffix: '', label: 'Provincias', icon: 'ri-map-pin-line' },
   { value: 98, suffix: '%', label: 'Satisfacción', icon: 'ri-star-line' },
 ]

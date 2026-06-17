@@ -18,7 +18,7 @@ function StatItem({ value, suffix, label, icon }: { value: number; suffix: strin
       </div>
       <div className="flex items-baseline gap-0.5">
         <span className="text-4xl md:text-5xl font-heading font-bold text-foreground-950">{count}</span>
-        <span className="text-2xl md:text-3xl font-heading font-light text-accent-500">{suffix}</span>
+        {suffix ? <span className="text-2xl md:text-3xl font-heading font-light text-accent-500">{suffix}</span> : null}
       </div>
       <p className="mt-2 text-sm font-body text-foreground-600">{label}</p>
     </div>
@@ -171,7 +171,7 @@ export default function Home() {
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {services.map((service) => (
                 <Link key={service.id} to={`/servicios#${service.id}`} className="group block rounded-lg border border-background-200 overflow-hidden bg-background-50 hover:border-background-300 transition-all duration-300">
                   <div className="relative h-56 overflow-hidden">

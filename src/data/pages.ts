@@ -61,6 +61,7 @@ export type GlobalCopy = {
     instagram: string
     youtube: string
     facebook: string
+    linkedin: string
   }
 }
 
@@ -147,8 +148,8 @@ export const defaultPages: SitePages = {
   global: {
     siteName: SITE_NAME,
     siteDescription: DEFAULT_DESCRIPTION,
-    footerTagline: 'Construimos la infraestructura que impulsa el crecimiento del Norte Argentino.',
-    footerCopyright: '© 2026 GRUPO EMPRENOR. Todos los derechos reservados.',
+    footerTagline: 'Construcción e instalaciones integradas en el NOA. Doce especialidades, un solo equipo.',
+    footerCopyright: '© 2026 EMPRENOR. Todos los derechos reservados.',
     newsletterTitle: 'Newsletter',
     newsletterText: 'Recibí novedades sobre proyectos, licitaciones y el sector de la construcción.',
     navCtaLabel: 'Solicitar Cotización',
@@ -161,6 +162,7 @@ export const defaultPages: SitePages = {
       instagram: 'https://instagram.com/emprenorgroup',
       youtube: 'https://youtube.com/@emprenorgroup',
       facebook: 'https://facebook.com/emprenorgroup',
+      linkedin: 'https://www.linkedin.com/company/emprenor',
     },
   },
   home: {
@@ -194,11 +196,11 @@ export const defaultPages: SitePages = {
       { value: '2018', label: 'Operación documentada' },
       { value: '5', label: 'Tipos de obra' },
     ],
-    statsIntro: '+500 proyectos ejecutados, más de 15 años de experiencia y presencia en 4 provincias del Norte Argentino.',
+    statsIntro: 'Doce especialidades integradas, operación documentada desde 2018 y presencia en Salta, Jujuy, Tucumán y Formosa.',
     statsImage: IMAGES.statsAerial,
     services: {
-      title: 'Divisiones de servicio',
-      subtitle: 'Soluciones integrales de ingeniería para cada etapa del proyecto.',
+      title: 'Nuestros servicios',
+      subtitle: 'Doce especialidades técnicas integradas para obra civil, instalaciones y mantenimiento en el NOA.',
     },
     projects: {
       label: 'Portafolio',
@@ -229,7 +231,7 @@ export const defaultPages: SitePages = {
   contacto: {
     seo: {
       title: 'Contacto',
-      description: 'Comuníquese con EMPRENOR GROUP para consultas de ingeniería, construcción, energía y licitaciones.',
+      description: 'Comuníquese con EMPRENOR para consultas de construcción, instalaciones y licitaciones en el NOA.',
     },
     hero: {
       label: 'Contacto',
@@ -257,24 +259,25 @@ export const defaultPages: SitePages = {
   empresa: {
     seo: {
       title: 'Empresa',
-      description: 'Conozca la historia, valores y equipo directivo de GRUPO EMPRENOR.',
+      description: 'Conozca la historia, valores y equipo de EMPRENOR en el Norte Argentino.',
     },
     hero: {
-      title: 'Somos GRUPO EMPRENOR',
-      subtitle: 'Ingeniería, construcción y energía. Más de 15 años impulsando el desarrollo del Norte Argentino.',
+      label: 'Desde 2018 · NOA',
+      title: 'Somos EMPRENOR',
+      subtitle: 'Construcción e instalaciones integradas. Doce especialidades técnicas con operación documentada en Salta, Jujuy, Tucumán y Formosa.',
       image: IMAGES.empresaHero,
     },
     history: {
       label: 'Trayectoria',
       title: 'Nuestra Historia',
       paragraphs: [
-        'GRUPO EMPRENOR nació en el año 2008 en la ciudad de Salta, fundada por un grupo de ingenieros con la visión de transformar la infraestructura del Norte Argentino. Lo que comenzó como una oficina técnica de tres profesionales, hoy es una empresa de referencia regional con más de 50 colaboradores.',
-        'Desde nuestros primeros proyectos de infraestructura eléctrica rural, fuimos expandiendo nuestras capacidades hacia la construcción de obras civiles, edificios públicos, plantas industriales y desarrollos energéticos de gran escala.',
-        'Hoy, con presencia en 4 provincias y más de 500 proyectos ejecutados, seguimos comprometidos con la excelencia técnica, la innovación y el desarrollo sostenible de las comunidades donde operamos.',
+        'EMPRENOR inició su operación documentada en 2018 en Salta, con la visión de ofrecer construcción e instalaciones integradas bajo un solo equipo técnico en el NOA.',
+        'Desde los primeros proyectos de obra civil e instalaciones eléctricas y sanitarias, fuimos incorporando especialidades hasta alcanzar doce rubros coordinados con presupuesto y alcance por escrito.',
+        'Hoy operamos en cuatro provincias del Norte Argentino con más de 500 proyectos ejecutados, equipos locales y compromiso con la calidad, la seguridad y el cumplimiento normativo.',
       ],
     },
-    mission: 'Desarrollar proyectos de ingeniería y construcción de excelencia que impulsen el crecimiento económico y social del Norte Argentino, generando valor para nuestros clientes, colaboradores y comunidades.',
-    vision: 'Ser la empresa de ingeniería y construcción de referencia en el Norte Argentino para el año 2030, reconocida por nuestra excelencia técnica, innovación, sostenibilidad y compromiso con el desarrollo regional.',
+    mission: 'Desarrollar proyectos de construcción e instalaciones de excelencia que impulsen el desarrollo del NOA, con un solo interlocutor técnico y entregables documentados.',
+    vision: 'Ser la empresa de referencia en construcción e instalaciones integradas del NOA, reconocida por calidad técnica, cumplimiento y operación documentada.',
     valuesTitle: 'Nuestros Valores',
     team: {
       label: 'Liderazgo',
@@ -287,7 +290,7 @@ export const defaultPages: SitePages = {
       subtitle: 'Operamos en 4 provincias del Norte Argentino, con oficinas centrales en Salta y capacidad de despliegue en toda la región.',
     },
     cta: {
-      title: 'Formá parte del equipo líder en ingeniería del Norte Argentino',
+      title: 'Formá parte del equipo líder en construcción del NOA',
       description: 'Buscamos profesionales comprometidos con la excelencia. Conocé nuestras oportunidades.',
       primaryLabel: 'Trabajá con Nosotros',
       primaryUrl: '/contacto',
@@ -297,20 +300,21 @@ export const defaultPages: SitePages = {
   servicios: {
     seo: {
       title: 'Servicios',
-      description: 'Seis divisiones de ingeniería, construcción, energía y mantenimiento para proyectos de cualquier escala.',
+      description: 'Doce especialidades de construcción, instalaciones y mantenimiento para proyectos de cualquier escala en el NOA.',
     },
     hero: {
-      title: 'Servicios de Ingeniería y Construcción',
-      subtitle: 'Soluciones integrales en seis divisiones especializadas que cubren cada etapa y escala de su proyecto.',
+      label: 'Desde 2018 · NOA',
+      title: 'Servicios Integrales de Construcción',
+      subtitle: 'Doce especialidades técnicas coordinadas por un solo equipo. Calidad, seguridad y cumplimiento normativo en Salta, Jujuy, Tucumán y Formosa.',
       image: IMAGES.serviciosHero,
     },
     divisions: {
-      label: 'Divisiones',
-      title: 'Seis áreas de especialización para proyectos de cualquier escala',
+      label: 'Especialidades',
+      title: 'Doce áreas de especialización para todo tipo de proyecto',
     },
     grid: {
       label: 'Soluciones Integrales',
-      title: 'Todas nuestras divisiones',
+      title: 'Todas nuestras especialidades',
     },
     cta: {
       label: '¿No encuentra lo que busca?',
@@ -350,7 +354,7 @@ export const defaultPages: SitePages = {
   licitaciones: {
     seo: {
       title: 'Licitaciones',
-      description: 'Portal de licitaciones vigentes de EMPRENOR GROUP. Acceda a documentación, consultas y ofertas.',
+      description: 'Portal de licitaciones vigentes de EMPRENOR. Acceda a documentación, consultas y ofertas.',
     },
     hero: {
       label: 'Transparencia y Gestión',

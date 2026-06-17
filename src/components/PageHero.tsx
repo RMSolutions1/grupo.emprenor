@@ -1,16 +1,26 @@
 import { Link } from 'react-router-dom'
+import Breadcrumb, { type BreadcrumbItem } from './Breadcrumb'
 
 interface PageHeroProps {
   label?: string
   title: string
   subtitle?: string
   image: string
+  breadcrumb?: BreadcrumbItem[]
   children?: React.ReactNode
 }
 
-export default function PageHero({ label, title, subtitle, image, children }: PageHeroProps) {
+export default function PageHero({ label, title, subtitle, image, breadcrumb, children }: PageHeroProps) {
   return (
-    <section className={`relative w-full overflow-hidden site-header-offset ${image ? 'min-h-[420px] md:min-h-[520px]' : 'py-16 md:py-20 bg-primary-500'}`}>
+    <>
+      {breadcrumb && breadcrumb.length > 0 && (
+        <div className="site-header-offset bg-background-100 border-b border-background-200">
+          <div className="w-full px-6 md:px-12 py-4 max-w-7xl mx-auto">
+            <Breadcrumb items={breadcrumb} className="!mb-0" />
+          </div>
+        </div>
+      )}
+    <section className={`relative w-full overflow-hidden ${breadcrumb?.length ? '' : 'site-header-offset'} ${image ? 'min-h-[420px] md:min-h-[520px]' : 'py-16 md:py-20 bg-primary-500'}`}>
       {image && (
         <>
           <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${image}")` }} />
@@ -32,6 +42,7 @@ export default function PageHero({ label, title, subtitle, image, children }: Pa
         {children}
       </div>
     </section>
+    </>
   )
 }
 
