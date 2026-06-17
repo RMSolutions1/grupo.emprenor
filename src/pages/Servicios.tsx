@@ -6,13 +6,13 @@ import HorizontalSlider from '../components/HorizontalSlider'
 import { IMAGES } from '../data/images'
 import { useServicesData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { useAutoplay } from '../hooks/useAutoplay'
+import { useSlider } from '../hooks/useSlider'
 import { ctaToLinks, resolveImage } from '../lib/pageCopy'
 
 export default function Servicios() {
   const copy = usePageCopy('servicios')
   const { services, serviceDetails } = useServicesData()
-  const { index: activeIndex, setIndex: setActiveIndex, bindPauseHandlers } = useAutoplay(services.length, { interval: 7000 })
+  const { index: activeIndex, setIndex: setActiveIndex, next, prev } = useSlider(services.length)
   const ctaLinks = ctaToLinks(copy.cta)
 
   usePageMeta({ title: copy.seo.title, description: copy.seo.description })
@@ -64,8 +64,19 @@ export default function Servicios() {
               ))}
             </div>
 
-            <div id="servicios-slider" className="scroll-mt-28" {...bindPauseHandlers}>
-              <HorizontalSlider index={activeIndex}>
+            <div id="servicios-slider" className="scroll-mt-28">
+              {services.length > 1 && (
+                <div className="flex items-center justify-end gap-2 mb-4">
+                  <button type="button" onClick={prev} className="w-9 h-9 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all" aria-label="Especialidad anterior">
+                    <i className="ri-arrow-left-line" />
+                  </button>
+                  <button type="button" onClick={next} className="w-9 h-9 flex items-center justify-center rounded-full border border-background-300 hover:bg-accent-500 hover:border-accent-500 hover:text-white text-foreground-600 transition-all" aria-label="Especialidad siguiente">
+                    <i className="ri-arrow-right-line" />
+                  </button>
+                </div>
+              )}
+              <div className="min-h-[480px]">
+                <HorizontalSlider index={activeIndex}>
                 {services.map((service) => {
                   const details = serviceDetails[service.id]
                   return (
@@ -95,6 +106,7 @@ export default function Servicios() {
                   )
                 })}
               </HorizontalSlider>
+              </div>
 
               {services.length > 1 && (
                 <div className="mt-8">

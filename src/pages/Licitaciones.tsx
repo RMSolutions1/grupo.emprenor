@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero from '../components/PageHero'
-import AutoCardSlider from '../components/AutoCardSlider'
 import CarouselDots from '../components/CarouselDots'
 import HorizontalSlider from '../components/HorizontalSlider'
 import { IMAGES } from '../data/images'
@@ -10,6 +9,7 @@ import { type Licitacion, STATUS_FILTER_MAP } from '../data/licitaciones'
 import { useLicitacionesData, usePageCopy } from '../context/ContentContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAutoplay } from '../hooks/useAutoplay'
+import { useInView } from '../hooks/useInView'
 import { resolveImage } from '../lib/pageCopy'
 
 const statusColors: Record<Licitacion['status'], string> = {
@@ -79,12 +79,16 @@ function LicitacionCard({ lic }: { lic: Licitacion }) {
 }
 
 function FeaturedLicitaciones({ items, label, title }: { items: Licitacion[]; label?: string; title: string }) {
-  const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(items.length, { interval: 6500 })
+  const { ref, inView } = useInView()
+  const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(items.length, {
+    interval: 9000,
+    inView,
+  })
 
   if (items.length === 0) return null
 
   return (
-    <section className="py-16 md:py-20 bg-background-100 border-b border-background-200">
+    <section ref={ref} className="py-16 md:py-20 bg-background-100 border-b border-background-200">
       <div className="w-full px-6 md:px-12 max-w-7xl mx-auto">
         <SectionHeading label={label} title={title} />
         <div {...bindPauseHandlers}>
@@ -226,15 +230,11 @@ export default function Licitaciones() {
             <p className="text-center text-foreground-500 font-body py-12">No hay licitaciones con los filtros seleccionados.</p>
           ) : (
             <>
-              <AutoCardSlider
-                items={filtered.slice(0, visible)}
-                itemKey={(l) => l.id}
-                ariaLabel="Licitaciones"
-                perView={{ default: 1, md: 2, lg: 3 }}
-                interval={5500}
-                showArrows={filtered.length > 1}
-                renderItem={(lic) => <LicitacionCard lic={lic} />}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.slice(0, visible).map((lic) => (
+                  <LicitacionCard key={lic.id} lic={lic} />
+                ))}
+              </div>
 
               {visible < filtered.length && (
                 <div className="text-center mt-10">

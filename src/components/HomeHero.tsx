@@ -4,6 +4,7 @@ import { IMAGES } from '../data/images'
 import type { HeroSlideCopy, HeroStripStatCopy } from '../data/pages'
 import { resolveImage } from '../lib/pageCopy'
 import { useAutoplay } from '../hooks/useAutoplay'
+import { useInView } from '../hooks/useInView'
 import CarouselDots from './CarouselDots'
 
 type HomeHeroProps = {
@@ -15,14 +16,18 @@ type HomeHeroProps = {
 }
 
 export default function HomeHero({ slides, strip, ctaPrimary, ctaSecondary, ctaSecondaryUrl }: HomeHeroProps) {
-  const { index: current, setIndex: setCurrent, bindPauseHandlers } = useAutoplay(slides.length, { interval: 8000 })
+  const { ref, inView } = useInView<HTMLElement>(0.35)
+  const { index: current, setIndex: setCurrent, bindPauseHandlers } = useAutoplay(slides.length, {
+    interval: 10000,
+    inView,
+  })
   const slide = slides[current] ?? slides[0]
 
   if (!slide) return null
 
   return (
     <>
-      <section className="relative h-screen min-h-[700px] w-full overflow-hidden" {...bindPauseHandlers}>
+      <section ref={ref} className="relative h-screen min-h-[700px] w-full overflow-hidden" {...bindPauseHandlers}>
         {slides.map((s, i) => {
           const img = resolveImage(s.image, IMAGES.hero)
           return (

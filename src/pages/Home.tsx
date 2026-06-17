@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import HomeHero from '../components/HomeHero'
-import AutoCardSlider from '../components/AutoCardSlider'
 import CarouselDots from '../components/CarouselDots'
 import HorizontalSlider from '../components/HorizontalSlider'
 import { CTASection } from '../components/PageHero'
@@ -10,6 +9,7 @@ import { useServicesData, useHomeData, useSiteContact, useProjectsData, usePageC
 import { useCounter } from '../hooks/useCounter'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAutoplay } from '../hooks/useAutoplay'
+import { useInView } from '../hooks/useInView'
 import { ctaToLinks, getHomeHeroSlides, resolveImage } from '../lib/pageCopy'
 
 function StatItem({ value, suffix, label, icon }: { value: number; suffix: string; label: string; icon: string }) {
@@ -31,12 +31,16 @@ function StatItem({ value, suffix, label, icon }: { value: number; suffix: strin
 function ProjectsCarousel() {
   const copy = usePageCopy('home')
   const { featuredProjects } = useProjectsData()
-  const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(featuredProjects.length, { interval: 7000 })
+  const { ref, inView } = useInView()
+  const { index: current, setIndex: setCurrent, next, prev, bindPauseHandlers } = useAutoplay(featuredProjects.length, {
+    interval: 9000,
+    inView,
+  })
 
   if (!featuredProjects.length) return null
 
   return (
-    <section className="py-20 md:py-28 bg-background-100">
+    <section ref={ref} className="py-20 md:py-28 bg-background-100">
       <div className="w-full px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
@@ -169,14 +173,9 @@ export default function Home() {
                 </p>
               )}
             </div>
-            <AutoCardSlider
-              items={services}
-              itemKey={(s) => s.id}
-              ariaLabel="Servicios"
-              perView={{ default: 1, md: 2, lg: 3 }}
-              interval={5000}
-              renderItem={(service) => (
-                <Link to={`/servicios#${service.id}`} className="group block h-full rounded-lg border border-background-200 overflow-hidden bg-background-50 hover:border-background-300 transition-all duration-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {services.map((service) => (
+                <Link key={service.id} to={`/servicios#${service.id}`} className="group block rounded-lg border border-background-200 overflow-hidden bg-background-50 hover:border-background-300 transition-all duration-300">
                   <div className="relative h-56 overflow-hidden">
                     <img alt={service.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" loading="lazy" src={service.image} />
                     <div className="absolute inset-0 bg-gradient-to-t from-primary-950/40 to-transparent" />
@@ -188,14 +187,14 @@ export default function Home() {
                       </div>
                       <h3 className="font-heading text-xl font-semibold text-foreground-950">{service.title}</h3>
                     </div>
-                    <p className="text-sm font-body text-foreground-600 leading-relaxed">{service.description}</p>
+                    <p className="text-sm font-body text-foreground-600 leading-relaxed line-clamp-3">{service.description}</p>
                     <span className="inline-flex items-center gap-1 mt-4 text-xs font-body font-medium text-accent-500 group-hover:text-accent-600 transition-colors">
                       Ver más<i className="ri-arrow-right-line w-4 h-4" />
                     </span>
                   </div>
                 </Link>
-              )}
-            />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -210,14 +209,9 @@ export default function Home() {
                 {copy.sectors.title}
               </h2>
             </div>
-            <AutoCardSlider
-              items={sectors}
-              itemKey={(s) => s.id}
-              ariaLabel="Sectores"
-              perView={{ default: 2, md: 3, lg: 4 }}
-              interval={5500}
-              renderItem={(sector) => (
-                <Link to={`/proyectos?sector=${sector.id}`} className="group relative block rounded-xl overflow-hidden aspect-[3/4]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {sectors.map((sector) => (
+                <Link key={sector.id} to={`/proyectos?sector=${sector.id}`} className="group relative rounded-xl overflow-hidden aspect-[3/4]">
                   <img alt={sector.title} className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700" loading="lazy" src={sector.image} />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-primary-950/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -229,8 +223,8 @@ export default function Home() {
                     <h3 className="font-heading text-lg font-semibold text-white">{sector.title}</h3>
                   </div>
                 </Link>
-              )}
-            />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -275,14 +269,9 @@ export default function Home() {
                 {copy.testimonials.title}
               </h2>
             </div>
-            <AutoCardSlider
-              items={testimonials}
-              itemKey={(t) => t.name}
-              ariaLabel="Testimonios"
-              perView={{ default: 1, md: 2, lg: 3 }}
-              interval={6500}
-              renderItem={(t) => (
-                <div className="h-full p-6 md:p-8 rounded-xl bg-background-100 border border-background-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonials.map((t) => (
+                <div key={t.name} className="h-full p-6 md:p-8 rounded-xl bg-background-100 border border-background-200">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-background-200">
                       <img alt={t.name} className="w-full h-full object-cover" loading="lazy" src={t.avatar} />
@@ -298,8 +287,8 @@ export default function Home() {
                     <p className="text-sm font-body text-foreground-700 leading-relaxed pl-6 italic">{t.quote}</p>
                   </div>
                 </div>
-              )}
-            />
+              ))}
+            </div>
           </div>
         </div>
       </section>

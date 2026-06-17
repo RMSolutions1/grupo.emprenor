@@ -1,7 +1,8 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { useAutoplay } from '../hooks/useAutoplay'
+import { useInView } from '../hooks/useInView'
+import { useSlider } from '../hooks/useSlider'
 import HorizontalSlider from './HorizontalSlider'
-import { useEffect, useState } from 'react'
 
 type Breakpoints = { default: number; sm?: number; md?: number; lg?: number }
 
@@ -12,33 +13,47 @@ function slidesPerViewAt(width: number, perView: Breakpoints) {
   return perView.default
 }
 
-type AutoCardSliderProps<T> = {
+type CardSliderProps<T> = {
   items: T[]
   itemKey: (item: T) => string
   renderItem: (item: T) => ReactNode
-  interval?: number
   perView?: Breakpoints
   ariaLabel?: string
   className?: string
   showArrows?: boolean
+  /** Solo true en secciones destacadas; por defecto control manual. */
+  autoplay?: boolean
+  autoplayInterval?: number
 }
 
-export default function AutoCardSlider<T>({
+export default function CardSlider<T>({
   items,
   itemKey,
   renderItem,
-  interval = 5000,
-  perView = { default: 1, md: 2, lg: 4 },
+  perView = { default: 1, md: 2, lg: 3 },
   ariaLabel = 'Carrusel',
   className = '',
   showArrows = true,
-}: AutoCardSliderProps<T>) {
+  autoplay = false,
+  autoplayInterval = 9000,
+}: CardSliderProps<T>) {
+  const { ref, inView } = useInView()
   const [spv, setSpv] = useState(() => slidesPerViewAt(typeof window !== 'undefined' ? window.innerWidth : 1280, perView))
   const maxIndex = Math.max(0, items.length - spv)
-  const { index, setIndex, next, prev, bindPauseHandlers } = useAutoplay(maxIndex + 1, {
-    interval,
-    enabled: items.length > spv,
+  const slideCount = maxIndex + 1
+
+  const manual = useSlider(slideCount)
+  const auto = useAutoplay(slideCount, {
+    interval: autoplayInterval,
+    enabled: autoplay && items.length > spv,
+    inView,
   })
+
+  const index = autoplay ? auto.index : manual.index
+  const setIndex = autoplay ? auto.setIndex : manual.setIndex
+  const next = autoplay ? auto.next : manual.next
+  const prev = autoplay ? auto.prev : manual.prev
+  const pauseHandlers = autoplay ? auto.bindPauseHandlers : {}
 
   useEffect(() => {
     const onResize = () => setSpv(slidesPerViewAt(window.innerWidth, perView))
@@ -53,10 +68,12 @@ export default function AutoCardSlider<T>({
 
   if (!items.length) return null
 
+  const canSlide = items.length > spv
+
   return (
-    <div className={className} {...bindPauseHandlers}>
+    <div ref={ref} className={className} {...pauseHandlers}>
       <div className="relative">
-        {showArrows && items.length > spv && (
+        {showArrows && canSlide && (
           <>
             <button
               type="button"
@@ -77,7 +94,7 @@ export default function AutoCardSlider<T>({
           </>
         )}
 
-        <div role="region" aria-label={ariaLabel} aria-live="polite" className="px-1">
+        <div role="region" aria-label={ariaLabel} aria-live={autoplay ? 'polite' : 'off'} className="px-1">
           <HorizontalSlider index={index} perView={spv}>
             {items.map((item) => (
               <div key={itemKey(item)} className="px-2 md:px-3 h-full">
@@ -88,9 +105,9 @@ export default function AutoCardSlider<T>({
         </div>
       </div>
 
-      {items.length > spv && (
+      {canSlide && (
         <div className="flex items-center justify-center gap-2 mt-8">
-          {Array.from({ length: maxIndex + 1 }, (_, i) => (
+          {Array.from({ length: slideCount }, (_, i) => (
             <button
               key={i}
               type="button"

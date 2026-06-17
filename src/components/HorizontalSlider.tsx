@@ -29,7 +29,7 @@ export default function HorizontalSlider({
   return (
     <div className={`overflow-hidden w-full ${className}`}>
       <div
-        className={`flex transition-transform duration-500 ease-in-out ${trackClassName}`}
+        className={`flex transition-transform duration-700 ease-out will-change-transform ${trackClassName}`}
         style={{
           width: `${trackWidth}%`,
           transform: `translateX(-${safeIndex * slideShare}%)`,
