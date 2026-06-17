@@ -1,4 +1,4 @@
-import type { HeroCopy, SectionCopy, CtaCopy, SeoCopy } from '../../data/pages'
+import type { HeroCopy, SectionCopy, CtaCopy, SeoCopy, HeroSlideCopy, HeroStripStatCopy } from '../../data/pages'
 import { AdminInput, AdminTextarea } from './AdminUI'
 import { AdminImageField } from './AdminImageField'
 import { FormSection } from './FormHelpers'
@@ -53,6 +53,50 @@ export function CtaFields({ cta, onChange }: { cta: CtaCopy; onChange: (cta: Cta
         <AdminInput label="Botón secundario — texto" value={cta.secondaryLabel ?? ''} onChange={(e) => onChange({ ...cta, secondaryLabel: e.target.value })} />
         <AdminInput label="Botón secundario — enlace" value={cta.secondaryUrl ?? ''} onChange={(e) => onChange({ ...cta, secondaryUrl: e.target.value })} />
         <AdminImageField label="Imagen de fondo" value={cta.image ?? ''} onChange={(url) => onChange({ ...cta, image: url })} />
+      </div>
+    </FormSection>
+  )
+}
+
+export function HeroSlideFields({ slides, onChange }: { slides: HeroSlideCopy[]; onChange: (slides: HeroSlideCopy[]) => void }) {
+  const update = (index: number, patch: Partial<HeroSlideCopy>) => {
+    const next = slides.map((s, i) => (i === index ? { ...s, ...patch } : s))
+    onChange(next)
+  }
+
+  return (
+    <FormSection title="Slides del hero (carousel)" description="Cada slide rota automáticamente en la página de inicio.">
+      <div className="space-y-6">
+        {slides.map((slide, i) => (
+          <div key={i} className="p-4 rounded-lg border border-background-200 space-y-3">
+            <p className="text-sm font-body font-semibold text-foreground-700">Slide {i + 1}</p>
+            <AdminInput label="Etiqueta" value={slide.label ?? ''} onChange={(e) => update(i, { label: e.target.value })} />
+            <AdminInput label="Título" value={slide.title} onChange={(e) => update(i, { title: e.target.value })} />
+            <AdminTextarea label="Subtítulo" rows={2} value={slide.subtitle ?? ''} onChange={(e) => update(i, { subtitle: e.target.value })} />
+            <AdminImageField label="Imagen" value={slide.image ?? ''} onChange={(url) => update(i, { image: url })} />
+          </div>
+        ))}
+      </div>
+    </FormSection>
+  )
+}
+
+export function HeroStripFields({ strip, onChange }: { strip: HeroStripStatCopy[]; onChange: (strip: HeroStripStatCopy[]) => void }) {
+  const update = (index: number, patch: Partial<HeroStripStatCopy>) => {
+    const next = strip.map((s, i) => (i === index ? { ...s, ...patch } : s))
+    onChange(next)
+  }
+
+  return (
+    <FormSection title="Franja de estadísticas (bajo hero)">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {strip.map((stat, i) => (
+          <div key={i} className="p-4 rounded-lg border border-background-200 space-y-3">
+            <p className="text-sm font-body font-semibold text-foreground-700">Stat {i + 1}</p>
+            <AdminInput label="Valor" value={stat.value} onChange={(e) => update(i, { value: e.target.value })} />
+            <AdminInput label="Etiqueta" value={stat.label} onChange={(e) => update(i, { label: e.target.value })} />
+          </div>
+        ))}
       </div>
     </FormSection>
   )

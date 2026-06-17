@@ -4,7 +4,7 @@ import { mergeSitePages } from '../lib/pageCopy'
 import { fetchSiteSettings, upsertSiteSettings } from '../lib/cms'
 import { AdminPage, AdminCard, AdminInput, AdminTextarea, AdminImageField, AdminLoading } from './components/AdminUI'
 import { AdminTabs, AdminTabPanel } from './components/AdminTabs'
-import { CtaFields, HeroFields, ParagraphList, SectionFields, SeoFields } from './components/PageCopyFields'
+import { CtaFields, HeroFields, HeroSlideFields, HeroStripFields, ParagraphList, SectionFields, SeoFields } from './components/PageCopyFields'
 import { FormSection, SaveBar } from './components/FormHelpers'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { useAdminReady } from './hooks/useAdminReady'
@@ -94,11 +94,28 @@ export default function AdminPaginasPage() {
               <AdminInput label="Facebook" value={pages.global.social.facebook} onChange={(e) => set('global', { ...pages.global, social: { ...pages.global.social, facebook: e.target.value } })} />
             </div>
           </FormSection>
+          <FormSection title="WhatsApp flotante">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="flex items-center gap-2 text-sm font-body text-foreground-700 md:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={pages.global.whatsapp?.enabled ?? false}
+                  onChange={(e) => set('global', { ...pages.global, whatsapp: { ...pages.global.whatsapp, enabled: e.target.checked } })}
+                  className="rounded border-background-300"
+                />
+                Mostrar botón flotante
+              </label>
+              <AdminInput label="Teléfono (solo dígitos, con código país)" value={pages.global.whatsapp?.phone ?? ''} onChange={(e) => set('global', { ...pages.global, whatsapp: { ...pages.global.whatsapp, phone: e.target.value } })} />
+              <AdminTextarea label="Mensaje predeterminado" rows={2} value={pages.global.whatsapp?.message ?? ''} onChange={(e) => set('global', { ...pages.global, whatsapp: { ...pages.global.whatsapp, message: e.target.value } })} />
+            </div>
+          </FormSection>
         </AdminTabPanel>
 
         <AdminTabPanel active={tab} id="home">
           <SeoFields seo={pages.home.seo} onChange={(seo) => set('home', { ...pages.home, seo })} />
           <HeroFields hero={pages.home.hero} onChange={(hero) => set('home', { ...pages.home, hero: { ...pages.home.hero, ...hero } })} />
+          <HeroSlideFields slides={pages.home.heroSlides ?? []} onChange={(heroSlides) => set('home', { ...pages.home, heroSlides })} />
+          <HeroStripFields strip={pages.home.heroStrip ?? []} onChange={(heroStrip) => set('home', { ...pages.home, heroStrip })} />
           <FormSection title="Botones del hero">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <AdminInput label="Botón principal" value={pages.home.hero.ctaPrimary} onChange={(e) => set('home', { ...pages.home, hero: { ...pages.home.hero, ctaPrimary: e.target.value } })} />

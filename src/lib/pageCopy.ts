@@ -1,4 +1,4 @@
-import { defaultPages, type SitePages, type CtaCopy } from '../data/pages'
+import { defaultPages, type SitePages, type CtaCopy, type HeroSlideCopy } from '../data/pages'
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -17,6 +17,16 @@ function mergeDeep<T>(base: T, patch?: Partial<T>): T {
     }
   }
   return out
+}
+
+export function getHomeHeroSlides(home: SitePages['home']): HeroSlideCopy[] {
+  if (home.heroSlides?.length) return home.heroSlides
+  return [{
+    label: home.hero.label,
+    title: home.hero.title,
+    subtitle: home.hero.subtitle,
+    image: home.hero.image,
+  }]
 }
 
 export function mergeSitePages(partial?: Partial<SitePages> | null): SitePages {

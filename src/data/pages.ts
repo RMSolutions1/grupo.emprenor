@@ -30,6 +30,24 @@ export type CtaCopy = {
   image?: string
 }
 
+export type HeroSlideCopy = {
+  label?: string
+  title: string
+  subtitle?: string
+  image?: string
+}
+
+export type HeroStripStatCopy = {
+  value: string
+  label: string
+}
+
+export type WhatsAppCopy = {
+  enabled: boolean
+  phone: string
+  message: string
+}
+
 export type GlobalCopy = {
   siteName: string
   siteDescription: string
@@ -38,6 +56,7 @@ export type GlobalCopy = {
   newsletterTitle: string
   newsletterText: string
   navCtaLabel: string
+  whatsapp: WhatsAppCopy
   social: {
     instagram: string
     youtube: string
@@ -48,6 +67,8 @@ export type GlobalCopy = {
 export type HomePageCopy = {
   seo: SeoCopy
   hero: HeroCopy & { ctaPrimary: string; ctaSecondary: string; ctaSecondaryUrl: string }
+  heroSlides: HeroSlideCopy[]
+  heroStrip: HeroStripStatCopy[]
   statsIntro: string
   statsImage: string
   services: SectionCopy
@@ -131,6 +152,11 @@ export const defaultPages: SitePages = {
     newsletterTitle: 'Newsletter',
     newsletterText: 'Recibí novedades sobre proyectos, licitaciones y el sector de la construcción.',
     navCtaLabel: 'Solicitar Cotización',
+    whatsapp: {
+      enabled: true,
+      phone: '541127586521',
+      message: 'Hola, quisiera consultar sobre un proyecto con EMPRENOR.',
+    },
     social: {
       instagram: 'https://instagram.com/emprenorgroup',
       youtube: 'https://youtube.com/@emprenorgroup',
@@ -140,13 +166,34 @@ export const defaultPages: SitePages = {
   home: {
     seo: { title: 'Inicio', description: DEFAULT_DESCRIPTION },
     hero: {
-      title: 'Construimos la infraestructura que impulsa el crecimiento del Norte Argentino.',
-      subtitle: 'Más de 15 años desarrollando proyectos de ingeniería, construcción y energía para organismos públicos, industrias y clientes privados.',
+      label: 'Desde 2018 · NOA',
+      title: 'Construcción e instalaciones integradas en el NOA',
+      subtitle: 'Doce especialidades técnicas coordinadas por un solo equipo, con presupuesto y alcance por escrito. Salta, Jujuy, Tucumán y Formosa.',
       image: IMAGES.hero,
       ctaPrimary: 'Solicitar Cotización',
       ctaSecondary: 'Ver Proyectos',
       ctaSecondaryUrl: '/proyectos',
     },
+    heroSlides: [
+      {
+        label: 'Desde 2018 · NOA',
+        title: 'Construcción e instalaciones integradas en el NOA',
+        subtitle: 'Doce especialidades técnicas coordinadas por un solo equipo, con presupuesto y alcance por escrito. Salta, Jujuy, Tucumán y Formosa.',
+        image: IMAGES.hero,
+      },
+      {
+        label: 'Sector industrial e institucional',
+        title: 'Infraestructura con gestión documentada y SST',
+        subtitle: 'Naves, plantas y obra pública con cronograma, controles de calidad y entregables según contrato.',
+        image: IMAGES.serviciosHero,
+      },
+    ],
+    heroStrip: [
+      { value: '12', label: 'Especialidades integradas' },
+      { value: '4', label: 'Provincias del NOA' },
+      { value: '2018', label: 'Operación documentada' },
+      { value: '5', label: 'Tipos de obra' },
+    ],
     statsIntro: '+500 proyectos ejecutados, más de 15 años de experiencia y presencia en 4 provincias del Norte Argentino.',
     statsImage: IMAGES.statsAerial,
     services: {
@@ -175,7 +222,7 @@ export const defaultPages: SitePages = {
       primaryLabel: 'Solicitar Reunión Técnica',
       primaryUrl: '/contacto',
       secondaryLabel: 'Llamar por Teléfono',
-      secondaryUrl: 'tel:+543874312800',
+      secondaryUrl: 'tel:+541127586521',
       image: IMAGES.cta,
     },
   },

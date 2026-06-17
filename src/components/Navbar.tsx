@@ -34,7 +34,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="hidden lg:block bg-primary-600 border-b border-white/10">
-        <div className="w-full px-6 md:px-12 h-9 flex items-center justify-between text-xs font-body text-white/80">
+        <div className="w-full px-6 md:px-12 h-9 flex items-center text-xs font-body text-white/80">
           <div className="flex items-center gap-5">
             <a href={contact.primaryPhone.href} className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
               <i className="ri-phone-line" />
@@ -45,13 +45,6 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               {contact.email}
             </a>
           </div>
-          <Link
-            to="/admin/login"
-            className="inline-flex items-center gap-1.5 font-medium text-white hover:text-accent-300 transition-colors"
-          >
-            <i className="ri-shield-user-line text-sm" />
-            Acceso Administrador
-          </Link>
         </div>
       </div>
 
@@ -116,14 +109,6 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/admin/login"
-              className="flex items-center gap-2 text-base font-body text-primary-600 font-medium"
-              onClick={() => setMenuOpen(false)}
-            >
-              <i className="ri-shield-user-line" />
-              Acceso Administrador
-            </Link>
             <Link
               to="/contacto"
               className="block w-full text-center px-6 py-3 bg-accent-500 text-white text-sm font-body font-medium rounded-md"

@@ -27,14 +27,14 @@ export default function Logo({ variant = 'dark', size = 'md', className = '', li
   const img = (
     <img
       src={sources[variant]}
-      alt="EMPRENOR GROUP"
+      alt="EMPRENOR"
       className={`${sizeClasses[size]} w-auto object-contain ${className}`}
     />
   )
 
   if (linkToHome) {
     return (
-      <Link to="/" className="inline-flex items-center shrink-0" aria-label="EMPRENOR GROUP — Inicio" onClick={onClick}>
+      <Link to="/" className="inline-flex items-center shrink-0" aria-label="EMPRENOR — Inicio" onClick={onClick}>
         {img}
       </Link>
     )

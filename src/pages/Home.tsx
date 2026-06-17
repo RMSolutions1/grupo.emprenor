@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
-import Layout, { AccentButton } from '../components/Layout'
+import Layout from '../components/Layout'
+import HomeHero from '../components/HomeHero'
 import { CTASection } from '../components/PageHero'
 import { IMAGES } from '../data/images'
 import { useServicesData, useHomeData, useSiteContact, useProjectsData, usePageCopy } from '../context/ContentContext'
 import { useCounter } from '../hooks/useCounter'
 import { usePageMeta } from '../hooks/usePageMeta'
-import { ctaToLinks, resolveImage } from '../lib/pageCopy'
+import { ctaToLinks, getHomeHeroSlides, resolveImage } from '../lib/pageCopy'
 import { useState } from 'react'
 
 function StatItem({ value, suffix, label, icon }: { value: number; suffix: string; label: string; icon: string }) {
@@ -122,38 +123,21 @@ export default function Home() {
 
   usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
-  const heroImage = resolveImage(copy.hero.image, IMAGES.hero)
+  const heroSlides = getHomeHeroSlides(copy)
   const statsImage = resolveImage(copy.statsImage, IMAGES.statsAerial)
   const ctaImage = resolveImage(copy.cta.image, IMAGES.cta)
 
   return (
     <Layout transparentNav>
-      <section className="relative h-screen min-h-[700px] w-full overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url("${heroImage}")` }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-950/70 via-primary-950/50 to-primary-950/70" />
-        <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent-500/20 to-transparent blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-2/3 h-1/2 bg-gradient-to-t from-primary-900/40 to-transparent blur-2xl" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full w-full px-6 md:px-12 text-center">
-          <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight max-w-5xl text-balance">
-            {copy.hero.title}
-          </h1>
-          {copy.hero.subtitle && (
-            <p className="mt-6 md:mt-8 text-base md:text-lg text-white/70 font-body font-light max-w-3xl leading-relaxed">
-              {copy.hero.subtitle}
-            </p>
-          )}
-          <div className="mt-10 md:mt-12 flex flex-col sm:flex-row items-center gap-4">
-            <AccentButton to="/contacto">{copy.hero.ctaPrimary}</AccentButton>
-            <Link to={copy.hero.ctaSecondaryUrl} className="whitespace-nowrap px-10 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white text-sm md:text-base font-body font-medium rounded-md transition-all duration-300">
-              {copy.hero.ctaSecondary}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HomeHero
+        slides={heroSlides}
+        strip={copy.heroStrip ?? []}
+        ctaPrimary={copy.hero.ctaPrimary}
+        ctaSecondary={copy.hero.ctaSecondary}
+        ctaSecondaryUrl={copy.hero.ctaSecondaryUrl}
+      />
 
-      <section id="stats" className="relative py-20 md:py-28 bg-background-100">
+      <section id="stats" className="relative py-20 md:py-28 bg-background-100 pt-28 md:pt-32">
         <div className="w-full px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
             <div className="relative rounded-2xl overflow-hidden mb-16 h-[300px] md:h-[420px]">
@@ -161,7 +145,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-primary-950/30 to-transparent" />
             </div>
             <div className="text-center mb-14">
-              <p className="text-foreground-500 font-heading text-2xl md:text-3xl font-light italic leading-relaxed max-w-3xl mx-auto">
+              <p className="text-foreground-500 font-body text-xl md:text-2xl font-medium leading-relaxed max-w-3xl mx-auto">
                 {copy.statsIntro}
               </p>
             </div>

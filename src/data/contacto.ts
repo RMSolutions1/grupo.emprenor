@@ -4,7 +4,7 @@ export const siteContact = {
     { display: '+54 11 2758-6521', href: 'tel:+541127586521' },
   ],
   primaryPhone: { display: '+54 11 2758-6521', href: 'tel:+541127586521' },
-  email: 'contacto@emprenor.com.ar',
+  email: 'info@emprenor.com.ar',
   licitacionesEmail: 'licitaciones@emprenor.com.ar',
   address: {
     lines: ['Av. Casiano Casas 3080', 'Campamento Vespucio, CP 4563', 'Salta, Argentina'],

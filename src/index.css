@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Cormorant Garamond", serif;
+  --font-heading: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
 
   --color-background-50: oklch(1 0 0);
@@ -40,17 +40,17 @@
   --color-secondary-900: oklch(0.12 0.021 260);
   --color-secondary-950: oklch(0.08 0.017 260);
 
-  --color-accent-50: oklch(0.98 0.02 45);
-  --color-accent-100: oklch(0.95 0.05 45);
-  --color-accent-200: oklch(0.9 0.08 45);
-  --color-accent-300: oklch(0.83 0.12 45);
-  --color-accent-400: oklch(0.76 0.16 45);
-  --color-accent-500: oklch(0.7 0.19 45);
-  --color-accent-600: oklch(0.63 0.175 45);
-  --color-accent-700: oklch(0.55 0.155 45);
-  --color-accent-800: oklch(0.47 0.135 45);
-  --color-accent-900: oklch(0.38 0.11 45);
-  --color-accent-950: oklch(0.28 0.085 45);
+  --color-accent-50: oklch(0.982 0.018 155);
+  --color-accent-100: oklch(0.962 0.044 156);
+  --color-accent-200: oklch(0.925 0.084 155);
+  --color-accent-300: oklch(0.871 0.15 154);
+  --color-accent-400: oklch(0.792 0.209 151);
+  --color-accent-500: oklch(0.627 0.194 149);
+  --color-accent-600: oklch(0.527 0.154 150);
+  --color-accent-700: oklch(0.448 0.119 151);
+  --color-accent-800: oklch(0.393 0.095 152);
+  --color-accent-900: oklch(0.338 0.077 152);
+  --color-accent-950: oklch(0.266 0.063 153);
 
   --color-foreground-50: oklch(0.98 0.002 264);
   --color-foreground-100: oklch(0.96 0.004 264);

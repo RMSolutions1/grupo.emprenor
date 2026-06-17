@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import WhatsAppButton from './WhatsAppButton'
 
 export default function Layout({ children, transparentNav = false }: { children: React.ReactNode; transparentNav?: boolean }) {
   return (
@@ -8,6 +9,7 @@ export default function Layout({ children, transparentNav = false }: { children:
       <Navbar transparent={transparentNav} />
       <main>{children}</main>
       <Footer />
+      <WhatsAppButton />
     </>
   )
 }
