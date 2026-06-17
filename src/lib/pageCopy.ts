@@ -54,10 +54,12 @@ function isStaleHomeCopy(home?: Partial<SitePages['home']>) {
 function isStaleEmpresaCopy(empresa?: Partial<SitePages['empresa']>) {
   const subtitle = empresa?.hero?.subtitle ?? ''
   const history = empresa?.history?.paragraphs?.[0] ?? ''
+  const ctaTitle = empresa?.cta?.title ?? ''
   return /15\s+años|más de 15/i.test(subtitle)
     || /2008/i.test(history)
     || /grupo emprenor/i.test(empresa?.hero?.title ?? '')
     || /ingeniería, construcción y energía/i.test(subtitle)
+    || /ingeniería del norte/i.test(ctaTitle)
 }
 
 function isStaleGlobalCopy(global?: Partial<SitePages['global']>) {
@@ -115,6 +117,7 @@ export function mergeSitePages(partial?: Partial<SitePages> | null): SitePages {
       history: defaultPages.empresa.history,
       mission: defaultPages.empresa.mission,
       vision: defaultPages.empresa.vision,
+      cta: defaultPages.empresa.cta,
     }
   }
   if (isStaleServiciosCopy(partial.servicios)) {
