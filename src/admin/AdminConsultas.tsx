@@ -157,7 +157,7 @@ export default function AdminConsultas() {
     >
       {!isMailApiLikelyAvailable() && (
         <AdminAlert tone="warning" className="mb-4">
-          Para enviar respuestas por email configure <code className="text-xs">RESEND_API_KEY</code> y <code className="text-xs">MAIL_FROM</code> en Vercel.
+          Para enviar respuestas por email configure SMTP en Vercel (correo Ferozo) o Resend como alternativa.
           Desde Ferozo las respuestas usan la API de grupo.emprenor.com.
         </AdminAlert>
       )}

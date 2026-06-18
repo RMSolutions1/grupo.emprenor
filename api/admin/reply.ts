@@ -49,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (!isMailConfigured()) {
-    return res.status(503).json({ error: 'Email no configurado. Agregue RESEND_API_KEY y MAIL_FROM en Vercel.' })
+    return res.status(503).json({ error: 'Email no configurado. Configure SMTP (Ferozo) o RESEND_API_KEY en Vercel.' })
   }
 
   let body: ReplyBody

@@ -1,3 +1,5 @@
+import { isSmtpConfigured, sendViaSmtp } from './smtp'
+
 type SendMailOptions = {
   to: string
   subject: string
@@ -6,14 +8,21 @@ type SendMailOptions = {
 }
 
 export function isMailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.MAIL_FROM)
+  return isSmtpConfigured() || Boolean(process.env.RESEND_API_KEY && process.env.MAIL_FROM)
 }
 
-export async function sendMail({ to, subject, html, replyTo }: SendMailOptions): Promise<{ ok: boolean; error?: string }> {
+export async function sendMail(options: SendMailOptions): Promise<{ ok: boolean; error?: string }> {
+  if (isSmtpConfigured()) {
+    return sendViaSmtp(options)
+  }
+  return sendViaResend(options)
+}
+
+async function sendViaResend({ to, subject, html, replyTo }: SendMailOptions): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.MAIL_FROM
   if (!apiKey || !from) {
-    return { ok: false, error: 'Email no configurado (RESEND_API_KEY, MAIL_FROM)' }
+    return { ok: false, error: 'Email no configurado (SMTP o RESEND_API_KEY + MAIL_FROM)' }
   }
 
   const res = await fetch('https://api.resend.com/emails', {
@@ -39,7 +48,7 @@ export async function sendMail({ to, subject, html, replyTo }: SendMailOptions):
 }
 
 export function staffNotifyEmail(): string {
-  return process.env.STAFF_NOTIFY_EMAIL || process.env.MAIL_REPLY_TO || 'info@emprenor.com.ar'
+  return process.env.STAFF_NOTIFY_EMAIL || process.env.MAIL_REPLY_TO || process.env.SMTP_USER || 'info@emprenor.com.ar'
 }
 
 export function escapeHtml(text: string): string {
