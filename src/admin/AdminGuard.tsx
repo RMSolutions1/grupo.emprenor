@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAdminAuth } from './AdminAuthContext'
 
 export default function AdminGuard() {
-  const { user, loading, configured } = useAdminAuth()
+  const { user, loading, configured, isStaff } = useAdminAuth()
 
   if (loading) {
     return (
@@ -16,7 +16,7 @@ export default function AdminGuard() {
     return <Navigate to="/admin/login" replace />
   }
 
-  if (!user) {
+  if (!user || !isStaff) {
     return <Navigate to="/admin/login" replace />
   }
 

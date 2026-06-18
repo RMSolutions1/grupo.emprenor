@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { type FormEvent, useState } from 'react'
 import Logo from './Logo'
 import FormNotice from './FormNotice'
+import HoneypotField from './HoneypotField'
 import { useSiteContact, useGlobalCopy } from '../context/ContentContext'
 import { submitNewsletter } from '../lib/contact'
 
@@ -24,7 +25,8 @@ export default function Footer() {
     e.preventDefault()
     const form = e.target as HTMLFormElement
     const email = (form.elements.namedItem('email') as HTMLInputElement).value
-    const result = await submitNewsletter(email)
+    const hp = (form.elements.namedItem('_hp') as HTMLInputElement | null)?.value
+    const result = await submitNewsletter(email, hp || undefined)
     if (result.ok) setSubscribed(true)
     else setError(result.error ?? 'Error al suscribirse')
   }
@@ -95,7 +97,8 @@ export default function Footer() {
             {subscribed ? (
               <p className="text-accent-300 text-sm font-body">¡Gracias por suscribirte!</p>
             ) : (
-              <form className="flex flex-col gap-0" onSubmit={handleNewsletter}>
+              <form className="relative flex flex-col gap-0" onSubmit={handleNewsletter}>
+                <HoneypotField />
                 {error && <p className="text-red-300 text-xs mb-2">{error}</p>}
                 <div className="flex items-center gap-0">
                   <input

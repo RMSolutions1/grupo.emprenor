@@ -4,14 +4,18 @@ import Logo from '../components/Logo'
 import { useAdminAuth } from './AdminAuthContext'
 
 export default function AdminLogin() {
-  const { user, configured, signIn, loading } = useAdminAuth()
+  const { user, configured, signIn, loading, isStaff, signOut } = useAdminAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  if (!loading && user) {
+  if (!loading && user && isStaff) {
     return <Navigate to="/admin" replace />
+  }
+
+  if (!loading && user && !isStaff) {
+    void signOut()
   }
 
   const handleSubmit = async (e: FormEvent) => {

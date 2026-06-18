@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero from '../components/PageHero'
 import FormNotice from '../components/FormNotice'
+import HoneypotField from '../components/HoneypotField'
 import { IMAGES } from '../data/images'
 import { interestAreas } from '../data/contacto'
 import { useSiteContact, useContactAreas, usePageCopy } from '../context/ContentContext'
@@ -36,6 +37,7 @@ export default function Contacto() {
       organization: String(form.get('organization') ?? '') || undefined,
       area: String(form.get('area') ?? ''),
       message: String(form.get('message') ?? ''),
+      _hp: String(form.get('_hp') ?? '') || undefined,
     })
     setSubmitting(false)
     if (result.ok) setSubmitted(true)
@@ -51,6 +53,7 @@ export default function Contacto() {
       name: String(form.get('name') ?? ''),
       phone: String(form.get('phone') ?? ''),
       schedule: String(form.get('schedule') ?? '') || undefined,
+      _hp: String(form.get('_hp') ?? '') || undefined,
     })
     setSubmitting(false)
     if (result.ok) setCallbackSubmitted(true)
@@ -82,7 +85,8 @@ export default function Contacto() {
                     <p className="text-base font-body text-foreground-600">{copy.formSuccessText}</p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5" aria-label="Formulario de contacto">
+                  <form onSubmit={handleSubmit} className="relative space-y-5" aria-label="Formulario de contacto">
+                    <HoneypotField />
                     {error && <p className="text-sm font-body text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -206,7 +210,8 @@ export default function Contacto() {
             {callbackSubmitted ? (
               <p className="text-base font-body text-accent-500">{copy.callbackSuccess}</p>
             ) : (
-              <form onSubmit={handleCallback} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left" aria-label="Formulario de callback">
+              <form onSubmit={handleCallback} className="relative grid grid-cols-1 sm:grid-cols-2 gap-4 text-left" aria-label="Formulario de callback">
+                <HoneypotField />
                 {error && !submitted && <p className="sm:col-span-2 text-sm font-body text-red-600">{error}</p>}
                 <div>
                   <label htmlFor="callback-name" className="sr-only">Nombre</label>

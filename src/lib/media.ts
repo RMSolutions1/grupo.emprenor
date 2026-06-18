@@ -2,7 +2,7 @@ import { supabase } from './supabase'
 
 const BUCKET = 'media'
 const MAX_SIZE = 8 * 1024 * 1024
-const ALLOWED = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'])
+const ALLOWED = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif'])
 
 export function isValidImageUrl(url: string): boolean {
   const v = url.trim()
@@ -23,7 +23,7 @@ export async function uploadMedia(file: File, folder = 'uploads'): Promise<{ url
 
   const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
   if (!ALLOWED.has(ext)) {
-    return { url: null, error: 'Formato no permitido. Use JPG, PNG, WebP, GIF o SVG.' }
+    return { url: null, error: 'Formato no permitido. Use JPG, PNG, WebP o GIF.' }
   }
   if (file.size > MAX_SIZE) {
     return { url: null, error: 'La imagen no puede superar 8 MB.' }

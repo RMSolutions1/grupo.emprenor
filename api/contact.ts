@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 type ContactBody = {
   type: 'contact' | 'callback' | 'newsletter'
@@ -9,10 +9,56 @@ type ContactBody = {
   area?: string
   message?: string
   schedule?: string
+  _hp?: string
 }
 
-type VercelRequest = { method?: string; body?: ContactBody | string }
+type VercelRequest = {
+  method?: string
+  body?: ContactBody | string
+  headers?: Record<string, string | string[] | undefined>
+}
 type VercelResponse = { status: (code: number) => { json: (body: unknown) => void } }
+
+const LIMITS = {
+  name: 200,
+  email: 320,
+  phone: 40,
+  organization: 200,
+  area: 100,
+  message: 5000,
+  schedule: 200,
+} as const
+
+const RATE_LIMIT = { max: 5, windowMs: 60 * 60 * 1000 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function trim(value: string | undefined, max: number): string | null {
+  if (!value) return null
+  const v = value.trim()
+  if (!v || v.length > max) return null
+  return v
+}
+
+function isValidEmail(email: string): boolean {
+  return EMAIL_RE.test(email) && email.length <= LIMITS.email
+}
+
+async function isRateLimited(
+  supabase: SupabaseClient,
+  field: 'email' | 'phone',
+  value: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - RATE_LIMIT.windowMs).toISOString()
+  const { count, error } = await supabase
+    .from('contact_submissions')
+    .select('*', { count: 'exact', head: true })
+    .eq(field, value)
+    .gte('created_at', since)
+
+  if (error) return false
+  return (count ?? 0) >= RATE_LIMIT.max
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -32,41 +78,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Datos inválidos' })
   }
 
+  if (body._hp?.trim()) {
+    return res.status(200).json({ ok: true })
+  }
+
   const supabase = createClient(url, serviceKey, { auth: { persistSession: false } })
 
   let row: Record<string, unknown>
   switch (body.type) {
-    case 'contact':
-      if (!body.name?.trim() || !body.email?.trim() || !body.message?.trim()) {
-        return res.status(400).json({ error: 'Complete nombre, email y mensaje' })
+    case 'contact': {
+      const name = trim(body.name, LIMITS.name)
+      const email = trim(body.email, LIMITS.email)
+      const message = trim(body.message, LIMITS.message)
+      if (!name || !email || !message || !isValidEmail(email)) {
+        return res.status(400).json({ error: 'Complete nombre, email y mensaje válidos' })
+      }
+      if (await isRateLimited(supabase, 'email', email)) {
+        return res.status(429).json({ error: 'Demasiados envíos. Intente más tarde.' })
       }
       row = {
-        name: body.name.trim(),
-        email: body.email.trim(),
-        phone: body.phone?.trim() || null,
-        organization: body.organization?.trim() || null,
-        area: body.area?.trim() || null,
-        message: body.message.trim(),
+        name,
+        email,
+        phone: trim(body.phone, LIMITS.phone),
+        organization: trim(body.organization, LIMITS.organization),
+        area: trim(body.area, LIMITS.area),
+        message,
         type: 'contact',
       }
       break
-    case 'callback':
-      if (!body.name?.trim() || !body.phone?.trim()) {
+    }
+    case 'callback': {
+      const name = trim(body.name, LIMITS.name)
+      const phone = trim(body.phone, LIMITS.phone)
+      if (!name || !phone) {
         return res.status(400).json({ error: 'Complete nombre y teléfono' })
       }
+      if (await isRateLimited(supabase, 'phone', phone)) {
+        return res.status(429).json({ error: 'Demasiados envíos. Intente más tarde.' })
+      }
+      const schedule = trim(body.schedule, LIMITS.schedule)
       row = {
-        name: body.name.trim(),
-        phone: body.phone.trim(),
-        message: body.schedule?.trim() ? `Horario preferido: ${body.schedule.trim()}` : 'Solicitud de llamada',
+        name,
+        phone,
+        message: schedule ? `Horario preferido: ${schedule}` : 'Solicitud de llamada',
         type: 'callback',
       }
       break
-    case 'newsletter':
-      if (!body.email?.trim()) {
-        return res.status(400).json({ error: 'Ingrese un email' })
+    }
+    case 'newsletter': {
+      const email = trim(body.email, LIMITS.email)
+      if (!email || !isValidEmail(email)) {
+        return res.status(400).json({ error: 'Ingrese un email válido' })
       }
-      row = { email: body.email.trim(), type: 'newsletter' }
+      if (await isRateLimited(supabase, 'email', email)) {
+        return res.status(429).json({ error: 'Demasiados envíos. Intente más tarde.' })
+      }
+      row = { email, type: 'newsletter' }
       break
+    }
     default:
       return res.status(400).json({ error: 'Tipo de formulario inválido' })
   }

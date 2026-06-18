@@ -7,12 +7,14 @@ export type ContactFormData = {
   organization?: string
   area?: string
   message: string
+  _hp?: string
 }
 
 export type CallbackFormData = {
   name: string
   phone: string
   schedule?: string
+  _hp?: string
 }
 
 type ApiPayload = {
@@ -24,6 +26,7 @@ type ApiPayload = {
   area?: string
   message?: string
   schedule?: string
+  _hp?: string
 }
 
 function friendlyError(message: string): string {
@@ -117,6 +120,7 @@ export async function submitContact(data: ContactFormData): Promise<{ ok: boolea
     organization: data.organization,
     area: data.area,
     message: data.message,
+    _hp: data._hp,
   })
 }
 
@@ -127,9 +131,10 @@ export async function submitCallback(data: CallbackFormData): Promise<{ ok: bool
     phone: data.phone,
     message: data.schedule ? `Horario preferido: ${data.schedule}` : 'Solicitud de llamada',
     schedule: data.schedule,
+    _hp: data._hp,
   })
 }
 
-export async function submitNewsletter(email: string): Promise<{ ok: boolean; error?: string }> {
-  return submit({ type: 'newsletter', email })
+export async function submitNewsletter(email: string, _hp?: string): Promise<{ ok: boolean; error?: string }> {
+  return submit({ type: 'newsletter', email, _hp })
 }

@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "seed": "tsx scripts/seed.ts",
     "fix:contact": "tsx scripts/apply-contact-form.ts",
-    "verify:env": "tsx scripts/verify-env.ts"
+    "verify:env": "tsx scripts/verify-env.ts",
+    "create-admin": "tsx scripts/create-admin.ts",
+    "migrate:rls": "tsx scripts/apply-migrate-rls.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
@@ -22,6 +24,7 @@
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.1",
     "@types/node": "^24.12.3",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",

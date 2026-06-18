@@ -31,7 +31,7 @@ export default function Blog() {
       )
     }
     return posts
-  }, [category, search])
+  }, [category, search, blogPosts])
 
   return (
     <Layout>

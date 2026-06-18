@@ -1,5 +1,6 @@
 export const SITE_NAME = 'EMPRENOR'
-export const SITE_URL = 'https://grupo.emprenor.com'
+export const SITE_URL =
+  (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '') || 'https://grupo.emprenor.com'
 export const DEFAULT_DESCRIPTION =
   'Construcción e instalaciones integradas en el NOA. Doce especialidades técnicas, operación documentada desde 2018 en Salta, Jujuy, Tucumán y Formosa.'
 
