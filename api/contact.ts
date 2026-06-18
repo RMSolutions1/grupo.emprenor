@@ -147,7 +147,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { notifyStaffNewContact } = await import('./_lib/notifyStaff')
+    const { notifyStaffNewContact } = await import('./_lib/notifyStaff.js')
     await notifyStaffNewContact(row as Parameters<typeof notifyStaffNewContact>[0])
   } catch (e) {
     console.error('notify staff contact:', e)

@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer'
-
 type SmtpSendOptions = {
   to: string
   subject: string
@@ -39,7 +37,9 @@ export async function sendViaSmtp({ to, subject, html, replyTo }: SmtpSendOption
   }
 
   try {
-    const transport = nodemailer.createTransport({
+    const nodemailer = await import('nodemailer')
+    const createTransport = nodemailer.default?.createTransport ?? nodemailer.createTransport
+    const transport = createTransport({
       host,
       port: smtpPort(),
       secure: smtpSecure(),

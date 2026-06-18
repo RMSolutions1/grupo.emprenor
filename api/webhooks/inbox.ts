@@ -1,4 +1,4 @@
-import { notifyStaffNewContact, notifyStaffNewLicitacionConsulta } from '../_lib/notifyStaff'
+import { notifyStaffNewContact, notifyStaffNewLicitacionConsulta } from '../_lib/notifyStaff.js'
 
 type WebhookPayload = {
   type?: string
@@ -14,9 +14,10 @@ type VercelRequest = {
 type VercelResponse = { status: (code: number) => { json: (body: unknown) => void } }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' })
-  }
+  try {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Método no permitido' })
+    }
 
   const secret = process.env.INBOX_WEBHOOK_SECRET
   const auth = req.headers?.authorization
@@ -48,4 +49,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   return res.status(200).json({ ok: true })
+  } catch (e) {
+    console.error('webhook inbox error:', e)
+    return res.status(500).json({ error: e instanceof Error ? e.message : 'Error interno' })
+  }
 }

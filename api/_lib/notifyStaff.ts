@@ -1,4 +1,4 @@
-import { escapeHtml, mailShell, sendMail, staffNotifyEmail } from './mail'
+import { escapeHtml, mailShell, sendMail, staffNotifyEmail } from './mail.js'
 
 type ContactRecord = {
   id?: string

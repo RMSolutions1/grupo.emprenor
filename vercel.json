@@ -21,6 +21,12 @@
   "rewrites": [
     { "source": "/((?!assets/|api/).*)", "destination": "/index.html" }
   ],
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "api/_lib/**",
+      "maxDuration": 30
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

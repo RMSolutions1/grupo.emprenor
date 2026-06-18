@@ -1,4 +1,4 @@
-import { isSmtpConfigured, sendViaSmtp } from './smtp'
+import { isSmtpConfigured, sendViaSmtp } from './smtp.js'
 
 type SendMailOptions = {
   to: string
