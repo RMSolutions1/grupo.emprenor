@@ -14,6 +14,7 @@
     "create-admin": "tsx scripts/create-admin.ts",
     "migrate:rls": "tsx scripts/apply-migrate-rls.ts",
     "migrate:inbox": "tsx scripts/apply-inbox-migration.ts",
+    "migrate:proveedores": "tsx scripts/apply-portal-proveedores.ts",
     "test:inbox-webhook": "tsx scripts/test-inbox-webhook.ts",
     "build:ferozo": "tsx scripts/build-ferozo.ts"
   },

@@ -3,7 +3,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import { ContentProvider } from './context/ContentContext'
 import { AdminAuthProvider } from './admin/AdminAuthContext'
+import { ProveedorAuthProvider } from './proveedor/ProveedorAuthContext'
 import AdminGuard from './admin/AdminGuard'
+import ProveedorGuard from './proveedor/ProveedorGuard'
+import { ProveedorPublicGuard } from './proveedor/ProveedorGuard'
+import ProveedorSessionGuard from './proveedor/ProveedorSessionGuard'
 
 const Home = lazy(() => import('./pages/Home'))
 const Empresa = lazy(() => import('./pages/Empresa'))
@@ -26,6 +30,15 @@ const AdminServicios = lazy(() => import('./admin/AdminServicios'))
 const AdminBlog = lazy(() => import('./admin/AdminBlog'))
 const AdminLicitaciones = lazy(() => import('./admin/AdminLicitaciones'))
 const AdminConsultas = lazy(() => import('./admin/AdminConsultas'))
+const AdminProveedores = lazy(() => import('./admin/AdminProveedores'))
+const ProveedorRegistro = lazy(() => import('./pages/proveedor/ProveedorRegistro'))
+const ProveedorLogin = lazy(() => import('./pages/proveedor/ProveedorLogin'))
+const ProveedorPendiente = lazy(() => import('./pages/proveedor/ProveedorPendiente'))
+const ProveedorCompletarRegistro = lazy(() => import('./pages/proveedor/ProveedorCompletarRegistro'))
+const ProveedorLayout = lazy(() => import('./proveedor/ProveedorLayout'))
+const ProveedorDashboard = lazy(() => import('./pages/proveedor/ProveedorDashboard'))
+const ProveedorLicitaciones = lazy(() => import('./pages/proveedor/ProveedorLicitaciones'))
+const ProveedorMisOfertas = lazy(() => import('./pages/proveedor/ProveedorMisOfertas'))
 const AdminContacto = lazy(() => import('./admin/AdminContactoPage'))
 const AdminInicio = lazy(() => import('./admin/AdminInicioPage'))
 const AdminEmpresa = lazy(() => import('./admin/AdminEmpresaPage'))
@@ -55,6 +68,7 @@ export default function App() {
     <BrowserRouter>
       <ContentProvider>
         <AdminAuthProvider>
+          <ProveedorAuthProvider>
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Lazy><Home /></Lazy>} />
@@ -69,6 +83,24 @@ export default function App() {
             <Route path="/contacto" element={<Lazy><Contacto /></Lazy>} />
             <Route path="/privacidad" element={<Lazy><Privacidad /></Lazy>} />
             <Route path="/terminos" element={<Lazy><Terminos /></Lazy>} />
+
+            <Route path="/proveedor">
+              <Route element={<ProveedorPublicGuard />}>
+                <Route path="registro" element={<Lazy><ProveedorRegistro /></Lazy>} />
+                <Route path="login" element={<Lazy><ProveedorLogin /></Lazy>} />
+              </Route>
+              <Route element={<ProveedorSessionGuard />}>
+                <Route path="pendiente" element={<Lazy><ProveedorPendiente /></Lazy>} />
+                <Route path="completar-registro" element={<Lazy><ProveedorCompletarRegistro /></Lazy>} />
+              </Route>
+              <Route element={<ProveedorGuard />}>
+                <Route element={<Lazy><ProveedorLayout /></Lazy>}>
+                  <Route index element={<Lazy><ProveedorDashboard /></Lazy>} />
+                  <Route path="licitaciones" element={<Lazy><ProveedorLicitaciones /></Lazy>} />
+                  <Route path="mis-ofertas" element={<Lazy><ProveedorMisOfertas /></Lazy>} />
+                </Route>
+              </Route>
+            </Route>
 
             <Route path="/acceso" element={<Lazy><AdminLogin /></Lazy>} />
             <Route path="/admin/login" element={<Lazy><AdminLogin /></Lazy>} />
@@ -85,11 +117,13 @@ export default function App() {
                 <Route path="paginas" element={<Lazy><AdminPaginas /></Lazy>} />
                 <Route path="medios" element={<Lazy><AdminMedios /></Lazy>} />
                 <Route path="consultas" element={<Lazy><AdminConsultas /></Lazy>} />
+                <Route path="proveedores" element={<Lazy><AdminProveedores /></Lazy>} />
               </Route>
             </Route>
 
             <Route path="*" element={<Lazy><NotFound /></Lazy>} />
           </Routes>
+          </ProveedorAuthProvider>
         </AdminAuthProvider>
       </ContentProvider>
     </BrowserRouter>

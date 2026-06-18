@@ -24,6 +24,7 @@ export const adminModules: AdminModule[] = [
   { id: 'services', title: 'Servicios', description: 'Divisiones, textos e imágenes de servicios', icon: 'ri-tools-line', path: '/admin/servicios', status: 'ready' },
   { id: 'blog', title: 'Blog', description: 'Artículos, categorías y autores', icon: 'ri-article-line', path: '/admin/blog', status: 'ready' },
   { id: 'licitaciones', title: 'Licitaciones', description: 'Llamados, pliegos y estados', icon: 'ri-file-list-3-line', path: '/admin/licitaciones', status: 'ready' },
+  { id: 'proveedores', title: 'Proveedores', description: 'Registro y aprobación de empresas', icon: 'ri-building-line', path: '/admin/proveedores', status: 'ready' },
   { id: 'empresa', title: 'Empresa', description: 'Equipo, historia, valores y regiones', icon: 'ri-team-line', path: '/admin/empresa', status: 'ready' },
   { id: 'pages', title: 'Textos del sitio', description: 'Títulos, párrafos, héroes y CTAs por página', icon: 'ri-file-text-line', path: '/admin/paginas', status: 'ready' },
   { id: 'home', title: 'Inicio', description: 'Estadísticas, testimonios y certificaciones', icon: 'ri-home-4-line', path: '/admin/inicio', status: 'ready' },

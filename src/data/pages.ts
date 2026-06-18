@@ -377,7 +377,7 @@ export const defaultPages: SitePages = {
       title: 'Registre su empresa como proveedor',
       subtitle: 'Al registrarse en nuestro portal de proveedores recibirá notificaciones automáticas de nuevos llamados, podrá descargar pliegos, realizar consultas técnicas y presentar sus ofertas de manera digital.',
       ctaPrimary: 'Registrarme como Proveedor',
-      ctaPrimaryUrl: '/contacto',
+      ctaPrimaryUrl: '/proveedor/registro',
       ctaSecondary: 'Conocer nuestros servicios',
       ctaSecondaryUrl: '/servicios',
     },

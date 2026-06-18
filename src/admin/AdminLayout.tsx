@@ -13,7 +13,7 @@ const navGroups = [
   },
   {
     label: 'Contenido',
-    items: adminModules.filter((m) => ['messages', 'projects', 'services', 'blog', 'licitaciones'].includes(m.id)),
+    items: adminModules.filter((m) => ['messages', 'projects', 'services', 'blog', 'licitaciones', 'proveedores'].includes(m.id)),
   },
   {
     label: 'Sitio web',
