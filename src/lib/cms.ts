@@ -10,7 +10,7 @@ import { sectors, certifications } from '../data/home'
 import { testimonials } from '../data/testimonials'
 import { timeline, values, team, regions } from '../data/empresa'
 import { defaultPages, type SitePages } from '../data/pages'
-import { mergeSitePages, isStaleStats, isStaleTestimonials, isStaleTimeline, isStaleRegions, isStaleTeam } from './pageCopy'
+import { mergeSitePages } from './pageCopy'
 
 export type SiteSettings = {
   id: string
@@ -184,19 +184,7 @@ const defaultSettings: SiteSettings = {
 }
 
 function sanitizeSiteSettings(settings: SiteSettings): SiteSettings {
-  const out: SiteSettings = { ...settings, pages: mergeSitePages(settings.pages) }
-  if (isStaleStats(out.stats)) out.stats = defaultSettings.stats
-  if (isStaleTestimonials(out.testimonials)) out.testimonials = defaultSettings.testimonials
-  if (isStaleTimeline(out.empresa.timeline)) {
-    out.empresa = { ...out.empresa, timeline: defaultSettings.empresa.timeline }
-  }
-  if (isStaleRegions(out.empresa.regions)) {
-    out.empresa = { ...out.empresa, regions: defaultSettings.empresa.regions }
-  }
-  if (isStaleTeam(out.empresa.team)) {
-    out.empresa = { ...out.empresa, team: defaultSettings.empresa.team }
-  }
-  return out
+  return { ...settings, pages: mergeSitePages(settings.pages) }
 }
 
 export async function fetchSiteSettings(): Promise<SiteSettings | null> {
@@ -283,14 +271,41 @@ export async function deleteSubmission(id: string): Promise<boolean> {
   return !error
 }
 
-export async function upsertSiteSettings(partial: Partial<Omit<SiteSettings, 'id'>>): Promise<boolean> {
-  if (!supabase) return false
-  const { error } = await supabase.from('site_settings').upsert({
+export async function upsertSiteSettings(
+  partial: Partial<Omit<SiteSettings, 'id' | 'updated_at'>>,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) {
+    return { ok: false, error: 'Supabase no está configurado.' }
+  }
+
+  const { data: existing, error: fetchError } = await supabase
+    .from('site_settings')
+    .select('*')
+    .eq('id', 'main')
+    .maybeSingle()
+
+  if (fetchError) {
+    return { ok: false, error: fetchError.message }
+  }
+
+  const payload = {
     id: 'main',
-    ...partial,
+    contact: partial.contact ?? existing?.contact ?? defaultSettings.contact,
+    stats: partial.stats ?? existing?.stats ?? defaultSettings.stats,
+    social: partial.social ?? existing?.social ?? defaultSettings.social,
+    testimonials: partial.testimonials ?? existing?.testimonials ?? defaultSettings.testimonials,
+    home: partial.home ?? existing?.home ?? defaultSettings.home,
+    empresa: partial.empresa ?? existing?.empresa ?? defaultSettings.empresa,
+    contact_areas: partial.contact_areas ?? existing?.contact_areas ?? defaultSettings.contact_areas,
+    pages: partial.pages ?? existing?.pages ?? defaultSettings.pages,
     updated_at: new Date().toISOString(),
-  })
-  return !error
+  }
+
+  const { error } = await supabase.from('site_settings').upsert(payload)
+  if (error) {
+    return { ok: false, error: error.message }
+  }
+  return { ok: true }
 }
 
 export async function saveProject(row: DbProject): Promise<boolean> {

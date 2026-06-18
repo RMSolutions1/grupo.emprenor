@@ -1,8 +1,9 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { fetchSiteSettings, upsertSiteSettings } from '../lib/cms'
 import { timeline, values, team, regions } from '../data/empresa'
 import {
-  AdminPage, AdminCard, AdminInput, AdminTextarea, AdminImageField, AdminLoading,
+  AdminPage, AdminCard, AdminInput, AdminTextarea, AdminImageField, AdminLoading, AdminAlert,
 } from './components/AdminUI'
 import { FormSection, ItemCard, SaveBar } from './components/FormHelpers'
 import { AdminTabs, AdminTabPanel } from './components/AdminTabs'
@@ -49,12 +50,12 @@ export default function AdminEmpresa() {
     setSaving(true)
     setSaved(false)
     setError(null)
-    const ok = await upsertSiteSettings({
+    const result = await upsertSiteSettings({
       empresa: { timeline: timelineList, values: valuesList, team: teamList, regions: regionsList },
     })
     setSaving(false)
-    if (ok) setSaved(true)
-    else setError('No se pudo guardar. Intente nuevamente.')
+    if (result.ok) setSaved(true)
+    else setError(result.error ?? 'No se pudo guardar. Intente nuevamente.')
   }
 
   if (loading) {
@@ -67,6 +68,13 @@ export default function AdminEmpresa() {
 
   return (
     <AdminPage title="Empresa" description="Editá la historia, valores, equipo directivo y regiones. Los cambios se ven al instante en la página Empresa del sitio.">
+      <AdminAlert tone="info">
+        El título del hero («Somos EMPRENOR»), misión, visión e historía narrativa se editan en{' '}
+        <Link to="/admin/paginas" className="font-medium text-accent-600 hover:text-accent-700 underline">
+          Textos del sitio → Empresa
+        </Link>
+        .
+      </AdminAlert>
       <AdminCard className="p-6 md:p-8">
         <AdminTabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
 

@@ -34,10 +34,10 @@ export default function AdminContacto() {
     setSaving(true)
     setSaved(false)
     setError(null)
-    const ok = await upsertSiteSettings({ contact, contact_areas: areas })
+    const result = await upsertSiteSettings({ contact, contact_areas: areas })
     setSaving(false)
-    if (ok) setSaved(true)
-    else setError('No se pudo guardar. Intente nuevamente.')
+    if (result.ok) setSaved(true)
+    else setError(result.error ?? 'No se pudo guardar. Intente nuevamente.')
   }
 
   const updatePhone = (i: number, field: 'display' | 'href', value: string) => {

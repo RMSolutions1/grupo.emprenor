@@ -5,6 +5,14 @@ export default function ScrollToTop() {
   const { pathname, search, hash } = useLocation()
 
   useEffect(() => {
+    // /servicios maneja su propio hash (carrusel horizontal + scroll al slider)
+    if (pathname === '/servicios') {
+      if (!hash) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
+      return
+    }
+
     if (hash) {
       const id = hash.slice(1)
       const timer = window.setTimeout(() => {

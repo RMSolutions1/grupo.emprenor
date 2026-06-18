@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { defaultPages, type SitePages } from '../data/pages'
 import { mergeSitePages } from '../lib/pageCopy'
 import { fetchSiteSettings, upsertSiteSettings } from '../lib/cms'
-import { AdminPage, AdminCard, AdminInput, AdminTextarea, AdminImageField, AdminLoading } from './components/AdminUI'
+import { AdminPage, AdminCard, AdminInput, AdminTextarea, AdminImageField, AdminLoading, AdminAlert } from './components/AdminUI'
 import { AdminTabs, AdminTabPanel } from './components/AdminTabs'
 import { CtaFields, HeroFields, HeroSlideFields, HeroStripFields, ParagraphList, SectionFields, SeoFields } from './components/PageCopyFields'
 import { FormSection, SaveBar } from './components/FormHelpers'
@@ -42,13 +42,18 @@ export default function AdminPaginasPage() {
     setSaving(true)
     setSaved(false)
     setError(null)
-    const ok = await upsertSiteSettings({
+    const result = await upsertSiteSettings({
       pages,
       social: pages.global.social,
     })
     setSaving(false)
-    if (ok) setSaved(true)
-    else setError('No se pudo guardar. Intente nuevamente.')
+    if (result.ok) {
+      setSaved(true)
+      const refreshed = await fetchSiteSettings()
+      if (refreshed?.pages) setPages(mergeSitePages(refreshed.pages))
+    } else {
+      setError(result.error ?? 'No se pudo guardar. Intente nuevamente.')
+    }
   }
 
   const set = <K extends keyof SitePages>(key: K, value: SitePages[K]) => {
@@ -152,6 +157,9 @@ export default function AdminPaginasPage() {
         </AdminTabPanel>
 
         <AdminTabPanel active={tab} id="empresa">
+          <AdminAlert tone="info">
+            Aquí editás el título del hero (ej. «Somos GRUPO EMPRENOR»), misión, visión e historía. Guardá con el botón al final de la página.
+          </AdminAlert>
           <SeoFields seo={pages.empresa.seo} onChange={(seo) => set('empresa', { ...pages.empresa, seo })} />
           <HeroFields hero={pages.empresa.hero} onChange={(hero) => set('empresa', { ...pages.empresa, hero })} />
           <SectionFields title="Historia — encabezado" section={{ label: pages.empresa.history.label, title: pages.empresa.history.title }} onChange={(h) => set('empresa', { ...pages.empresa, history: { ...pages.empresa.history, ...h } })} />

@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 import Layout, { SectionHeading } from '../components/Layout'
 import PageHero, { CTASection } from '../components/PageHero'
 import CarouselDots from '../components/CarouselDots'
@@ -9,24 +10,45 @@ import { usePageMeta } from '../hooks/usePageMeta'
 import { useSlider } from '../hooks/useSlider'
 import { ctaToLinks, resolveImage } from '../lib/pageCopy'
 
+function serviceIndexFromHash(services: { id: string }[], hashId: string) {
+  if (!hashId) return 0
+  const idx = services.findIndex((s) => s.id === hashId)
+  return idx >= 0 ? idx : 0
+}
+
 export default function Servicios() {
+  const { hash } = useLocation()
+  const hashId = hash.replace(/^#/, '')
   const copy = usePageCopy('servicios')
   const { services, serviceDetails } = useServicesData()
-  const { index: activeIndex, setIndex: setActiveIndex, next, prev } = useSlider(services.length)
+  const initialIndex = useMemo(() => serviceIndexFromHash(services, hashId), [services, hashId])
+  const { index: activeIndex, setIndex: setActiveIndex, next, prev } = useSlider(services.length, initialIndex)
   const ctaLinks = ctaToLinks(copy.cta)
 
   usePageMeta({ title: copy.seo.title, description: copy.seo.description })
 
+  const selectService = useCallback(
+    (i: number) => {
+      setActiveIndex(i)
+      const id = services[i]?.id
+      if (id) {
+        window.history.replaceState(null, '', `${window.location.pathname}#${id}`)
+      }
+    },
+    [services, setActiveIndex],
+  )
+
   useEffect(() => {
-    const hash = window.location.hash.replace('#', '')
-    const idx = services.findIndex((s) => s.id === hash)
-    if (idx >= 0) {
-      setActiveIndex(idx)
-      setTimeout(() => {
-        document.getElementById('servicios-slider')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
-    }
-  }, [services, setActiveIndex])
+    if (!hashId) return
+    const idx = services.findIndex((s) => s.id === hashId)
+    if (idx < 0) return
+
+    setActiveIndex(idx)
+    const timer = window.setTimeout(() => {
+      document.getElementById('servicios-slider')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [hashId, services, setActiveIndex])
 
   const active = services[activeIndex] ?? services[0]
 
@@ -52,7 +74,7 @@ export default function Servicios() {
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => setActiveIndex(i)}
+                  onClick={() => selectService(i)}
                   className={`px-3 py-2.5 rounded-lg text-sm font-body font-medium text-center leading-snug transition-all duration-300 ${
                     activeIndex === i
                       ? 'bg-accent-500 text-white shadow-sm'
@@ -110,7 +132,7 @@ export default function Servicios() {
 
               {services.length > 1 && (
                 <div className="mt-8">
-                  <CarouselDots count={services.length} current={activeIndex} onSelect={setActiveIndex} labelPrefix="Ir a especialidad" />
+                  <CarouselDots count={services.length} current={activeIndex} onSelect={selectService} labelPrefix="Ir a especialidad" />
                 </div>
               )}
             </div>

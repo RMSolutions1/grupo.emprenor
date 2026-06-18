@@ -44,8 +44,13 @@ async function submitViaApi(payload: ApiPayload): Promise<{ ok: boolean; error?:
       body: JSON.stringify(payload),
     })
     if (res.status === 404) return { ok: false, unavailable: true }
-    const data = (await res.json().catch(() => ({}))) as { error?: string; ok?: boolean }
-    if (res.ok) return { ok: true }
+    const contentType = res.headers.get('content-type') ?? ''
+    if (!contentType.includes('application/json')) {
+      return { ok: false, unavailable: true }
+    }
+    const data = (await res.json().catch(() => null)) as { error?: string; ok?: boolean } | null
+    if (!data) return { ok: false, unavailable: true }
+    if (res.ok && data.ok) return { ok: true }
     return { ok: false, error: data.error ?? 'No se pudo enviar' }
   } catch {
     return { ok: false, unavailable: true }

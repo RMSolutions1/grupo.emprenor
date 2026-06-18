@@ -40,14 +40,14 @@ export default function AdminInicio() {
     setSaving(true)
     setSaved(false)
     setError(null)
-    const ok = await upsertSiteSettings({
+    const result = await upsertSiteSettings({
       stats: statList,
       testimonials: testimonialList,
       home: { sectors: sectorList, certifications: certList },
     })
     setSaving(false)
-    if (ok) setSaved(true)
-    else setError('No se pudo guardar. Intente nuevamente.')
+    if (result.ok) setSaved(true)
+    else setError(result.error ?? 'No se pudo guardar. Intente nuevamente.')
   }
 
   if (loading) {
