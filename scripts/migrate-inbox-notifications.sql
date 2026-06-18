@@ -11,7 +11,7 @@ alter table public.licitacion_consultas
 comment on column public.contact_submissions.staff_reply is 'Última respuesta enviada al contacto desde el panel';
 comment on column public.licitacion_consultas.read is 'Marcada como vista por staff en la bandeja';
 
--- Webhook opcional (Database Webhooks en Supabase Dashboard):
--- Tabla contact_submissions → INSERT → POST https://grupo.emprenor.com/api/webhooks/inbox
--- Tabla licitacion_consultas → INSERT → POST https://grupo.emprenor.com/api/webhooks/inbox
--- Header: Authorization: Bearer <INBOX_WEBHOOK_SECRET>
+-- Webhook email (automático vía pg_net):
+--   npx tsx scripts/apply-inbox-migration.ts
+-- Dispara POST a https://grupo.emprenor.com/api/webhooks/inbox en INSERT
+-- Tablas: contact_submissions, licitacion_consultas
