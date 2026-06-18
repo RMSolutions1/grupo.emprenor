@@ -35,6 +35,8 @@ export type ContactSubmission = {
   message: string | null
   type: 'contact' | 'callback' | 'newsletter'
   read: boolean
+  staff_reply: string | null
+  replied_at: string | null
   created_at: string
 }
 
@@ -127,6 +129,7 @@ export type LicitacionConsulta = {
   answer: string | null
   status: string
   published: boolean
+  read: boolean
   created_at: string
   answered_at: string | null
 }
@@ -297,6 +300,15 @@ export async function markSubmissionRead(id: string, read: boolean): Promise<boo
   return !error
 }
 
+export async function saveSubmissionReply(id: string, staffReply: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase
+    .from('contact_submissions')
+    .update({ staff_reply: staffReply, replied_at: new Date().toISOString(), read: true })
+    .eq('id', id)
+  return !error
+}
+
 export async function deleteSubmission(id: string): Promise<boolean> {
   if (!supabase) return false
   const { error } = await supabase.from('contact_submissions').delete().eq('id', id)
@@ -446,11 +458,15 @@ export async function deleteLicitacionDocumento(id: string): Promise<boolean> {
 
 export async function updateLicitacionConsulta(
   id: string,
-  patch: Partial<Pick<LicitacionConsulta, 'answer' | 'status' | 'published' | 'answered_at'>>,
+  patch: Partial<Pick<LicitacionConsulta, 'answer' | 'status' | 'published' | 'answered_at' | 'read'>>,
 ): Promise<boolean> {
   if (!supabase) return false
   const { error } = await supabase.from('licitacion_consultas').update(patch).eq('id', id)
   return !error
+}
+
+export async function markLicitacionConsultaRead(id: string, read: boolean): Promise<boolean> {
+  return updateLicitacionConsulta(id, { read })
 }
 
 export async function deleteLicitacionConsulta(id: string): Promise<boolean> {

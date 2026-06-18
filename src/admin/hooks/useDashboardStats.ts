@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { fetchContactSubmissions, type ContactSubmission } from '../../lib/cms'
+import { fetchContactSubmissions, fetchAllLicitacionConsultas, type ContactSubmission } from '../../lib/cms'
 import { useAdminReady } from './useAdminReady'
 
 export type DashboardStats = {
@@ -13,6 +13,7 @@ export type DashboardStats = {
   licitacionesPublished: number
   submissions: number
   unread: number
+  licitacionPending: number
   siteUpdatedAt: string | null
 }
 
@@ -26,6 +27,7 @@ const emptyStats: DashboardStats = {
   licitacionesPublished: 0,
   submissions: 0,
   unread: 0,
+  licitacionPending: 0,
   siteUpdatedAt: null,
 }
 
@@ -50,6 +52,7 @@ export function useDashboardStats() {
       lic,
       licPub,
       submissions,
+      licConsultas,
       settings,
     ] = await Promise.all([
       supabase.from('projects').select('id', { count: 'exact', head: true }),
@@ -60,8 +63,12 @@ export function useDashboardStats() {
       supabase.from('licitaciones').select('id', { count: 'exact', head: true }),
       supabase.from('licitaciones').select('id', { count: 'exact', head: true }).eq('published', true),
       fetchContactSubmissions(),
+      fetchAllLicitacionConsultas(),
       supabase.from('site_settings').select('updated_at').eq('id', 'main').maybeSingle(),
     ])
+
+    const contactUnread = submissions.filter((s) => !s.read).length
+    const licPending = licConsultas.filter((l) => l.status === 'pending' && !l.read).length
 
     setStats({
       projects: projects.count ?? 0,
@@ -71,8 +78,9 @@ export function useDashboardStats() {
       blogPublished: blogPub.count ?? 0,
       licitaciones: lic.count ?? 0,
       licitacionesPublished: licPub.count ?? 0,
-      submissions: submissions.length,
-      unread: submissions.filter((s) => !s.read).length,
+      submissions: submissions.length + licConsultas.length,
+      unread: contactUnread + licPending,
+      licitacionPending: licPending,
       siteUpdatedAt: settings.data?.updated_at ?? null,
     })
     setRecentSubmissions(submissions.slice(0, 6))

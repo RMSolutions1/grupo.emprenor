@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useAdminAuth } from './AdminAuthContext'
 import { adminModules } from '../lib/supabase'
-import { fetchContactSubmissions } from '../lib/cms'
+import { AdminNotificationsProvider, useAdminNotificationsContext } from './AdminNotificationsContext'
 import AdminTopBar from './components/AdminTopBar'
 import { AdminUserAvatar } from './components/AdminUserMenu'
 
@@ -21,17 +21,13 @@ const navGroups = [
   },
 ]
 
-export default function AdminLayout() {
+function AdminLayoutShell() {
   const { user, signOut } = useAdminAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [unread, setUnread] = useState(0)
+  const { counts } = useAdminNotificationsContext()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const isDashboard = location.pathname === '/admin'
-
-  useEffect(() => {
-    fetchContactSubmissions().then((items) => setUnread(items.filter((i) => !i.read).length))
-  }, [location.pathname])
 
   useEffect(() => {
     setSidebarOpen(false)
@@ -79,8 +75,8 @@ export default function AdminLayout() {
                   >
                     <i className={`${mod.icon} text-lg w-5 text-center`} />
                     <span className="flex-1">{mod.title}</span>
-                    {mod.id === 'messages' && unread > 0 && (
-                      <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-accent-500 text-[10px] font-bold text-white">{unread}</span>
+                    {mod.id === 'messages' && counts.total > 0 && (
+                      <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-accent-500 text-[10px] font-bold text-white">{counts.total}</span>
                     )}
                   </NavLink>
                 ))}
@@ -139,5 +135,13 @@ export default function AdminLayout() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function AdminLayout() {
+  return (
+    <AdminNotificationsProvider>
+      <AdminLayoutShell />
+    </AdminNotificationsProvider>
   )
 }

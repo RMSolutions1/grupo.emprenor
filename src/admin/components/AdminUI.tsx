@@ -96,13 +96,14 @@ export function AdminBadge({ children, tone = 'neutral' }: { children: ReactNode
   return <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-body font-medium ${tones[tone]}`}>{children}</span>
 }
 
-export function AdminAlert({ children, tone = 'info' }: { children: ReactNode; tone?: 'info' | 'success' | 'error' }) {
+export function AdminAlert({ children, tone = 'info', className = '' }: { children: ReactNode; tone?: 'info' | 'success' | 'error' | 'warning'; className?: string }) {
   const tones = {
     info: 'border-blue-200 bg-blue-50 text-blue-900',
     success: 'border-green-200 bg-green-50 text-green-900',
     error: 'border-red-200 bg-red-50 text-red-900',
+    warning: 'border-amber-200 bg-amber-50 text-amber-900',
   }
-  return <p className={`text-sm font-body px-4 py-3 rounded-lg border ${tones[tone]}`}>{children}</p>
+  return <p className={`text-sm font-body px-4 py-3 rounded-lg border ${tones[tone]} ${className}`}>{children}</p>
 }
 
 export function AdminTable({ headers, children }: { headers: string[]; children: ReactNode }) {

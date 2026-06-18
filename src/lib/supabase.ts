@@ -19,7 +19,7 @@ export type AdminModule = {
 }
 
 export const adminModules: AdminModule[] = [
-  { id: 'messages', title: 'Consultas', description: 'Formularios recibidos desde el sitio', icon: 'ri-mail-line', path: '/admin/consultas', status: 'ready' },
+  { id: 'messages', title: 'Bandeja', description: 'Consultas, callbacks y licitaciones', icon: 'ri-inbox-line', path: '/admin/consultas', status: 'ready' },
   { id: 'projects', title: 'Proyectos', description: 'Agregar, editar y destacar proyectos', icon: 'ri-building-2-line', path: '/admin/proyectos', status: 'ready' },
   { id: 'services', title: 'Servicios', description: 'Divisiones, textos e imágenes de servicios', icon: 'ri-tools-line', path: '/admin/servicios', status: 'ready' },
   { id: 'blog', title: 'Blog', description: 'Artículos, categorías y autores', icon: 'ri-article-line', path: '/admin/blog', status: 'ready' },

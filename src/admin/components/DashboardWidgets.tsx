@@ -55,8 +55,8 @@ export function WelcomeBanner({ name, unread }: { name: string; unread: number }
         </div>
         <div className="flex flex-wrap gap-3">
           <Link to="/admin/consultas" className="inline-flex items-center gap-2 px-4 h-10 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur text-sm font-body transition-colors">
-            <i className="ri-mail-unread-line" />
-            {unread > 0 ? `${unread} consultas nuevas` : 'Ver consultas'}
+            <i className="ri-inbox-line" />
+            {unread > 0 ? `${unread} pendientes en bandeja` : 'Abrir bandeja'}
           </Link>
           <Link to="/admin/proyectos" className="inline-flex items-center gap-2 px-4 h-10 rounded-xl bg-accent-500 hover:bg-accent-600 text-sm font-body font-medium transition-colors">
             <i className="ri-add-line" />

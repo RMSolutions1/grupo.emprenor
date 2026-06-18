@@ -146,5 +146,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'No se pudo guardar. Intente nuevamente.' })
   }
 
+  try {
+    const { notifyStaffNewContact } = await import('./_lib/notifyStaff')
+    await notifyStaffNewContact(row as Parameters<typeof notifyStaffNewContact>[0])
+  } catch (e) {
+    console.error('notify staff contact:', e)
+  }
+
   return res.status(200).json({ ok: true })
 }

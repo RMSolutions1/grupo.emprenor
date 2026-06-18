@@ -2,10 +2,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { isSupabaseConfigured } from '../../lib/supabase'
 import { AdminButton } from './AdminUI'
 import AdminUserMenu from './AdminUserMenu'
+import AdminNotificationBell from './AdminNotificationBell'
+import { useAdminNotificationsContext } from '../AdminNotificationsContext'
 
 const routeLabels: Record<string, string> = {
   '/admin': 'Dashboard',
-  '/admin/consultas': 'Consultas',
+  '/admin/consultas': 'Bandeja de entrada',
   '/admin/proyectos': 'Proyectos',
   '/admin/servicios': 'Servicios',
   '/admin/blog': 'Blog',
@@ -20,6 +22,7 @@ const routeLabels: Record<string, string> = {
 export default function AdminTopBar({ onRefresh, refreshing }: { onRefresh?: () => void; refreshing?: boolean }) {
   const { pathname } = useLocation()
   const pageTitle = routeLabels[pathname] ?? 'Panel'
+  const { counts, items, loading, refresh } = useAdminNotificationsContext()
 
   const now = new Date()
   const dateStr = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -45,6 +48,8 @@ export default function AdminTopBar({ onRefresh, refreshing }: { onRefresh?: () 
             <span className="hidden lg:inline">Actualizar</span>
           </AdminButton>
         )}
+
+        <AdminNotificationBell count={counts.total} items={items} loading={loading} onRefresh={refresh} />
 
         <Link
           to="/"

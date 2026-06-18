@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         <StatCard label="Proyectos" value={stats.projects} sub={`${stats.projectsPublished} publicados`} icon="ri-building-2-line" to="/admin/proyectos" accent="bg-blue-50 text-blue-600" loading={loading} />
         <StatCard label="Artículos" value={stats.blog} sub={`${stats.blogPublished} publicados`} icon="ri-article-line" to="/admin/blog" accent="bg-violet-50 text-violet-600" loading={loading} />
         <StatCard label="Licitaciones" value={stats.licitaciones} sub={`${stats.licitacionesPublished} publicadas`} icon="ri-file-list-3-line" to="/admin/licitaciones" accent="bg-emerald-50 text-emerald-600" loading={loading} />
-        <StatCard label="Consultas nuevas" value={stats.unread} sub={`${stats.submissions} en total`} icon="ri-mail-unread-line" to="/admin/consultas" accent="bg-accent-50 text-accent-600" loading={loading} />
+        <StatCard label="Bandeja" value={stats.unread} sub={`${stats.submissions} mensajes · ${stats.licitacionPending} licitaciones pendientes`} icon="ri-inbox-line" to="/admin/consultas" accent="bg-accent-50 text-accent-600" loading={loading} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">

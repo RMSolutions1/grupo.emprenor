@@ -5,6 +5,7 @@ import FormNotice from './FormNotice'
 import HoneypotField from './HoneypotField'
 import { useSiteContact, useGlobalCopy } from '../context/ContentContext'
 import { submitNewsletter } from '../lib/contact'
+import AfipF960Badge from './AfipF960Badge'
 
 const navLinks = [
   { to: '/empresa', label: 'Empresa' },
@@ -120,7 +121,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-xs font-body">{global.footerCopyright}</p>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <p className="text-white/30 text-xs font-body">{global.footerCopyright}</p>
+            <AfipF960Badge />
+          </div>
           <div className="flex items-center gap-6">
             <Link to="/privacidad" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Privacidad</Link>
             <Link to="/terminos" className="text-white/30 hover:text-white/50 text-xs font-body transition-colors">Términos</Link>
