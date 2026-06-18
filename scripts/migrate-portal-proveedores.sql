@@ -179,12 +179,7 @@ create policy "Org: lectura staff" on public.organizaciones
 
 drop policy if exists "Org: lectura miembro" on public.organizaciones;
 create policy "Org: lectura miembro" on public.organizaciones
-  for select using (
-    exists (
-      select 1 from public.proveedor_miembros m
-      where m.organizacion_id = id and m.user_id = auth.uid()
-    )
-  );
+  for select using (id = public.my_organizacion_id());
 
 drop policy if exists "Org: actualización staff" on public.organizaciones;
 create policy "Org: actualización staff" on public.organizaciones
