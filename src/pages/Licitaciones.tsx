@@ -22,7 +22,8 @@ const statusColors: Record<Licitacion['status'], string> = {
 
 function LicitacionCard({ lic }: { lic: Licitacion }) {
   return (
-    <article className="group h-full flex flex-col bg-background-50 border border-background-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-300">
+    <Link to={`/licitaciones/${lic.id}`} className="group block h-full">
+    <article className="h-full flex flex-col bg-background-50 border border-background-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-accent-300">
       <div className="relative h-44 overflow-hidden">
         <img alt={lic.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" loading="lazy" src={lic.image} />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-950/50 to-transparent" />
@@ -75,6 +76,7 @@ function LicitacionCard({ lic }: { lic: Licitacion }) {
         </div>
       </div>
     </article>
+    </Link>
   )
 }
 
@@ -120,8 +122,8 @@ function FeaturedLicitaciones({ items, label, title }: { items: Licitacion[]; la
                     <span>Cierre: <strong className="text-foreground-900">{lic.cierre}</strong></span>
                     <span>Presupuesto: <strong className="text-foreground-900">{lic.budget}</strong></span>
                   </div>
-                  <Link to="/contacto" className="self-start px-6 py-2.5 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all">
-                    Consultar documentación
+                  <Link to={`/licitaciones/${lic.id}`} className="self-start px-6 py-2.5 bg-accent-500 hover:bg-accent-600 text-white text-sm font-body font-medium rounded-md transition-all">
+                    Ver documentación
                   </Link>
                 </div>
               </div>

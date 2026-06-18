@@ -13,8 +13,21 @@ export interface Licitacion {
   budget: string
   docs: number
   consultas?: number
+  description?: string
   image: string
 }
+
+/** Valores válidos para guardar en base de datos (admin). */
+export const LICITACION_STATUS_VALUES: Licitacion['status'][] = [
+  'Publicada', 'En Análisis', 'Presentada', 'Adjudicada', 'Finalizada',
+]
+
+export const LICITACION_CATEGORY_VALUES = [
+  'Obra Civil', 'Energía', 'Infraestructura', 'Equipamiento', 'Mantenimiento',
+]
+
+export const licitacionStatuses = ['Todas las Licitaciones', 'Publicadas', 'En Análisis', 'Presentadas', 'Adjudicadas', 'Finalizadas']
+export const licitacionCategories = ['Todas las Categorías', ...LICITACION_CATEGORY_VALUES]
 
 /** Imagen única por licitación, alineada a categoría y tipo de obra. */
 const LICITACION_MEDIA: Record<string, string> = {
@@ -40,13 +53,15 @@ const CATEGORY_MEDIA: Record<string, string> = {
   Mantenimiento: 'div-mant-2026-06',
 }
 
-export function licitacionImage(lic: Pick<Licitacion, 'id' | 'category'>): string {
+export function licitacionImage(lic: Pick<Licitacion, 'id' | 'category'> & { image?: string; image_url?: string | null }): string {
+  if (lic.image?.startsWith('http')) return lic.image
+  if (lic.image_url?.trim()) return lic.image_url.trim()
   const key = LICITACION_MEDIA[lic.id] ?? CATEGORY_MEDIA[lic.category] ?? 'lic-hero-bg-2026'
   return image(key)
 }
 
 function withImage(lic: Omit<Licitacion, 'image'>): Licitacion {
-  return { ...lic, image: licitacionImage(lic) }
+  return { ...lic, image: licitacionImage({ id: lic.id, category: lic.category }) }
 }
 
 export const licitaciones: Licitacion[] = [
@@ -63,9 +78,6 @@ export const licitaciones: Licitacion[] = [
   withImage({ id: 'lic-11', code: 'LP-2025-134-JUJ', status: 'Adjudicada', category: 'Obra Civil', title: 'Construcción Centro de Salud Palpalá', client: 'Ministerio de Salud de Jujuy', location: 'Palpalá, Jujuy', apertura: '20/06/2025', cierre: '10/08/2025', budget: '$ 650M', docs: 4 }),
   withImage({ id: 'lic-12', code: 'CP-2025-098-SAL', status: 'En Análisis', category: 'Mantenimiento', title: 'Mantenimiento Preventivo Instalaciones Industriales', client: 'Grupo Agroindustrial Norte', location: 'Metán, Salta', apertura: '01/09/2026', cierre: '15/10/2026', budget: '$ 180M', docs: 2, consultas: 2 }),
 ]
-
-export const licitacionStatuses = ['Todas las Licitaciones', 'Publicadas', 'En Análisis', 'Presentadas', 'Adjudicadas', 'Finalizadas']
-export const licitacionCategories = ['Todas las Categorías', 'Obra Civil', 'Energía', 'Infraestructura', 'Equipamiento', 'Mantenimiento']
 
 export const STATUS_FILTER_MAP: Record<string, Licitacion['status'] | null> = {
   'Todas las Licitaciones': null,

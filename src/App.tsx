@@ -11,6 +11,7 @@ const Servicios = lazy(() => import('./pages/Servicios'))
 const Proyectos = lazy(() => import('./pages/Proyectos'))
 const ProyectoDetail = lazy(() => import('./pages/ProyectoDetail'))
 const Licitaciones = lazy(() => import('./pages/Licitaciones'))
+const LicitacionDetail = lazy(() => import('./pages/LicitacionDetail'))
 const Blog = lazy(() => import('./pages/Blog'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
 const Contacto = lazy(() => import('./pages/Contacto'))
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/proyectos" element={<Lazy><Proyectos /></Lazy>} />
             <Route path="/proyectos/:id" element={<Lazy><ProyectoDetail /></Lazy>} />
             <Route path="/licitaciones" element={<Lazy><Licitaciones /></Lazy>} />
+            <Route path="/licitaciones/:id" element={<Lazy><LicitacionDetail /></Lazy>} />
             <Route path="/blog" element={<Lazy><Blog /></Lazy>} />
             <Route path="/blog/:id" element={<Lazy><BlogPost /></Lazy>} />
             <Route path="/contacto" element={<Lazy><Contacto /></Lazy>} />

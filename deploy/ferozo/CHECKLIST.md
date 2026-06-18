@@ -92,6 +92,15 @@ FTP: modo binario, mismo destino `public_html/`.
 - [ ] Contenido CMS igual que en grupo.emprenor.com
 - [ ] `https://grupo.emprenor.com` sigue funcionando en Vercel (sin cambios)
 
+## Sincronización entre dominios (regla simple)
+
+| Qué editás | ¿Se ve en ambos al instante? |
+|------------|------------------------------|
+| **Contenido** (textos, proyectos, blog, licitaciones, imágenes CMS, documentos PDF) | **Sí** — una sola base Supabase |
+| **Código** (diseño, nuevas funciones) | Vercel: automático con `git push`. Ferozo: `npm run build:ferozo` + subir `dist/` |
+
+**Importante:** ejecute `scripts/migrate-licitaciones-portal.sql` en Supabase una vez (documentos y consultas de licitaciones).
+
 ## 7. Actualizar el sitio en Ferozo
 
 Cada vez que cambie el código:

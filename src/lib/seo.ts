@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_URL, DEFAULT_DESCRIPTION } from '../data/site'
+import { SITE_NAME, SITE_URL, DEFAULT_DESCRIPTION, getSiteOrigin } from '../data/site'
 
 const DEFAULT_OG_IMAGE = `${SITE_URL}/brand/logo-large.png?v=3`
 
@@ -32,8 +32,9 @@ function upsertLink(rel: string, href: string) {
 
 export function applyPageSeo({ title, description = DEFAULT_DESCRIPTION, path = '/', image, type = 'website' }: PageSeoOptions) {
   const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`
-  const url = `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`
-  const ogImage = image || DEFAULT_OG_IMAGE
+  const origin = getSiteOrigin()
+  const url = `${origin}${path.startsWith('/') ? path : `/${path}`}`
+  const ogImage = image?.startsWith('http') ? image : image ? `${origin}${image.startsWith('/') ? image : `/${image}`}` : DEFAULT_OG_IMAGE.replace(SITE_URL, origin)
 
   document.title = fullTitle
   upsertMeta('name', 'description', description)
@@ -54,12 +55,13 @@ export function applyPageSeo({ title, description = DEFAULT_DESCRIPTION, path = 
 }
 
 export function organizationJsonLd() {
+  const origin = typeof window !== 'undefined' ? getSiteOrigin() : SITE_URL
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
-    url: SITE_URL,
-    logo: `${SITE_URL}/brand/logo-large.png`,
+    url: origin,
+    logo: `${origin}/brand/logo-large.png`,
     description: DEFAULT_DESCRIPTION,
     email: 'info@emprenor.com.ar',
     telephone: '+54-11-2758-6521',
@@ -74,11 +76,12 @@ export function organizationJsonLd() {
 }
 
 export function webSiteJsonLd() {
+  const origin = typeof window !== 'undefined' ? getSiteOrigin() : SITE_URL
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
-    url: SITE_URL,
+    url: origin,
     inLanguage: 'es-AR',
   }
 }

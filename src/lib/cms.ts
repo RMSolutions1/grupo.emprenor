@@ -98,7 +98,37 @@ type DbLicitacion = {
   budget: string | null
   docs: number | null
   consultas: number | null
+  description: string | null
+  image_url: string | null
   published: boolean | null
+}
+
+export type LicitacionDocumento = {
+  id: string
+  licitacion_id: string
+  title: string
+  doc_type: string
+  file_url: string
+  file_name: string | null
+  file_size: number | null
+  mime_type: string | null
+  sort_order: number
+  published: boolean
+  created_at: string
+}
+
+export type LicitacionConsulta = {
+  id: string
+  licitacion_id: string
+  name: string
+  email: string
+  organization: string | null
+  question: string
+  answer: string | null
+  status: string
+  published: boolean
+  created_at: string
+  answered_at: string | null
 }
 
 export function mapProject(row: DbProject): Project {
@@ -163,8 +193,10 @@ export function mapLicitacion(row: DbLicitacion): Licitacion {
     budget: row.budget ?? '',
     docs: row.docs ?? 0,
     consultas: row.consultas ?? undefined,
+    description: row.description ?? undefined,
+    image: '',
   }
-  return { ...lic, image: licitacionImage(lic) }
+  return { ...lic, image: licitacionImage({ ...lic, image_url: row.image_url }) }
 }
 
 const defaultSettings: SiteSettings = {
@@ -353,6 +385,77 @@ export async function saveLicitacion(row: DbLicitacion): Promise<boolean> {
 export async function deleteLicitacion(id: string): Promise<boolean> {
   if (!supabase) return false
   const { error } = await supabase.from('licitaciones').delete().eq('id', id)
+  return !error
+}
+
+export async function fetchLicitacionById(id: string): Promise<Licitacion | null> {
+  if (!supabase) return null
+  const { data, error } = await supabase.from('licitaciones').select('*').eq('id', id).eq('published', true).maybeSingle()
+  if (error || !data) return null
+  return mapLicitacion(data as DbLicitacion)
+}
+
+export async function fetchLicitacionDocumentos(licitacionId: string, publishedOnly = true): Promise<LicitacionDocumento[]> {
+  if (!supabase) return []
+  let query = supabase
+    .from('licitacion_documentos')
+    .select('*')
+    .eq('licitacion_id', licitacionId)
+    .order('sort_order', { ascending: true })
+  if (publishedOnly) query = query.eq('published', true)
+  const { data, error } = await query
+  if (error || !data) return []
+  return data as LicitacionDocumento[]
+}
+
+export async function fetchLicitacionConsultas(licitacionId: string, publishedOnly = true): Promise<LicitacionConsulta[]> {
+  if (!supabase) return []
+  let query = supabase
+    .from('licitacion_consultas')
+    .select('*')
+    .eq('licitacion_id', licitacionId)
+    .order('created_at', { ascending: true })
+  if (publishedOnly) query = query.eq('published', true).eq('status', 'published')
+  const { data, error } = await query
+  if (error || !data) return []
+  return data as LicitacionConsulta[]
+}
+
+export async function fetchAllLicitacionConsultas(): Promise<LicitacionConsulta[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('licitacion_consultas')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error || !data) return []
+  return data as LicitacionConsulta[]
+}
+
+export async function saveLicitacionDocumento(row: Omit<LicitacionDocumento, 'created_at'> & { id?: string }): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Supabase no configurado' }
+  const { error } = await supabase.from('licitacion_documentos').upsert(row)
+  if (error) return { ok: false, error: error.message }
+  return { ok: true }
+}
+
+export async function deleteLicitacionDocumento(id: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('licitacion_documentos').delete().eq('id', id)
+  return !error
+}
+
+export async function updateLicitacionConsulta(
+  id: string,
+  patch: Partial<Pick<LicitacionConsulta, 'answer' | 'status' | 'published' | 'answered_at'>>,
+): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('licitacion_consultas').update(patch).eq('id', id)
+  return !error
+}
+
+export async function deleteLicitacionConsulta(id: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('licitacion_consultas').delete().eq('id', id)
   return !error
 }
 
