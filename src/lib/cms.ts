@@ -459,4 +459,14 @@ export async function deleteLicitacionConsulta(id: string): Promise<boolean> {
   return !error
 }
 
+/** Verifica si la migración del portal de licitaciones está aplicada en Supabase. */
+export async function checkLicitacionPortalReady(): Promise<'ready' | 'missing' | 'unknown'> {
+  if (!supabase) return 'unknown'
+  const { error } = await supabase.from('licitacion_documentos').select('id').limit(1)
+  if (!error) return 'ready'
+  const msg = `${error.message} ${error.code ?? ''}`.toLowerCase()
+  if (msg.includes('does not exist') || msg.includes('42p01')) return 'missing'
+  return 'unknown'
+}
+
 export type { DbProject, DbService, DbBlogPost, DbLicitacion }

@@ -8,6 +8,7 @@ import {
   deleteLicitacionDocumento,
   updateLicitacionConsulta,
   deleteLicitacionConsulta,
+  checkLicitacionPortalReady,
   type DbLicitacion,
   type LicitacionDocumento,
   type LicitacionConsulta,
@@ -59,6 +60,7 @@ export default function AdminLicitaciones() {
   const [docTitle, setDocTitle] = useState('')
   const [docType, setDocType] = useState<DocType>('pliego')
   const [uploading, setUploading] = useState(false)
+  const [portalReady, setPortalReady] = useState<'ready' | 'missing' | 'unknown' | 'loading'>('loading')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const load = async () => {
@@ -79,7 +81,9 @@ export default function AdminLicitaciones() {
   }
 
   useEffect(() => {
-    if (ready) load()
+    if (!ready) return
+    load()
+    checkLicitacionPortalReady().then(setPortalReady)
   }, [ready])
 
   const openNew = () => {
@@ -183,9 +187,17 @@ export default function AdminLicitaciones() {
 
   return (
     <AdminPage title="Licitaciones" description="Llamados, pliegos PDF/DOCX, planos y consultas técnicas. Los cambios se ven en ambos dominios al instante (misma base Supabase)." actions={<AdminButton onClick={openNew}><i className="ri-add-line" /> Nueva</AdminButton>}>
-      <AdminAlert tone="info">
-        Ejecute <code className="text-xs bg-background-100 px-1 rounded">scripts/migrate-licitaciones-portal.sql</code> en Supabase si aún no subió documentos.
-      </AdminAlert>
+      {portalReady === 'missing' && (
+        <AdminAlert tone="error">
+          Falta ejecutar la migración SQL en Supabase:{' '}
+          <code className="text-xs bg-background-100 px-1 rounded">scripts/migrate-licitaciones-portal.sql</code>
+        </AdminAlert>
+      )}
+      {portalReady === 'ready' && (
+        <AdminAlert tone="info">
+          Portal de documentos activo. Para subir pliegos: <strong>Editar</strong> una licitación → pestaña <strong>Documentos</strong>.
+        </AdminAlert>
+      )}
       <AdminCard className="mt-4">
         {loading ? <AdminLoading /> : rows.length === 0 ? <AdminEmpty message="No hay licitaciones cargadas." /> : (
         <AdminTable headers={['Código', 'Título', 'Estado', 'Docs', 'Consultas', 'Acciones']}>
