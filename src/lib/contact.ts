@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase'
+import { apiUrl } from './apiOrigin'
 
 export type ContactFormData = {
   name: string
@@ -43,9 +44,10 @@ function friendlyError(message: string): string {
   return message
 }
 
+/** Misma API Vercel en grupo.emprenor.com y www.emprenor.com.ar (CORS). */
 async function submitViaApi(payload: ApiPayload): Promise<{ ok: boolean; error?: string; unavailable?: boolean }> {
   try {
-    const res = await fetch('/api/contact', {
+    const res = await fetch(apiUrl('/api/contact'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -64,6 +66,7 @@ async function submitViaApi(payload: ApiPayload): Promise<{ ok: boolean; error?:
   }
 }
 
+/** Respaldo directo a Supabase (misma DB) si la API Vercel no responde. */
 async function submitViaSupabase(payload: ApiPayload): Promise<{ ok: boolean; error?: string }> {
   if (!isSupabaseConfigured || !supabase) {
     return { ok: false, error: 'Servicio no disponible' }

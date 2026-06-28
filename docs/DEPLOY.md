@@ -14,10 +14,11 @@ Mismo código fuente, **una sola base Supabase**, dos formas de publicar el fron
 | **Build** | `npm run build` | `npm run build:ferozo` |
 | **Variables build** | Vercel Dashboard | `.env.ferozo` local |
 | **`VITE_SITE_URL`** | `https://grupo.emprenor.com` | `https://www.emprenor.com.ar` |
-| **Deploy código** | **Automático** — push a `main` | **Manual** — subir `dist/` por FTP |
-| **Backend API** | Sí (`/api/*` serverless) | No (estático) |
-| **Formularios** | `/api/contact` → Supabase | RPC `submit_contact_submission` → Supabase |
-| **Respuestas email admin** | `/api/reply` (mismo origen) | `/api/reply` en Vercel (cross-origin) |
+| **Deploy código** | **Automático** — push a `main` | **Automático** — GitHub Action FTP (o manual FTP) |
+| **Backend API** | `/api/*` en Vercel (mismo origen) | `/api/*` en **grupo.emprenor.com** (CORS) |
+| **Formularios** | `POST /api/contact` → Supabase | `POST grupo.emprenor.com/api/contact` → Supabase |
+| **Respuestas email admin** | `POST /api/reply` | `POST grupo.emprenor.com/api/reply` (CORS) |
+| **Consultas licitación** | RPC Supabase | RPC Supabase (misma DB) |
 | **CMS / contenido** | Supabase (tiempo real) | Supabase (tiempo real) |
 
 ---
@@ -59,10 +60,12 @@ flowchart TB
 
   VDist --> DB
   Apache --> DB
+  Apache -->|fetch CORS| VAPI
   VAPI --> DB
   VAPI --> Mail
-  FDist -.->|admin reply fetch| VAPI
 ```
+
+**Patrón unificado:** ambos frontends hablan con la **misma Supabase** (CMS, auth, licitaciones) y con las **mismas APIs Vercel** (formularios, email admin). Ferozo solo sirve archivos estáticos; el backend vive en `grupo.emprenor.com`.
 
 ---
 
@@ -84,16 +87,16 @@ Workflow `.github/workflows/ci.yml`:
 - `npm ci` → `lint` → `test` → `build`
 - Se ejecuta en push/PR a `main`; **no sube archivos**, solo comprueba que compila.
 
-### Qué incluye Vercel y Ferozo no
+### Qué corre en Vercel (compartido por ambos dominios)
 
-| Ruta | Función |
-|------|---------|
-| `/api/contact` | Formularios con rate limit + honeypot (service role) |
-| `/api/reply` | Respuestas email desde panel admin |
-| `/api/webhooks/inbox` | Notificaciones Supabase → email |
-| `/api/migrate-rls` | Migraciones protegidas (secret) |
+| Ruta | Función | Usado desde |
+|------|---------|-------------|
+| `/api/contact` | Formularios + rate limit + honeypot → Supabase | `.com` y `.com.ar` (CORS) |
+| `/api/reply` | Respuestas email panel admin → SMTP | `.com` y `.com.ar` (CORS) |
+| `/api/webhooks/inbox` | Notificaciones Supabase → email | Supabase |
+| `/api/migrate-rls` | Migraciones protegidas | Scripts |
 
-Configuración: `vercel.json` (redirects, SPA rewrites, headers CSP, funciones 30s).
+CORS permitido en `api/_lib/cors.ts` para ambos dominios. Cliente: `src/lib/apiOrigin.ts`.
 
 ### Variables en Vercel (Production)
 
@@ -101,33 +104,25 @@ Obligatorias: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_R
 
 ---
 
-## 2. Ferozo — www.emprenor.com.ar (build automático, subida manual)
+## 2. Ferozo — www.emprenor.com.ar
 
-### Cómo se despliega hoy (operación real)
+### Deploy (igual que Vercel: push a `main`)
 
-1. Ejecutar **`ACTUALIZAR-FEROZO.bat`** (o `npm run build:ferozo`).
-   - Lint + tests + build con `.env.ferozo`.
-   - Genera `dist/` con `.htaccess`, SEO apuntando a `.com.ar`.
-2. **Subir manualmente por FTP** el contenido de `dist/` → `public_html/`.
-3. (Opcional) `npm run verify:ferozo` para comprobar URLs.
+| Método | Cómo |
+|--------|------|
+| **Automático** | Push a `main` → GitHub Action `deploy-ferozo.yml` (build + FTP + verify) |
+| **Manual FTP** | `ACTUALIZAR-FEROZO.bat` → subir `dist/` a `public_html/` |
 
-Guía FTP: [deploy/ferozo/SUBIR-MANUAL.md](../deploy/ferozo/SUBIR-MANUAL.md)
+Requiere secrets `FEROZO_*` en GitHub para el Action automático.
 
-### Automatización FTP (preparada, no activa por defecto)
+### Mismo backend que Vercel
 
-Existe `.github/workflows/deploy-ferozo.yml` que en push a `main` haría build + FTP + verify, **pero requiere**:
+- **Formularios:** `src/lib/contact.ts` → `grupo.emprenor.com/api/contact` (CORS)
+- **Email admin:** `src/lib/adminMail.ts` → `grupo.emprenor.com/api/reply` (CORS)
+- **CMS / auth:** Supabase directo (misma anon key)
+- **Respaldo:** si la API Vercel no responde, formularios usan RPC Supabase
 
-1. Commitear y pushear el workflow al repo.
-2. Configurar secrets `FEROZO_*` en GitHub.
-
-Hasta entonces, Ferozo se actualiza **solo cuando subís `dist/` por FTP**.
-
-### Diferencias técnicas en Ferozo
-
-- **`deploy/ferozo/.htaccess`**: HTTPS, SPA fallback, `/api/*` → 404 (fuerza fallback Supabase en cliente).
-- **Formularios** (`src/lib/contact.ts`): intenta `/api/contact`; si 404, usa RPC Supabase directo.
-- **Panel admin** (`src/lib/adminMail.ts`): dominios `.com.ar` llaman a `https://grupo.emprenor.com/api/reply` (CORS permitido en `api/reply.ts`).
-- **Sin service role** en el build Ferozo — solo anon key embebida.
+Resolución de URL: `src/lib/apiOrigin.ts` (`VITE_API_ORIGIN=https://grupo.emprenor.com`).
 
 ### Variables en `.env.ferozo`
 
@@ -135,11 +130,8 @@ Hasta entonces, Ferozo se actualiza **solo cuando subís `dist/` por FTP**.
 VITE_SITE_URL=https://www.emprenor.com.ar
 VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
-# Opcional para npm run deploy:ferozo / upload:ferozo:
-FTP_HOST=...
-FTP_USER=...
-FTP_PASS=...
-FTP_REMOTE_DIR=/public_html
+VITE_API_ORIGIN=https://grupo.emprenor.com
+FTP_HOST=...   # solo para deploy:ferozo / upload:ferozo
 ```
 
 ---
@@ -161,19 +153,25 @@ Migraciones SQL aplicables: `npm run migrate:contact`, scripts en `scripts/`.
 
 ## 4. Flujos por funcionalidad
 
-### Formulario de contacto
+### Formulario de contacto (idéntico en ambos dominios)
 
 ```
-Vercel:  Browser → POST /api/contact → Supabase (rate limit server)
-         ↓ fallback si falla
-Ferozo:  Browser → RPC submit_contact_submission → Supabase (rate limit RPC)
+Browser → POST grupo.emprenor.com/api/contact → Supabase + email staff
+          (mismo origen en .com; CORS desde .com.ar)
+          ↓ solo si API caída
+          RPC submit_contact_submission → Supabase
 ```
 
-### Respuesta desde panel admin
+### Respuesta desde panel admin (idéntico)
 
 ```
-Vercel:  /admin → JWT → POST /api/reply → SMTP Ferozo
-Ferozo:  /admin → JWT → POST grupo.emprenor.com/api/reply → SMTP Ferozo
+Browser → JWT Supabase → POST grupo.emprenor.com/api/reply → SMTP
+```
+
+### Consultas de licitación
+
+```
+Browser → RPC submit_licitacion_consulta → Supabase (ambos dominios)
 ```
 
 ### Actualizar contenido CMS
@@ -184,8 +182,8 @@ Editar en `/admin` desde **cualquier dominio** → visible al instante en **ambo
 
 | Dominio | Acción |
 |---------|--------|
-| grupo.emprenor.com | `git push origin main` → Vercel despliega solo |
-| www.emprenor.com.ar | `ACTUALIZAR-FEROZO.bat` → FTP `dist/` |
+| grupo.emprenor.com | `git push origin main` → Vercel auto |
+| www.emprenor.com.ar | `git push origin main` → GitHub Action FTP (o manual) |
 
 ---
 
@@ -234,7 +232,7 @@ npm run lint            # ESLint
 | `deploy/ferozo/.htaccess` | Apache SPA + HTTPS |
 | `.github/workflows/ci.yml` | Validación en PR/push |
 | `.github/workflows/deploy-ferozo.yml` | FTP automático (opcional) |
-| `api/contact.ts` | API formularios Vercel |
-| `api/reply.ts` | API email + CORS .com.ar |
-| `src/lib/contact.ts` | Formularios con fallback RPC |
-| `src/lib/adminMail.ts` | Reply cross-origin desde Ferozo |
+| `api/_lib/cors.ts` | CORS compartido .com + .com.ar |
+| `src/lib/apiOrigin.ts` | URL base API Vercel |
+| `src/lib/contact.ts` | Formularios → API Vercel (+ fallback RPC) |
+| `src/lib/adminMail.ts` | Reply → API Vercel |

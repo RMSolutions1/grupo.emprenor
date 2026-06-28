@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { setCors } from './_lib/cors.js'
 
 type ContactBody = {
   type: 'contact' | 'callback' | 'newsletter'
@@ -17,7 +18,10 @@ type VercelRequest = {
   body?: ContactBody | string
   headers?: Record<string, string | string[] | undefined>
 }
-type VercelResponse = { status: (code: number) => { json: (body: unknown) => void } }
+type VercelResponse = {
+  status: (code: number) => { json: (body: unknown) => void }
+  setHeader?: (k: string, v: string) => void
+}
 
 const LIMITS = {
   name: 200,
@@ -61,6 +65,10 @@ async function isRateLimited(
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setCors(req, res)
+  if (req.method === 'OPTIONS') {
+    return res.status(204).json({})
+  }
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' })
   }

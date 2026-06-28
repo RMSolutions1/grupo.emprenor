@@ -1,22 +1,5 @@
 import { supabase } from './supabase'
-
-/** API de email vive en Vercel (grupo.emprenor.com). Ferozo no tiene backend. */
-const MAIL_API_ORIGIN = 'https://grupo.emprenor.com'
-
-function mailApiBase(): string {
-  const env = import.meta.env.VITE_MAIL_API_URL as string | undefined
-  if (env) return env.replace(/\/$/, '')
-
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname.toLowerCase()
-    // Ferozo (.com.ar) y desarrollo local → API en Vercel
-    if (host.endsWith('.com.ar') || host === 'localhost' || host === '127.0.0.1') {
-      return MAIL_API_ORIGIN
-    }
-  }
-  // grupo.emprenor.com → mismo origen
-  return ''
-}
+import { apiUrl } from './apiOrigin'
 
 export type ReplyPayload = {
   kind: 'contact' | 'licitacion'
@@ -37,11 +20,8 @@ export async function sendStaffReply(payload: ReplyPayload): Promise<{ ok: boole
     return { ok: false, error: 'Sesión expirada. Inicie sesión nuevamente.' }
   }
 
-  const base = mailApiBase()
-  const url = `${base}/api/reply`
-
   try {
-    const res = await fetch(url, {
+    const res = await fetch(apiUrl('/api/reply'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

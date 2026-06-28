@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { verifyStaffRequest } from './_lib/auth.js'
+import { setCors } from './_lib/cors.js'
 import { escapeHtml, isMailConfigured, mailShell, sendMail } from './_lib/mail.js'
 
 type ReplyBody = {
@@ -16,23 +17,6 @@ type VercelRequest = {
   headers?: Record<string, string | string[] | undefined>
 }
 type VercelResponse = { status: (code: number) => { json: (body: unknown) => void }; setHeader?: (k: string, v: string) => void }
-
-const CORS_ORIGINS = [
-  'https://grupo.emprenor.com',
-  'https://www.emprenor.com.ar',
-  'https://emprenor.com.ar',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-]
-
-function setCors(req: VercelRequest, res: VercelResponse) {
-  const origin = typeof req.headers?.origin === 'string' ? req.headers.origin : ''
-  if (CORS_ORIGINS.includes(origin)) {
-    res.setHeader?.('Access-Control-Allow-Origin', origin)
-    res.setHeader?.('Access-Control-Allow-Headers', 'Authorization, Content-Type')
-    res.setHeader?.('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  }
-}
 
 function staffFromEmail(): string {
   const from = process.env.MAIL_FROM ?? ''

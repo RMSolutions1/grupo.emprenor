@@ -10,7 +10,7 @@
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
   # React Router: rutas como /contacto, /admin → index.html
-  # /api/* no existe en Ferozo — 404 para que el cliente use Supabase
+  # Las peticiones /api/* del navegador van a grupo.emprenor.com (CORS), no a Apache
   RewriteRule ^api/ - [R=404,L]
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
