@@ -134,16 +134,8 @@ async function testDb() {
     console.log('✓ Formulario público (RPC): OK')
     await client.from('contact_submissions').delete().eq('email', 'test-verify@local.dev')
   } else {
-    const { error: insertErr } = await anonClient
-      .from('contact_submissions')
-      .insert({ email: 'test-verify@local.dev', type: 'newsletter', name: 'Test verificación' })
-    if (insertErr) {
-      console.log(`✗ Formulario público: ${insertErr.message}`)
-      console.log('  → Ejecute: npm run fix:contact  (o scripts/fix-contact-form.sql en Supabase)')
-    } else {
-      console.log('✓ Formulario público (insert directo): OK')
-      await client.from('contact_submissions').delete().eq('email', 'test-verify@local.dev')
-    }
+    console.log(`✗ Formulario público (RPC): ${rpcErr.message}`)
+    console.log('  → Ejecute: npm run migrate:contact  (o scripts/migrate-contact-hardening.sql en Supabase)')
   }
 }
 

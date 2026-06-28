@@ -27,7 +27,8 @@ if errorlevel 1 (
 )
 
 echo.
-echo  Carpeta lista: dist\
-echo  Suba TODO su contenido a public_html en Ferozo.
+echo  Build listo en dist\
+echo  Deploy completo (FTP): npm run deploy:ferozo
+echo  o ejecute scripts\deploy-ferozo.bat
 echo.
 pause

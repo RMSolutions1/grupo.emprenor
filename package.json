@@ -15,8 +15,15 @@
     "migrate:rls": "tsx scripts/apply-migrate-rls.ts",
     "migrate:inbox": "tsx scripts/apply-inbox-migration.ts",
     "migrate:proveedores": "tsx scripts/apply-portal-proveedores.ts",
+    "migrate:contact": "tsx scripts/apply-contact-hardening.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:inbox-webhook": "tsx scripts/test-inbox-webhook.ts",
-    "build:ferozo": "tsx scripts/build-ferozo.ts"
+    "build:ferozo": "tsx scripts/build-ferozo.ts",
+    "upload:ferozo": "tsx scripts/upload-ferozo-ftp.ts",
+    "verify:ferozo": "tsx scripts/verify-ferozo-site.ts",
+    "verify:sites": "tsx scripts/verify-both-sites.ts",
+    "deploy:ferozo": "tsx scripts/deploy-ferozo.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
@@ -43,6 +50,8 @@
     "tsx": "^4.21.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vitest": "^3.2.4",
+    "basic-ftp": "^5.0.5"
   }
 }

@@ -25,7 +25,11 @@ const url = process.env.VITE_SUPABASE_URL!
 const anon = process.env.VITE_SUPABASE_ANON_KEY!
 const service = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@emprenor.com.ar'
-const password = process.env.SEED_ADMIN_PASSWORD ?? 'Emprenor-Admin-2026!'
+const password = process.env.SEED_ADMIN_PASSWORD
+if (!password) {
+  console.error('❌ Configure SEED_ADMIN_PASSWORD en .env.local')
+  process.exit(1)
+}
 const origin = (process.argv[2] ?? 'https://grupo.emprenor.com').replace(/\/$/, '')
 
 async function main() {

@@ -123,7 +123,11 @@ async function main() {
   console.log('7. Admin staff puede listar organizaciones')
   const adminAuth = createClient(url, anon)
   const adminEmail = process.env.SEED_ADMIN_EMAIL ?? 'admin@emprenor.com.ar'
-  const adminPass = process.env.SEED_ADMIN_PASSWORD ?? 'Emprenor-Admin-2026!'
+  const adminPass = process.env.SEED_ADMIN_PASSWORD
+  if (!adminPass) {
+    console.error('❌ Configure SEED_ADMIN_PASSWORD en .env.local')
+    process.exit(1)
+  }
   await adminAuth.auth.signInWithPassword({ email: adminEmail, password: adminPass })
   const { data: orgs, error: listErr } = await adminAuth.from('organizaciones').select('id, razon_social, status')
   if (listErr || !orgs?.some((o) => o.id === orgId)) {

@@ -1,5 +1,5 @@
--- Fix formularios de contacto: RPC endurecido (sin insert directo vía RLS)
--- Ejecutar en SQL Editor de Supabase (https://supabase.com/dashboard)
+-- Endurecimiento formularios de contacto: honeypot + rate limit en RPC, sin insert directo
+-- Ejecutar en SQL Editor de Supabase (proyectos existentes)
 
 drop policy if exists "Submissions: insert público" on public.contact_submissions;
 
@@ -72,3 +72,20 @@ $$;
 
 revoke all on function public.submit_contact_submission(text, text, text, text, text, text, text, text) from public;
 grant execute on function public.submit_contact_submission(text, text, text, text, text, text, text, text) to anon, authenticated;
+
+-- Trigger seguro: solo 'provider' desde metadata; admin/editor solo vía service role + upsert
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_meta_role text := new.raw_user_meta_data->>'role';
+  v_role text := 'client';
+begin
+  if v_meta_role = 'provider' then
+    v_role := 'provider';
+  end if;
+  insert into public.profiles (id, email, role)
+  values (new.id, new.email, v_role)
+  on conflict (id) do update set email = excluded.email;
+  return new;
+end;
+$$;

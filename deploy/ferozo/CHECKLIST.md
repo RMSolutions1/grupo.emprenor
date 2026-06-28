@@ -1,135 +1,180 @@
-# Deploy EMPRENOR en Ferozo
+# Deploy EMPRENOR en Ferozo (automatizado)
 
-Misma web y **misma base de datos Supabase** que Vercel. No reemplaza `grupo.emprenor.com`.
+Misma web y **misma base de datos Supabase** que Vercel (`grupo.emprenor.com`).  
+Dominio típico Ferozo: **https://www.emprenor.com.ar**
 
-## 1. Preparar build local
+---
+
+## Configuración inicial (una sola vez)
+
+### 1. Archivo `.env.ferozo`
 
 ```bash
 cp .env.ferozo.example .env.ferozo
-# Editar .env.ferozo — copiar claves Supabase desde .env.local
 ```
 
-Variables mínimas en `.env.ferozo`:
+Completar en `.env.ferozo`:
 
-| Variable | Ejemplo |
-|----------|---------|
+| Variable | Dónde obtenerla |
+|----------|-----------------|
 | `VITE_SITE_URL` | `https://www.emprenor.com.ar` |
-| `VITE_SUPABASE_URL` | Igual que en `.env.local` |
-| `VITE_SUPABASE_ANON_KEY` | Igual que en `.env.local` |
+| `VITE_SUPABASE_URL` | Igual que `.env.local` → Supabase Dashboard |
+| `VITE_SUPABASE_ANON_KEY` | Igual que `.env.local` |
+| `FTP_HOST` | cPanel Ferozo → **Cuentas FTP** → servidor (ej. `c2751446.ferozo.com`) |
+| `FTP_USER` | Usuario FTP del dominio |
+| `FTP_PASS` | Contraseña FTP |
+| `FTP_REMOTE_DIR` | `/public_html` (por defecto) |
 
-Build:
+Opcional: `FTP_PORT=21`, `FTP_SECURE=true` si Ferozo exige FTPS.
 
-```bash
-npm run build:ferozo
-```
+### 2. Supabase — URLs de redirect
 
-O en Windows: doble clic en `scripts\build-ferozo.bat`.
-
-Resultado: carpeta `dist/` con `.htaccess`, assets y SEO apuntando al dominio .com.ar.
-
-### Segundo dominio (`www.grupo.emprenor.com.ar`)
-
-Opción A — **Redirigir** en Ferozo/cPanel (recomendado para SEO):
-
-- `www.grupo.emprenor.com.ar` → 301 → `https://www.emprenor.com.ar`
-
-Opción B — **Mismo sitio en ambos**:
-
-1. Cambiar `VITE_SITE_URL` a `https://www.grupo.emprenor.com.ar`
-2. Volver a ejecutar `npm run build:ferozo`
-3. Subir `dist/` al hosting del segundo dominio
-
-## 2. Supabase (solo agregar URLs)
-
-Dashboard → **Authentication** → **URL Configuration**:
-
-**Redirect URLs** (agregar, no borrar las de Vercel):
+Dashboard → **Authentication** → **URL Configuration** → **Redirect URLs** (agregar, no borrar Vercel):
 
 ```
 https://www.emprenor.com.ar/**
 https://www.grupo.emprenor.com.ar/**
 ```
 
-Con esto el panel `/admin` funciona también desde .com.ar.
+### 3. Migraciones de seguridad (proyectos existentes)
 
-## 3. DNS en Ferozo / registrador
+En el SQL Editor de Supabase (o con `DATABASE_URL` en `.env.local`):
 
-Para cada dominio (`emprenor.com.ar`, `grupo.emprenor.com.ar`):
+```bash
+npm run migrate:contact    # honeypot + rate limit en formularios
+```
+
+SQL manual: `scripts/migrate-secure-auth.sql` + `scripts/migrate-contact-hardening.sql`
+
+Deshabilitar registro público:
+
+```bash
+npx tsx scripts/disable-signup.ts
+```
+
+### 4. DNS y SSL en Ferozo
 
 | Registro | Nombre | Valor |
 |----------|--------|-------|
-| A | `@` | IP del servidor Ferozo (panel → Información del servidor) |
-| A o CNAME | `www` | Misma IP o CNAME que indique Ferozo |
+| A | `@` | IP del servidor (panel Ferozo) |
+| A o CNAME | `www` | Misma IP o CNAME indicado por Ferozo |
 
-Esperar propagación DNS (15 min – 48 h).
-
-## 4. SSL en Ferozo (cPanel)
-
-1. **SSL/TLS** → **Manage SSL sites** o **AutoSSL**
-2. Activar Let's Encrypt para `emprenor.com.ar` y `www`
-3. Repetir para `grupo.emprenor.com.ar` si aplica
-
+cPanel → **SSL/TLS** → AutoSSL / Let's Encrypt para el dominio.  
 El `.htaccess` incluido fuerza HTTPS.
 
-## 5. Subir archivos
+---
 
-1. cPanel → **Administrador de archivos** → `public_html/`
-2. Borrar contenido previo del sitio (backup antes si hace falta)
-3. Subir **todo** el contenido de `dist/` (no la carpeta `dist` en sí):
-   - `index.html`
-   - `.htaccess`
-   - `assets/`
-   - `brand/`, `images/`, etc.
+## Deploy automatizado vs manual (estado actual)
 
-FTP: modo binario, mismo destino `public_html/`.
+| Paso | Vercel | Ferozo |
+|------|--------|--------|
+| Build | Automático en push a `main` | `ACTUALIZAR-FEROZO.bat` o `npm run build:ferozo` |
+| Publicar | Automático (integración Git Vercel) | **Manual — FTP** `dist/` → `public_html/` |
+| Verificar | — | `npm run verify:ferozo` o `npm run verify:sites` |
 
-## 6. Verificación post-deploy
+### Pipeline local Ferozo (antes del FTP)
 
-- [ ] `https://www.emprenor.com.ar/` carga el home
-- [ ] `https://www.emprenor.com.ar/contacto` (recarga directa, sin 404)
-- [ ] Formulario de contacto envía OK (usa Supabase directo)
-- [ ] `https://www.emprenor.com.ar/admin/login` muestra login
-- [ ] Contenido CMS igual que en grupo.emprenor.com
-- [ ] `https://grupo.emprenor.com` sigue funcionando en Vercel (sin cambios)
+```bash
+npm run deploy:ferozo -- --skip-upload   # lint + test + build, sin FTP
+```
 
-## Sincronización entre dominios (regla simple)
+### Subida manual por FTP (operación habitual)
+
+1. **Doble clic:** `ACTUALIZAR-FEROZO.bat` (raíz del proyecto) → abre `dist/` listo para FTP.
+2. Guía paso a paso: **[SUBIR-MANUAL.md](SUBIR-MANUAL.md)**
+
+```bash
+npm run build:ferozo   # solo genera dist/
+```
+
+### Comandos individuales
+
+| Comando | Qué hace |
+|---------|----------|
+| `npm run deploy:ferozo` | Pipeline completo |
+| `npm run build:ferozo` | Solo genera `dist/` |
+| `npm run upload:ferozo` | Solo sube `dist/` por FTP (requiere build previo) |
+| `npm run verify:ferozo` | Comprueba URLs en vivo (`VITE_SITE_URL`) |
+
+### Opciones del deploy
+
+```bash
+npm run deploy:ferozo -- --clean-remote   # borra public_html remoto antes de subir
+npm run deploy:ferozo -- --skip-upload   # solo verificaciones + build
+npm run deploy:ferozo -- --skip-checks   # solo build + FTP (más rápido)
+```
+
+---
+
+## Automatización FTP vía GitHub (opcional)
+
+El workflow `.github/workflows/deploy-ferozo.yml` **está preparado** para build + FTP en push a `main`, pero **no está activo** hasta que:
+
+1. Se commitee y pushee al repo remoto.
+2. Se configuren los secrets `FEROZO_*` en GitHub.
+
+**Flujo habitual hoy:** `ACTUALIZAR-FEROZO.bat` → subir `dist/` por FTP manualmente.
+
+Si activás GitHub Actions, secrets requeridos:
+
+| Secret | Valor |
+|--------|-------|
+| `FEROZO_VITE_SITE_URL` | `https://www.emprenor.com.ar` |
+| `FEROZO_VITE_SUPABASE_URL` | URL Supabase |
+| `FEROZO_VITE_SUPABASE_ANON_KEY` | Anon key |
+| `FEROZO_FTP_HOST` | Servidor FTP |
+| `FEROZO_FTP_USER` | Usuario FTP |
+| `FEROZO_FTP_PASSWORD` | Contraseña FTP |
+
+Vercel despliega `grupo.emprenor.com` por su propia integración Git (no usa este workflow).
+
+---
+
+## Verificación post-deploy
+
+Manual (recomendado tras cada FTP):
+
+```bash
+npm run verify:ferozo    # solo Ferozo
+npm run verify:sites     # Vercel + Ferozo
+```
+
+Comprueba:
+
+- [ ] `https://www.emprenor.com.ar/` → HTTP 200, contiene "EMPRENOR"
+- [ ] `https://www.emprenor.com.ar/contacto` → HTTP 200 (SPA, sin 404)
+- [ ] `https://www.emprenor.com.ar/admin/login` → HTTP 200
+- [ ] `https://www.emprenor.com.ar/robots.txt` → HTTP 200
+
+Pruebas manuales recomendadas:
+
+- [ ] Formulario de contacto envía OK (RPC Supabase + rate limit)
+- [ ] Panel `/admin` login funciona
+- [ ] Contenido CMS igual que en `grupo.emprenor.com`
+- [ ] `https://grupo.emprenor.com` sigue en Vercel sin cambios
+
+---
+
+## Sincronización entre dominios
 
 | Qué editás | ¿Se ve en ambos al instante? |
 |------------|------------------------------|
-| **Contenido** (textos, proyectos, blog, licitaciones, imágenes CMS, documentos PDF) | **Sí** — una sola base Supabase |
-| **Código** (diseño, nuevas funciones) | Vercel: automático con `git push`. Ferozo: `npm run build:ferozo` + subir `dist/` |
+| **Contenido CMS** (proyectos, blog, licitaciones, textos) | **Sí** — misma Supabase |
+| **Código** (diseño, features) | Vercel: push a `main` (auto). Ferozo: build + **FTP manual** |
+| **Formularios** | **Sí** — misma tabla `contact_submissions` |
+| **Panel admin** | **Sí** — mismo login Supabase |
 
-**Importante:** ejecute `scripts/migrate-licitaciones-portal.sql` en Supabase una vez (documentos y consultas de licitaciones).
+---
 
-## 7. Actualizar el sitio en Ferozo
+## Notas técnicas
 
-Cada vez que cambie el código:
+- **Formularios en Ferozo:** no hay `/api/contact` serverless; el sitio usa RPC `submit_contact_submission` (honeypot + rate limit 5/h incluidos tras `migrate:contact`).
+- **Service role key:** nunca va en Ferozo ni en `.env.ferozo` — solo anon key en el build.
+- **`.htaccess`:** se copia automáticamente a `dist/` en cada build.
+- **Assets con hash:** Vite genera nombres únicos; use `--clean-remote` periódicamente para limpiar assets viejos en el servidor.
 
-```bash
-git pull
-npm run build:ferozo
-# Subir dist/ por FTP
-```
+## Segundo dominio (`www.grupo.emprenor.com.ar`)
 
-Vercel se actualiza solo con push a `main`; Ferozo requiere subir `dist/` manualmente (o automatizar FTP aparte).
+**Opción A (recomendada):** redirigir 301 → `https://www.emprenor.com.ar` en cPanel.
 
-## Notas
-
-- **Formularios:** en Ferozo no hay `/api/contact`; el sitio guarda en Supabase vía RPC `submit_contact_submission` (misma tabla que Vercel).
-- **Rate limit** del servidor (5/hora) solo aplica en Vercel; en Ferozo no.
-- **Service role key** no va en Ferozo — solo la anon key en el build.
-
-## Sincronización con grupo.emprenor.com
-
-| Tipo de cambio | ¿Se sincroniza solo? | Cómo |
-|----------------|----------------------|------|
-| Contenido CMS (proyectos, blog, textos del panel) | **Sí, al instante** | Misma base Supabase en ambos sitios |
-| Cambios de código (diseño, bugs, features) | **No automático hoy** | Vercel despliega con `git push`; Ferozo requiere `npm run build:ferozo` + subir `dist/` |
-| Formularios recibidos | **Sí** | Misma tabla `contact_submissions` |
-| Panel `/admin` | **Sí** | Mismo login Supabase en cualquier dominio |
-
-### Automatizar deploy de código a Ferozo (opcional)
-
-Agregar un GitHub Action que, en cada push a `main`, ejecute `build:ferozo` y suba `dist/` por FTP a Ferozo. Así código y CMS quedarían alineados sin intervención manual.
-
-Alternativa simple: redirigir `www.emprenor.com.ar` → `https://grupo.emprenor.com` y usar un solo frontend (sin duplicar deploys).
+**Opción B:** cambiar `VITE_SITE_URL`, ejecutar `npm run deploy:ferozo` y apuntar el FTP al `public_html` de ese dominio.

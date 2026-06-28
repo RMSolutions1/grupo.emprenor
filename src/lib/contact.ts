@@ -29,9 +29,16 @@ type ApiPayload = {
   _hp?: string
 }
 
+export function isHoneypotTriggered(hp?: string): boolean {
+  return Boolean(hp?.trim())
+}
+
 function friendlyError(message: string): string {
   if (message.includes('row-level security')) {
     return 'El formulario no está habilitado en el servidor. Contacte al administrador.'
+  }
+  if (message.includes('Demasiados envíos')) {
+    return 'Demasiados envíos. Intente más tarde.'
   }
   return message
 }
@@ -62,7 +69,7 @@ async function submitViaSupabase(payload: ApiPayload): Promise<{ ok: boolean; er
     return { ok: false, error: 'Servicio no disponible' }
   }
 
-  const rpcArgs = {
+  const { error: rpcError } = await supabase.rpc('submit_contact_submission', {
     p_type: payload.type,
     p_name: payload.name ?? null,
     p_email: payload.email ?? null,
@@ -70,45 +77,18 @@ async function submitViaSupabase(payload: ApiPayload): Promise<{ ok: boolean; er
     p_organization: payload.organization ?? null,
     p_area: payload.area ?? null,
     p_message: payload.message ?? null,
-  }
-
-  const { error: rpcError } = await supabase.rpc('submit_contact_submission', rpcArgs)
-  if (!rpcError) return { ok: true }
-
-  if (payload.type === 'contact') {
-    const { error } = await supabase.from('contact_submissions').insert({
-      name: payload.name,
-      email: payload.email,
-      phone: payload.phone || null,
-      organization: payload.organization || null,
-      area: payload.area || null,
-      message: payload.message,
-      type: 'contact',
-    })
-    if (error) return { ok: false, error: friendlyError(error.message) }
-    return { ok: true }
-  }
-
-  if (payload.type === 'callback') {
-    const { error } = await supabase.from('contact_submissions').insert({
-      name: payload.name,
-      phone: payload.phone,
-      message: payload.message,
-      type: 'callback',
-    })
-    if (error) return { ok: false, error: friendlyError(error.message) }
-    return { ok: true }
-  }
-
-  const { error } = await supabase.from('contact_submissions').insert({
-    email: payload.email,
-    type: 'newsletter',
+    p_honeypot: payload._hp ?? null,
   })
-  if (error) return { ok: false, error: friendlyError(error.message) }
-  return { ok: true }
+
+  if (!rpcError) return { ok: true }
+  return { ok: false, error: friendlyError(rpcError.message) }
 }
 
 async function submit(payload: ApiPayload): Promise<{ ok: boolean; error?: string }> {
+  if (isHoneypotTriggered(payload._hp)) {
+    return { ok: true }
+  }
+
   const api = await submitViaApi(payload)
   if (api.ok) return { ok: true }
   if (api.error && !api.unavailable) return { ok: false, error: api.error }

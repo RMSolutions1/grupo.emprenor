@@ -1,0 +1,59 @@
+name: Deploy Ferozo (FTP)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'deploy/ferozo/**'
+      - 'scripts/build-ferozo.ts'
+      - 'scripts/deploy-ferozo.ts'
+      - 'scripts/upload-ferozo-ftp.ts'
+      - 'package.json'
+      - 'package-lock.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.repository != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Crear .env.ferozo desde secrets
+        env:
+          VITE_SITE_URL: ${{ secrets.FEROZO_VITE_SITE_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.FEROZO_VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.FEROZO_VITE_SUPABASE_ANON_KEY }}
+          FTP_HOST: ${{ secrets.FEROZO_FTP_HOST }}
+          FTP_USER: ${{ secrets.FEROZO_FTP_USER }}
+          FTP_PASS: ${{ secrets.FEROZO_FTP_PASSWORD }}
+          FTP_REMOTE_DIR: ${{ secrets.FEROZO_FTP_REMOTE_DIR }}
+          FTP_PORT: ${{ secrets.FEROZO_FTP_PORT }}
+          FTP_SECURE: ${{ secrets.FEROZO_FTP_SECURE }}
+        run: |
+          {
+            echo "VITE_SITE_URL=${VITE_SITE_URL}"
+            echo "VITE_SUPABASE_URL=${VITE_SUPABASE_URL}"
+            echo "VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}"
+            echo "FTP_HOST=${FTP_HOST}"
+            echo "FTP_USER=${FTP_USER}"
+            echo "FTP_PASS=${FTP_PASS}"
+            echo "FTP_REMOTE_DIR=${FTP_REMOTE_DIR:-/public_html}"
+            echo "FTP_PORT=${FTP_PORT:-21}"
+            echo "FTP_SECURE=${FTP_SECURE:-false}"
+          } > .env.ferozo
+
+      - run: npm run deploy:ferozo -- --skip-checks
+
+      - name: Verificación HTTP
+        run: npm run verify:ferozo

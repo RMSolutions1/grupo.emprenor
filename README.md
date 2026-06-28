@@ -6,7 +6,8 @@ Sitio web de EMPRENOR GROUP: React 19, Vite, TypeScript, Tailwind CSS 4 y Supaba
 
 - Node.js 20+
 - Proyecto en [Supabase](https://supabase.com)
-- Cuenta en [Vercel](https://vercel.com) (recomendado para despliegue)
+- Cuenta en [Vercel](https://vercel.com) — `grupo.emprenor.com`
+- Hosting Ferozo (opcional) — `www.emprenor.com.ar` vía FTP automatizado
 
 ## Desarrollo local
 
@@ -23,7 +24,7 @@ Sin Supabase configurado, el sitio funciona con datos estáticos en `src/data/`.
 
 1. Crear proyecto en supabase.com.
 2. Ejecutar `scripts/supabase-schema.sql` en el SQL Editor.
-3. **Deshabilitar registro público** en Authentication → Providers → Email (solo admins creados manualmente).
+3. **Deshabilitar registro público** en Authentication → Providers → Email (o `npx tsx scripts/disable-signup.ts`).
 4. Crear usuario admin:
 
 ```bash
@@ -37,13 +38,15 @@ npx tsx scripts/create-admin.ts
 npm run seed
 ```
 
-### Migración RLS (proyectos existentes)
+### Migraciones (proyectos existentes)
 
-Si ya desplegaste una versión anterior del esquema, ejecutá también:
-
-```sql
--- scripts/migrate-rls-roles.sql
+```bash
+npm run migrate:contact     # formularios: honeypot + rate limit + auth RPC seguro
+npm run migrate:rls         # políticas RLS staff
+npm run migrate:proveedores # portal proveedores
 ```
+
+SQL manual: `scripts/migrate-secure-auth.sql`, `scripts/migrate-contact-hardening.sql`, `scripts/migrate-rls-roles.sql`.
 
 ## Variables de entorno
 
@@ -61,44 +64,68 @@ Verificar configuración:
 npm run verify:env
 ```
 
-## Despliegue en Vercel
+## Despliegue — dos instancias, una base de datos
 
-Proyecto: **`grupo-emprenor`** → dominio de producción: **https://grupo.emprenor.com**
+Documentación completa: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
-1. El repo debe estar conectado a ese proyecto en Vercel (rama `main` → Production).
-2. Variables de entorno en Vercel (Production + Preview):
-   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-   - `VITE_SITE_URL=https://grupo.emprenor.com`
-3. Deploy manual desde la raíz del repo (proyecto ya vinculado en `.vercel`):
+| Sitio | URL | Deploy código | Backend API |
+|-------|-----|---------------|-------------|
+| **Vercel** | https://grupo.emprenor.com | Automático — `git push main` | Sí (`/api/*`) |
+| **Ferozo** | https://www.emprenor.com.ar | Manual — build + FTP `dist/` | No (Supabase directo) |
+
+El **contenido CMS** (proyectos, blog, textos) se sincroniza solo entre ambos vía Supabase.  
+Solo el **código compilado** requiere redeploy en cada hosting.
+
+### Vercel (automático)
+
+Push a `main` → Vercel construye y publica (`vercel.json`). CI en GitHub valida lint + test + build.
+
+### Ferozo (build automático, subida FTP manual)
 
 ```bash
-npx vercel deploy --prod
+# Windows: doble clic ACTUALIZAR-FEROZO.bat
+# o:
+npm run build:ferozo
+# → subir contenido de dist/ a public_html/ por FTP
+npm run verify:ferozo
 ```
 
-Cada push a `main` en GitHub también despliega automáticamente si el proyecto está conectado.
+Guías: [deploy/ferozo/SUBIR-MANUAL.md](deploy/ferozo/SUBIR-MANUAL.md) · [deploy/ferozo/CHECKLIST.md](deploy/ferozo/CHECKLIST.md)
+
+Verificar ambos sitios:
+
+```bash
+npm run verify:sites
+```
+
+Opcional: GitHub Action `deploy-ferozo.yml` (FTP automático al pushear) — requiere secrets `FEROZO_*`.
 
 ## Scripts
 
 | Comando | Descripción |
 |---------|-------------|
 | `npm run dev` | Servidor de desarrollo |
-| `npm run build` | Build de producción |
+| `npm run build` | Build de producción (Vercel) |
 | `npm run lint` | ESLint |
+| `npm run test` | Tests unitarios (Vitest) |
 | `npm run seed` | Migrar datos estáticos a Supabase |
 | `npm run verify:env` | Validar variables y JWT |
+| `npm run migrate:contact` | Endurecer formularios en Supabase |
+| `npm run deploy:ferozo` | Build + FTP + verificación Ferozo |
 | `npx tsx scripts/create-admin.ts` | Crear o resetear usuario admin |
 
 ## Panel administrativo
 
 - URL: `/admin` (login en `/acceso` o `/admin/login`)
 - Requiere usuario con perfil `admin` o `editor` en la tabla `profiles`
-- Módulos: proyectos, servicios, blog, licitaciones, consultas, textos, medios, etc.
+- Módulos: proyectos, servicios, blog, licitaciones, consultas, proveedores, textos, medios, etc.
 
 ## Seguridad
 
 - RLS en Supabase: solo perfiles `admin`/`editor` pueden editar contenido.
-- Formularios: validación + rate limit (5 envíos/hora por email o teléfono) vía `/api/contact`.
-- No commitear `.env.local` ni la service role key.
+- Formularios: honeypot + rate limit (5 envíos/hora) vía `/api/contact` (Vercel) y RPC `submit_contact_submission` (Ferozo).
+- Registro: roles `admin`/`editor` solo vía `create-admin.ts`; signup público deshabilitado.
+- No commitear `.env.local`, `.env.ferozo` ni la service role key.
 
 ## Estructura
 
@@ -106,10 +133,13 @@ Cada push a `main` en GitHub también despliega automáticamente si el proyecto 
 src/
   pages/       # Páginas públicas
   admin/       # Panel CMS
+  proveedor/   # Portal proveedores
   data/        # Contenido estático (fallback)
   lib/         # Supabase, CMS, contacto, SEO
   context/     # ContentProvider
 api/
   contact.ts   # Serverless Vercel
-scripts/       # SQL, seed, utilidades
+  reply.ts     # Respuestas email staff
+scripts/       # SQL, seed, deploy Ferozo
+deploy/ferozo/ # .htaccess y checklist FTP
 ```

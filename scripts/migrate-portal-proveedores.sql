@@ -485,10 +485,11 @@ comment on table public.oferta_documentos is 'Documentos adjuntos a una oferta (
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
-  v_role text := coalesce(new.raw_user_meta_data->>'role', 'editor');
+  v_meta_role text := new.raw_user_meta_data->>'role';
+  v_role text := 'client';
 begin
-  if v_role not in ('admin', 'editor', 'provider', 'client') then
-    v_role := 'editor';
+  if v_meta_role = 'provider' then
+    v_role := 'provider';
   end if;
   insert into public.profiles (id, email, role)
   values (new.id, new.email, v_role)

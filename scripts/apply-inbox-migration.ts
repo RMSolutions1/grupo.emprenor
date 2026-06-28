@@ -174,7 +174,7 @@ async function ensureVercelWebhookSecret(secret: string) {
   console.log(`  echo "${secret}" | npx vercel env add INBOX_WEBHOOK_SECRET production --force`)
 }
 
-async function testWebhookEndToEnd(secret: string) {
+async function testWebhookEndToEnd() {
   if (!supabaseUrl || !serviceKey) return
   console.log('\n--- Prueba webhook (insert test + email) ---')
   const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } })
@@ -220,9 +220,7 @@ async function main() {
     console.log(`  ${t.ok ? '✓' : '✗'} ${t.name}`)
   }
 
-  const colsOk = state.columns.every((c) => c.column === 'read' && !licTable ? true : c.ok)
   const needColumns = state.columns.some((c) => !(c.column === 'read' && !licTable) && !c.ok)
-  const needTriggers = state.triggers.some((t) => !t.ok) || !state.triggers.every((t) => t.ok)
 
   if (needColumns) {
     console.log('\n→ Aplicando migrate-inbox-notifications.sql …')
@@ -272,7 +270,7 @@ async function main() {
   if (allReady) {
     console.log('\n✅ Base de datos lista para bandeja + webhooks email')
     if (process.argv.includes('--test')) {
-      await testWebhookEndToEnd(secret)
+      await testWebhookEndToEnd()
     }
   } else {
     console.log('\n⚠ Quedaron ítems pendientes — revise arriba')

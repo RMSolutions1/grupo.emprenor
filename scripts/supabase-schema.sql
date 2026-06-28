@@ -6,7 +6,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   full_name text,
-  role text not null default 'editor' check (role in ('admin', 'editor')),
+  role text not null default 'client' check (role in ('admin', 'editor', 'provider', 'client')),
   created_at timestamptz not null default now()
 );
 
@@ -251,9 +251,6 @@ create table if not exists public.contact_submissions (
 alter table public.contact_submissions enable row level security;
 
 drop policy if exists "Submissions: insert público" on public.contact_submissions;
-create policy "Submissions: insert público" on public.contact_submissions
-  for insert to anon, authenticated
-  with check (true);
 
 drop policy if exists "Submissions: lectura autenticada" on public.contact_submissions;
 drop policy if exists "Submissions: lectura staff" on public.contact_submissions;
@@ -270,7 +267,7 @@ drop policy if exists "Submissions: eliminación staff" on public.contact_submis
 create policy "Submissions: eliminación staff" on public.contact_submissions
   for delete using (public.is_staff());
 
--- RPC para formularios públicos (alternativa robusta a RLS directo)
+-- RPC para formularios públicos (única vía de insert; honeypot + rate limit)
 create or replace function public.submit_contact_submission(
   p_type text,
   p_name text default null,
@@ -278,7 +275,8 @@ create or replace function public.submit_contact_submission(
   p_phone text default null,
   p_organization text default null,
   p_area text default null,
-  p_message text default null
+  p_message text default null,
+  p_honeypot text default null
 )
 returns uuid
 language plpgsql
@@ -287,19 +285,47 @@ set search_path = public
 as $$
 declare
   new_id uuid;
+  v_count int;
+  v_since timestamptz := now() - interval '1 hour';
 begin
+  if p_honeypot is not null and length(trim(p_honeypot)) > 0 then
+    return gen_random_uuid();
+  end if;
+
   if p_type not in ('contact', 'callback', 'newsletter') then
     raise exception 'Tipo inválido';
   end if;
   if p_type = 'contact' and (p_name is null or length(trim(p_name)) = 0 or length(p_name) > 200) then
     raise exception 'Nombre inválido';
   end if;
-  if p_type in ('contact', 'newsletter') and (p_email is null or length(trim(p_email)) > 320) then
+  if p_type in ('contact', 'newsletter') and (p_email is null or length(trim(p_email)) = 0 or length(p_email) > 320) then
     raise exception 'Email inválido';
+  end if;
+  if p_type = 'callback' and (p_phone is null or length(trim(p_phone)) = 0 or length(p_phone) > 40) then
+    raise exception 'Teléfono inválido';
   end if;
   if p_message is not null and length(p_message) > 5000 then
     raise exception 'Mensaje demasiado largo';
   end if;
+
+  if p_type in ('contact', 'newsletter') and p_email is not null then
+    select count(*) into v_count
+    from public.contact_submissions
+    where email = trim(p_email) and created_at >= v_since;
+    if v_count >= 5 then
+      raise exception 'Demasiados envíos';
+    end if;
+  end if;
+
+  if p_type = 'callback' and p_phone is not null then
+    select count(*) into v_count
+    from public.contact_submissions
+    where phone = trim(p_phone) and created_at >= v_since;
+    if v_count >= 5 then
+      raise exception 'Demasiados envíos';
+    end if;
+  end if;
+
   insert into public.contact_submissions (name, email, phone, organization, area, message, type)
   values (p_name, p_email, p_phone, p_organization, p_area, p_message, p_type)
   returning id into new_id;
@@ -307,16 +333,22 @@ begin
 end;
 $$;
 
-revoke all on function public.submit_contact_submission(text, text, text, text, text, text, text) from public;
-grant execute on function public.submit_contact_submission(text, text, text, text, text, text, text) to anon, authenticated;
+revoke all on function public.submit_contact_submission(text, text, text, text, text, text, text, text) from public;
+grant execute on function public.submit_contact_submission(text, text, text, text, text, text, text, text) to anon, authenticated;
 
--- Trigger: crear perfil editor al registrar usuario (admin solo vía scripts/create-admin.ts)
+-- Trigger: perfil seguro al registrar (admin/editor solo vía scripts/create-admin.ts)
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_meta_role text := new.raw_user_meta_data->>'role';
+  v_role text := 'client';
 begin
+  if v_meta_role = 'provider' then
+    v_role := 'provider';
+  end if;
   insert into public.profiles (id, email, role)
-  values (new.id, new.email, 'editor')
-  on conflict (id) do nothing;
+  values (new.id, new.email, v_role)
+  on conflict (id) do update set email = excluded.email;
   return new;
 end;
 $$;

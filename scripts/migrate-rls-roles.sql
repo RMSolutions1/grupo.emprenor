@@ -96,13 +96,19 @@ create policy "Submissions: lectura staff" on public.contact_submissions for sel
 create policy "Submissions: actualización staff" on public.contact_submissions for update using (public.is_staff());
 create policy "Submissions: eliminación staff" on public.contact_submissions for delete using (public.is_staff());
 
--- trigger: nuevos usuarios → editor (no admin)
+-- trigger: nuevos usuarios → client (admin/editor solo vía create-admin.ts; provider vía metadata)
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_meta_role text := new.raw_user_meta_data->>'role';
+  v_role text := 'client';
 begin
+  if v_meta_role = 'provider' then
+    v_role := 'provider';
+  end if;
   insert into public.profiles (id, email, role)
-  values (new.id, new.email, 'editor')
-  on conflict (id) do nothing;
+  values (new.id, new.email, v_role)
+  on conflict (id) do update set email = excluded.email;
   return new;
 end;
 $$;

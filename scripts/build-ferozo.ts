@@ -80,5 +80,6 @@ console.log('✓ dist/.htaccess (Apache/Ferozo)')
 patchDistSeo(siteUrl)
 
 console.log('')
-console.log('✅ Listo. Suba el contenido de dist/ a public_html en Ferozo (FTP o Administrador de archivos).')
-console.log('   Incluya .htaccess (ya está dentro de dist/).')
+console.log('✅ Build listo en dist/')
+console.log('   Subir automáticamente: npm run deploy:ferozo')
+console.log('   Solo FTP (sin rebuild):  npm run upload:ferozo')
